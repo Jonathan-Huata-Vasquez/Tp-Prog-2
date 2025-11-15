@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- Fragmento de navbar con botón “Cerrar sesión” -->
+<div th:fragment="navbar">
+    <div style="display:flex;align-items:center;gap:12px;justify-content:space-between;padding:12px 0;">
+        <div>
+            <!-- Opcional: muestra usuario y roles si los tenés en el principal -->
+            <span th:if="${#authentication?.principal != null}">
+        <strong th:text="${#authentication.principal.nombreCompleto}">Usuario</strong>
+        <small>—</small>
+        <small th:text="${#authentication.authorities}">[roles]</small>
+      </span>
+        </div>
+
+        <!-- Logout: POST /logout (SecurityConfig) -->
+        <form th:action="@{/logout}" method="post" style="margin:0;">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <button type="submit" class="btn btn-sm btn-outline-danger">Cerrar sesión</button>
+        </form>
+    </div>
+    <hr/>
+</div>
+</body>
+</html>
