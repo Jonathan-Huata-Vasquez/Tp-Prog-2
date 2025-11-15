@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(titulo='Detalle de libro - Biblioteca')}"></head>
+<body>
+
+<div th:replace="~{fragments/navbar-lector :: navbarLector('catalogo')}"></div>
+
+<main class="container">
+    <div class="row g-4 mt-4">
+
+        <!-- Encabezado libro -->
+        <section class="col-12">
+            <div class="card card-soft mb-4">
+                <div class="card-body">
+                    <p class="section-title mb-2">Detalle de libro</p>
+
+                    <div class="d-flex flex-column flex-md-row gap-4">
+                        <div class="book-cover">
+                            <i class="bi bi-book-half book-cover-icon"></i>
+                            <!-- Si hay portada: <img th:if="${libro.portadaUrl}" th:src="${libro.portadaUrl}" alt="Portada" class="img-fluid rounded-3" /> -->
+                        </div>
+
+                        <div class="flex-grow-1">
+                            <h1 class="h4 mb-1" th:text="${libro.titulo}">Título del libro</h1>
+                            <p class="mb-2 text-soft-muted">
+                                de <span class="fw-semibold" th:text="${libro.autor}">Autor</span>
+                            </p>
+
+                            <div class="d-flex flex-wrap gap-2 mb-3">
+                <span class="chip" th:if="${libro.categoria}">
+                  <i class="bi bi-bookmark"></i>
+                  <span th:text="${libro.categoria}">Categoría</span>
+                </span>
+                                <span class="chip" th:if="${libro.anio}">
+                  <i class="bi bi-calendar"></i>
+                  <span th:text="${libro.anio}">Año</span>
+                </span>
+                                <span class="chip" th:if="${libro.editorial}">
+                  <i class="bi bi-building"></i>
+                  <span th:text="${libro.editorial}">Editorial</span>
+                </span>
+                            </div>
+
+                            <p class="small-label mb-1">Descripción</p>
+                            <p class="mb-0 text-soft-muted" th:text="${libro.descripcion}">
+                                Descripción del libro...
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tabla de copias (fragment) -->
+        <section class="col-lg-8">
+            <div th:replace="~{fragments/lector-tabla-copias :: tablaCopias(${libro.copias}, ${libro.totalCopias}, ${libro.copiasDisponibles})}"></div>
+        </section>
+
+        <!-- Lateral -->
+        <aside class="col-lg-4">
+            <div class="card card-soft-light mb-4">
+                <div class="card-body">
+                    <p class="section-title mb-2">Disponibilidad</p>
+
+                    <p class="small-label mb-1">Copias disponibles</p>
+                    <p class="highlight-number mb-2" th:text="${libro.copiasDisponibles}">0</p>
+
+                    <p class="small text-soft-muted mb-3">
+                        Este número refleja las copias libres en este momento. Acercate al mostrador para solicitar el préstamo.
+                    </p>
+
+                    <div class="mb-3">
+                        <p class="small-label mb-1">Tu situación con este título</p>
+                        <p class="small mb-0" th:if="${!libro.prestadoAlLector}">No tenés préstamos activos de este título.</p>
+                        <p class="small mb-0" th:if="${libro.prestadoAlLector}">Tenés un préstamo activo de este título. Revisalo en “Mis préstamos”.</p>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <a th:href="@{/catalogo}" class="btn btn-outline-secondary btn-sm">
+                            <i class="bi bi-arrow-left me-1"></i> Volver al catálogo
+                        </a>
+                        <a th:href="@{/lector/prestamos}" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-journal-check me-1"></i> Ver mis préstamos
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 bg-transparent text-soft-muted">
+                <div class="card-body px-0">
+                    <p class="section-title mb-2">Información para el lector</p>
+                    <ul class="list-unstyled small mb-0">
+                        <li>• La reserva y registro de préstamos se realiza en el mostrador.</li>
+                        <li>• Podés consultar la disponibilidad antes de acercarte.</li>
+                        <li>• Cada préstamo tiene un plazo de 21 días.</li>
+                        <li>• Los atrasos impactan en tu estado de cuenta como lector.</li>
+                    </ul>
+                </div>
+            </div>
+        </aside>
+
+    </div>
+</main>
+
+</body>
+</html>

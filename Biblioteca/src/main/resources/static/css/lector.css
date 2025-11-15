@@ -1,67 +1,75 @@
-/* Paleta / base */
-body {
-    min-height: 100vh;
-    margin: 0;
-    background: radial-gradient(circle at top left, #1e293b 0, #020617 45%, #020617 100%);
-    color: #e5e7eb;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-}
-main { padding-top: 1.5rem; padding-bottom: 2.5rem; }
+/* === Base / Paleta / Layout === */
+body{min-height:100vh;margin:0;background:radial-gradient(circle at top left,#1e293b 0,#020617 45%,#020617 100%);color:#e5e7eb;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{padding-top:1.5rem;padding-bottom:2.5rem}
 
-/* Navbar */
-.navbar-main { background: linear-gradient(90deg, #020617, #0f172a); box-shadow: 0 12px 30px rgba(15, 23, 42, 0.6); }
-.navbar-brand { font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; font-size: 0.9rem; }
-.nav-link { font-size: 0.9rem; }
-.nav-link.active { color: #e5e7eb !important; font-weight: 600; }
-.nav-link-muted { color: #9ca3af !important; }
-.nav-link-muted:hover { color: #e5e7eb !important; }
+/* === Navbar === */
+.navbar-main{background:linear-gradient(90deg,#020617,#0f172a);box-shadow:0 12px 30px rgba(15,23,42,.6)}
+.navbar-brand{font-weight:600;letter-spacing:.05em;text-transform:uppercase;font-size:.9rem}
+.nav-link{font-size:.9rem}
+.nav-link.active{color:#e5e7eb!important;font-weight:600}
+.nav-link-muted{color:#9ca3af!important}
+.nav-link-muted:hover{color:#e5e7eb!important}
 
-/* Cards y títulos */
-.card-soft { border: none; border-radius: 1rem; box-shadow: 0 18px 45px rgba(15, 23, 42, 0.55); background: #020617; color: #e5e7eb; }
-.card-soft-light { border: none; border-radius: 1rem; box-shadow: 0 14px 36px rgba(15, 23, 42, 0.5); background: #020617; color: #e5e7eb; }
-.section-title { font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.16em; color: #9ca3af; }
-.text-soft-muted { color: #9ca3af; }
-.highlight-number { font-size: 1.8rem; font-weight: 700; color: #38bdf8; }
+/* === Cards / Tipografías === */
+.card-soft{border:none;border-radius:1rem;box-shadow:0 18px 45px rgba(15,23,42,.55);background:#020617;color:#e5e7eb}
+.card-soft-light{border:none;border-radius:1rem;box-shadow:0 14px 36px rgba(15,23,42,.5);background:#020617;color:#e5e7eb}
+.section-title{font-size:.8rem;font-weight:600;text-transform:uppercase;letter-spacing:.16em;color:#9ca3af}
+.text-soft-muted{color:#9ca3af}
+.highlight-number{font-size:1.8rem;font-weight:700;color:#38bdf8}
 
-/* Estados */
-.badge-estado { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.09em; padding: 0.4rem 0.7rem; border-radius: 999px; border: 1px solid rgba(45, 212, 191, 0.4); background: rgba(45, 212, 191, 0.12); color: #a7f3d0; white-space: nowrap; }
-.badge-disponible { font-size: 0.75rem; border-radius: 999px; padding: 0.25rem 0.6rem; background-color: rgba(34, 197, 94, 0.15); color: #4ade80; }
-.badge-sindisponible { font-size: 0.75rem; border-radius: 999px; padding: 0.25rem 0.6rem; background-color: rgba(248, 113, 113, 0.18); color: #fca5a5; }
+/* === Estados y badges === */
+.badge-estado{font-size:.75rem;padding:.25rem .55rem;border-radius:999px}
+.badge-estado-disponible{background-color:rgba(34,197,94,.15);color:#4ade80}
+.badge-estado-prestado{background-color:rgba(248,113,113,.18);color:#fca5a5}
+.badge-estado-activo{background-color:rgba(34,197,94,.15);color:#4ade80}
+.badge-estado-vencido{background-color:rgba(248,113,113,.18);color:#fca5a5}
+.badge-estado-devuelto{background-color:rgba(148,163,184,.18);color:#cbd5f5}
+.badge-estado-mini{font-size:.7rem;text-transform:uppercase;letter-spacing:.09em;padding:.4rem .7rem;border-radius:999px;border:1px solid rgba(45,212,191,.4);background:rgba(45,212,191,.12);color:#a7f3d0;white-space:nowrap}
 
-/* Controles */
-.form-control, .form-control:focus { background-color: #020617; border-radius: 999px; border-color: #1f2933; color: #e5e7eb; box-shadow: none; }
-.form-control::placeholder { color: #6b7280; }
+/* === Controles === */
+.form-control,.form-control:focus{background-color:#020617;border-radius:999px;border-color:#1f2933;color:#e5e7eb;box-shadow:none}
+.form-control::placeholder{color:#6b7280}
+.btn-primary{border-radius:999px;background-color:#6366f1;border-color:#6366f1;font-weight:500}
+.btn-primary:hover{background-color:#4f46e5;border-color:#4f46e5}
+.btn-outline-secondary{border-radius:999px;border-color:#374151;color:#e5e7eb;background-color:transparent}
+.btn-outline-secondary:hover{background-color:#111827;border-color:#4b5563;color:#e5e7eb}
+.btn-outline-primary{border-radius:999px;border-color:#0ea5e9;color:#0ea5e9;background-color:transparent}
+.btn-outline-primary:hover{background-color:rgba(14,165,233,.1);border-color:#0ea5e9;color:#38bdf8}
 
-.btn-primary { border-radius: 999px; background-color: #6366f1; border-color: #6366f1; font-weight: 500; }
-.btn-primary:hover { background-color: #4f46e5; border-color: #4f46e5; }
-.btn-outline-secondary { border-radius: 999px; border-color: #374151; color: #e5e7eb; background-color: transparent; }
-.btn-outline-secondary:hover { background-color: #111827; border-color: #4b5563; color: #e5e7eb; }
-.btn-outline-primary { border-radius: 999px; border-color: #0ea5e9; color: #0ea5e9; background-color: transparent; }
-.btn-outline-primary:hover { background-color: rgba(14, 165, 233, 0.1); border-color: #0ea5e9; color: #38bdf8; }
+/* === User menu (<details>) === */
+.user-menu{position:relative;list-style:none}
+.user-menu summary{list-style:none;cursor:pointer}
+.user-menu summary::-webkit-details-marker{display:none}
+.user-avatar{width:36px;height:36px;border-radius:999px;background:radial-gradient(circle at 30% 20%,#22c55e,#0ea5e9);display:inline-flex;align-items:center;justify-content:center;color:#0b1120;font-weight:700;font-size:.85rem;box-shadow:0 0 0 2px rgba(15,23,42,.9)}
+.user-menu-dropdown{position:absolute;right:0;margin-top:.75rem;min-width:210px;background:#020617;border-radius:.75rem;box-shadow:0 18px 40px rgba(15,23,42,.85);padding:.75rem .8rem;border:1px solid #1f2937;z-index:20;display:none}
+.user-menu[open] .user-menu-dropdown{display:block}
+.user-menu-header{padding:.35rem .5rem .5rem}
+.user-menu-name{font-size:.9rem;font-weight:600;color:#e5e7eb}
+.user-menu-role{font-size:.75rem;color:#9ca3af}
+.user-menu-divider{height:1px;background:linear-gradient(90deg,transparent,#1f2937,transparent);margin:.4rem .2rem .5rem}
+.user-menu-link{display:flex;align-items:center;gap:.45rem;padding:.35rem .6rem;border-radius:.5rem;font-size:.8rem;color:#e5e7eb;text-decoration:none}
+.user-menu-link i{font-size:.95rem;color:#9ca3af}
+.user-menu-link:hover{background-color:#0b1120;color:#f9fafb}
 
-/* User menu (sin JS, <details>) */
-.user-menu { position: relative; list-style: none; }
-.user-menu summary { list-style: none; cursor: pointer; }
-.user-menu summary::-webkit-details-marker { display: none; }
-.user-avatar { width: 36px; height: 36px; border-radius: 999px; background: radial-gradient(circle at 30% 20%, #22c55e, #0ea5e9); display: inline-flex; align-items: center; justify-content: center; color: #0b1120; font-weight: 700; font-size: 0.85rem; box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.9); }
-.user-menu-dropdown { position: absolute; right: 0; margin-top: 0.75rem; min-width: 210px; background: #020617; border-radius: 0.75rem; box-shadow: 0 18px 40px rgba(15, 23, 42, 0.85); padding: 0.75rem 0.8rem; border: 1px solid #1f2937; z-index: 20; display: none; }
-.user-menu[open] .user-menu-dropdown { display: block; }
-.user-menu-header { padding: 0.35rem 0.5rem 0.5rem; }
-.user-menu-name { font-size: 0.9rem; font-weight: 600; color: #e5e7eb; }
-.user-menu-role { font-size: 0.75rem; color: #9ca3af; }
-.user-menu-divider { height: 1px; background: linear-gradient(90deg, transparent, #1f2937, transparent); margin: 0.4rem 0.2rem 0.5rem; }
-.user-menu-link { display: flex; align-items: center; gap: 0.45rem; padding: 0.35rem 0.6rem; border-radius: 0.5rem; font-size: 0.8rem; color: #e5e7eb; text-decoration: none; }
-.user-menu-link i { font-size: 0.95rem; color: #9ca3af; }
-.user-menu-link:hover { background-color: #0b1120; color: #f9fafb; }
+/* === Catálogo: cards de libros === */
+.book-card{border-radius:1rem;background:#020617;border:1px solid #111827;box-shadow:0 12px 30px rgba(15,23,42,.55);height:100%;display:flex;flex-direction:column}
+.book-card-header{display:flex;gap:1rem}
+.book-card-cover{width:52px;height:72px;border-radius:.5rem;background:radial-gradient(circle at 20% 10%,#38bdf8,#0f172a 60%);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.book-card-cover i{font-size:1.7rem;color:#f9fafb;opacity:.9}
+.book-card-title{font-size:.98rem;font-weight:600;margin-bottom:.15rem}
+.book-card-author{font-size:.85rem;color:#9ca3af}
+.chip{display:inline-flex;align-items:center;gap:.35rem;padding:.2rem .65rem;border-radius:999px;background-color:#020617;border:1px solid #1f2937;font-size:.7rem;color:#e5e7eb}
+.chip i{font-size:.85rem;color:#9ca3af}
+.book-card-footer{margin-top:auto}
+.small-label{font-size:.75rem;text-transform:uppercase;letter-spacing:.12em;color:#9ca3af}
 
-/* Catálogo: cards */
-.book-card { border-radius: 1rem; background: #020617; border: 1px solid #111827; box-shadow: 0 12px 30px rgba(15, 23, 42, 0.55); height: 100%; display: flex; flex-direction: column; }
-.book-card-header { display: flex; gap: 1rem; }
-.book-card-cover { width: 52px; height: 72px; border-radius: 0.5rem; background: radial-gradient(circle at 20% 10%, #38bdf8, #0f172a 60%); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.book-card-cover i { font-size: 1.7rem; color: #f9fafb; opacity: 0.9; }
-.book-card-title { font-size: 0.98rem; font-weight: 600; margin-bottom: 0.15rem; }
-.book-card-author { font-size: 0.85rem; color: #9ca3af; }
-.chip { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.2rem 0.65rem; border-radius: 999px; background-color: #020617; border: 1px solid #1f2937; font-size: 0.7rem; color: #e5e7eb; }
-.chip i { font-size: 0.85rem; color: #9ca3af; }
-.book-card-footer { margin-top: auto; }
-.small-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.12em; color: #9ca3af; }
+/* === Detalle de libro: portada === */
+.book-cover{width:100%;max-width:220px;aspect-ratio:2/3;border-radius:.75rem;background:radial-gradient(circle at 20% 10%,#38bdf8,#0f172a 60%);box-shadow:0 18px 40px rgba(15,23,42,.85);display:flex;align-items:center;justify-content:center;color:#f9fafb;flex-shrink:0}
+.book-cover-icon{font-size:3rem;opacity:.85}
+
+/* === Tablas oscuras reutilizables === */
+.table-dark-custom{--bs-table-bg:transparent;--bs-table-striped-bg:rgba(15,23,42,.85);--bs-table-striped-color:#e5e7eb;--bs-table-hover-bg:rgba(31,41,55,.85);--bs-table-hover-color:#f9fafb;border-color:#1f2937}
+.table-dark-custom,.table-dark-custom th,.table-dark-custom td{color:#e5e7eb}
+.table-dark-custom thead{background:linear-gradient(90deg,#020617,#111827);border-bottom:1px solid #1f2937}
+.table-dark-custom thead th{font-size:.75rem;text-transform:uppercase;letter-spacing:.14em;font-weight:600;color:#9ca3af;border-bottom:none}
+.table-dark-custom tbody tr{border-color:#1f2937}

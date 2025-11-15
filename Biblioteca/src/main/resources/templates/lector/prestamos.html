@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(titulo='Mis préstamos - Biblioteca')}"></head>
+<body>
+
+<div th:replace="~{fragments/navbar-lector :: navbarLector('prestamos')}"></div>
+
+<main class="container">
+    <div class="row g-4 mt-4">
+
+        <!-- Encabezado reutilizable -->
+        <section class="col-12">
+            <div th:replace="~{fragments/lector-header :: headerSeccion('Mis préstamos','Préstamos registrados a tu nombre','Préstamos activos', ${resumen.cantidadActivos})}"></div>
+        </section>
+
+        <!-- Tabla de préstamos (fragment) -->
+        <section class="col-12">
+            <div th:replace="~{fragments/lector-tabla-prestamos :: tablaPrestamos(${prestamos})}"></div>
+        </section>
+
+    </div>
+</main>
+
+</body>
+</html>

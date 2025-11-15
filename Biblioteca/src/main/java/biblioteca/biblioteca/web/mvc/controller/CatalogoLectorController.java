@@ -6,6 +6,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
+import java.util.Map;
+
 @Controller
 @RequiredArgsConstructor
 public class CatalogoLectorController {
@@ -17,13 +20,37 @@ public class CatalogoLectorController {
             @RequestParam(name = "q", required = false) String q,
             Model model
     ) {
-        // Placeholder de datos para que la vista renderice sin NPE:
         model.addAttribute("criterioBusqueda", q);
-        model.addAttribute("totalLibros", 0);
-        model.addAttribute("libros", java.util.List.of());
 
-        // Ejemplo cuando conectes el query real:
-        // var resultado = libroCatalogoQuery.listar(q); // List<LibroCatalogoItemDto>
+        // Placeholders (reemplazar por resultados reales)
+        List<Map<String, Object>> libros = List.of(
+                Map.of(
+                        "id", 1,
+                        "titulo", "Cien años de soledad",
+                        "autor", "Gabriel García Márquez",
+                        "categoria", "Novela",
+                        "anio", 1967,
+                        "descripcionCorta", "Obra clave del realismo mágico.",
+                        "copiasDisponibles", 2,
+                        "totalCopias", 4
+                ),
+                Map.of(
+                        "id", 2,
+                        "titulo", "Introducción a la algoritmia",
+                        "autor", "J. Pérez · M. López",
+                        "categoria", "Informática",
+                        "anio", 2015,
+                        "descripcionCorta", "Manual introductorio.",
+                        "copiasDisponibles", 0,
+                        "totalCopias", 1
+                )
+        );
+
+        model.addAttribute("libros", libros);
+        model.addAttribute("totalLibros", libros.size());
+
+        // Ejemplo real:
+        // var resultado = libroCatalogoQuery.listar(q);
         // model.addAttribute("libros", resultado);
         // model.addAttribute("totalLibros", resultado.size());
 
