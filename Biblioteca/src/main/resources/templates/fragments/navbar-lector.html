@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+<nav class="navbar navbar-main" th:fragment="navbarLector(activo)">
+    <div class="container d-flex align-items-center justify-content-between">
+        <a class="navbar-brand text-white" th:href="@{/dashboard/lector}">
+            BIBLIOTECA
+        </a>
+
+        <div class="d-flex align-items-center gap-3">
+            <a class="nav-link"
+               th:classappend="${activo}=='home' ? ' active text-white' : ' nav-link-muted'"
+               th:href="@{/dashboard/lector}">
+                Inicio
+            </a>
+
+            <a class="nav-link"
+               th:classappend="${activo}=='catalogo' ? ' active text-white' : ' nav-link-muted'"
+               th:href="@{/lector/catalogo}">
+                Catálogo
+            </a>
+
+            <a class="nav-link"
+               th:classappend="${activo}=='prestamos' ? ' active text-white' : ' nav-link-muted'"
+               th:href="@{/lector/prestamos}">
+                Mis préstamos
+            </a>
+
+            <!-- Menú usuario sin JS -->
+            <details class="user-menu ms-2">
+                <summary class="d-flex align-items-center gap-2">
+                    <span class="user-avatar" th:text="${#strings.substring(#authentication.principal.nombreCompleto,0,1)} + ${#strings.substring(#authentication.principal.nombreCompleto, #authentication.principal.nombreCompleto.indexOf(' ')+1, #authentication.principal.nombreCompleto.indexOf(' ')+2)}">JP</span>
+                </summary>
+
+                <div class="user-menu-dropdown">
+                    <div class="user-menu-header">
+                        <div class="user-menu-name" th:text="${#authentication.principal.nombreCompleto}">Juan Pérez</div>
+                        <div class="user-menu-role">Rol: Lector</div>
+                    </div>
+
+                    <div class="user-menu-divider"></div>
+
+                    <a class="user-menu-link" th:href="@{/lector/perfil}">
+                        <i class="bi bi-person-lines-fill"></i>
+                        <span>Ver perfil</span>
+                    </a>
+
+                    <!-- Logout como POST con CSRF -->
+                    <form th:action="@{/logout}" method="post" style="margin:0;">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <button type="submit" class="user-menu-link" style="background:none;border:0;padding:0;">
+                            <i class="bi bi-box-arrow-right"></i>
+                            <span>Cerrar sesión</span>
+                        </button>
+                    </form>
+                </div>
+            </details>
+        </div>
+    </div>
+</nav>
+</body>
+</html>
