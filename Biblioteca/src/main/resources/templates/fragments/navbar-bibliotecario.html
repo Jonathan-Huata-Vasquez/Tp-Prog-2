@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- Navbar específica para bibliotecarios -->
+<nav th:fragment="navbarBibliotecario(activeSection)" class="navbar navbar-main">
+  <div class="container d-flex align-items-center justify-content-between">
+    <!-- Brand -->
+    <a class="navbar-brand text-white" href="/">BIBLIOTECA</a>
+    
+    <!-- Navigation links -->
+    <div class="d-flex align-items-center gap-3">
+      <a class="nav-link" 
+         th:classappend="${activeSection == 'home'} ? 'nav-link-active' : 'nav-link-muted'"
+         th:href="@{/dashboard/bibliotecario}">Dashboard</a>
+      
+      <a class="nav-link"
+         th:classappend="${activeSection == 'prestamos'} ? 'nav-link-active' : 'nav-link-muted'"
+         th:href="@{/bibliotecario/prestamos}">Préstamos</a>
+         
+      <a class="nav-link"
+         th:classappend="${activeSection == 'catalogo'} ? 'nav-link-active' : 'nav-link-muted'"
+         th:href="@{/catalogo}">Catálogo</a>
+    </div>
+
+    <!-- User info and logout -->
+    <div class="d-flex align-items-center gap-3">
+      <div class="text-white-50 small">
+        <span th:text="${#authentication.principal.nombreCompleto}">Usuario</span>
+        <small class="text-white-25"> · Bibliotecario</small>
+      </div>
+      
+      <!-- Logout form -->
+      <form th:action="@{/logout}" method="post" class="mb-0">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        <button type="submit" class="btn btn-outline-light btn-sm">
+          <i class="bi bi-box-arrow-right me-1"></i>Salir
+        </button>
+      </form>
+    </div>
+  </div>
+</nav>
+
+</body>
+</html>
