@@ -5,39 +5,56 @@
 <!-- Navbar específica para bibliotecarios -->
 <nav th:fragment="navbarBibliotecario(activeSection)" class="navbar navbar-main">
   <div class="container d-flex align-items-center justify-content-between">
-    <!-- Brand -->
-    <a class="navbar-brand text-white" href="/">BIBLIOTECA</a>
-    
-    <!-- Navigation links -->
-    <div class="d-flex align-items-center gap-3">
-      <a class="nav-link" 
-         th:classappend="${activeSection == 'home'} ? 'nav-link-active' : 'nav-link-muted'"
-         th:href="@{/dashboard/bibliotecario}">Dashboard</a>
-      
-      <a class="nav-link"
-         th:classappend="${activeSection == 'prestamos'} ? 'nav-link-active' : 'nav-link-muted'"
-         th:href="@{/bibliotecario/prestamos}">Préstamos</a>
-         
-      <a class="nav-link"
-         th:classappend="${activeSection == 'catalogo'} ? 'nav-link-active' : 'nav-link-muted'"
-         th:href="@{/catalogo}">Catálogo</a>
-    </div>
+    <a class="navbar-brand text-white" href="#" th:href="@{/dashboard/bibliotecario}">
+        BIBLIOTECA
+    </a>
 
-    <!-- User info and logout -->
     <div class="d-flex align-items-center gap-3">
-      <div class="text-white-50 small">
-        <span th:text="${#authentication.principal.nombreCompleto}">Usuario</span>
-        <small class="text-white-25"> · Bibliotecario</small>
-      </div>
-      
-      <!-- Logout form -->
-      <form th:action="@{/logout}" method="post" class="mb-0">
-        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-        <button type="submit" class="btn btn-outline-light btn-sm">
-          <i class="bi bi-box-arrow-right me-1"></i>Salir
-        </button>
-      </form>
-    </div>
+        <a class="nav-link" 
+           th:classappend="${activeSection == 'home'} ? 'active text-white' : 'nav-link-muted'"
+           href="#" th:href="@{/dashboard/bibliotecario}">Inicio</a>
+        <a class="nav-link"
+           th:classappend="${activeSection == 'prestamos'} ? 'nav-link-muted' : 'nav-link-muted'"
+           href="#" th:href="@{/bibliotecario/prestamos}">Préstamos</a>
+        <a class="nav-link"
+           th:classappend="${activeSection == 'lectores'} ? 'nav-link-muted' : 'nav-link-muted'"
+           href="#" th:href="@{/bibliotecario/lectores}">Lectores</a>
+        <a class="nav-link"
+           th:classappend="${activeSection == 'catalogo'} ? 'nav-link-muted' : 'nav-link-muted'"
+           href="#" th:href="@{/catalogo}">Catálogo</a>
+
+        <!-- Menú usuario -->
+        <details class="user-menu ms-2">
+            <summary class="d-flex align-items-center gap-2">
+                <span class="user-avatar"
+                      th:text="${#authentication?.principal?.nombreCompleto != null ? #authentication.principal.nombreCompleto.substring(0,1) + (#authentication.principal.nombreCompleto.split(' ').length > 1 ? #authentication.principal.nombreCompleto.split(' ')[1].substring(0,1) : '') : 'AB'}">
+                    AB
+                </span>
+            </summary>
+            <div class="user-menu-dropdown">
+                <div class="user-menu-header">
+                    <div class="user-menu-name"
+                         th:text="${#authentication?.principal?.nombreCompleto ?: 'Ana Bibliotecaria'}">
+                        Ana Bibliotecaria
+                    </div>
+                    <div class="user-menu-role">
+                        Rol: Bibliotecario
+                    </div>
+                </div>
+
+                <div class="user-menu-divider"></div>
+
+                <a href="#" class="user-menu-link" th:href="@{/bibliotecario/perfil}">
+                    <i class="bi bi-person-badge"></i>
+                    <span>Ver perfil</span>
+                </a>
+
+                <a href="#" class="user-menu-link" th:href="@{/logout}">
+                    <i class="bi bi-box-arrow-right"></i>
+                    <span>Cerrar sesión</span>
+                </a>
+            </div>
+        </details>
   </div>
 </nav>
 

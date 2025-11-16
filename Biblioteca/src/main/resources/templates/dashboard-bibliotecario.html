@@ -1,39 +1,229 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: head(titulo='Dashboard Bibliotecario - Biblioteca')}"></head>
+<head th:replace="~{fragments/head :: head(titulo='Dashboard Bibliotecario - Biblioteca')}">
+    <title>Dashboard Bibliotecario - Biblioteca</title>
+</head>
 <body>
 
+<!-- Navbar bibliotecario -->
 <div th:replace="~{fragments/navbar-bibliotecario :: navbarBibliotecario('home')}"></div>
 
 <main class="container">
     <div class="row g-4 mt-4">
-        
-        <!-- Bienvenida -->
+
+        <!-- Encabezado -->
         <div class="col-12">
-            <div class="card card-soft">
+            <div class="card card-soft mb-3">
                 <div class="card-body">
                     <p class="section-title mb-1">Panel de bibliotecario</p>
-                    <h1 class="h3 mb-2">
-                        Hola,
-                        <span th:text="${#authentication.principal.nombreCompleto}">Bibliotecario</span> 👋
+                    <h1 class="h4 mb-2">
+                        Gestión diaria de préstamos y lectores
                     </h1>
                     <p class="mb-0 text-soft-muted">
-                        Desde aquí podés gestionar préstamos, consultar el catálogo y administrar la biblioteca.
+                        Desde aquí podés registrar préstamos y devoluciones, y consultar rápidamente información
+                        de lectores, libros y copias.
                     </p>
                 </div>
             </div>
         </div>
-        
-        <!-- Contenido temporal -->
+
+        <!-- Acciones rápidas -->
         <div class="col-12">
-            <div class="card card-soft-light">
+            <div class="card card-soft-light mb-3">
                 <div class="card-body">
-                    <h2 class="h5 mb-3">Funcionalidades disponibles</h2>
-                    <p class="text-soft-muted">Dashboard del bibliotecario en desarrollo...</p>
+                    <p class="section-title mb-3">Acciones rápidas</p>
+
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6 col-lg-3">
+                            <a href="/bibliotecario/prestamos/nuevo" class="quick-action-card" 
+                               th:href="@{/bibliotecario/prestamos/nuevo}">
+                                <span class="quick-action-icon">
+                                    <i class="bi bi-plus-lg"></i>
+                                </span>
+                                <div>
+                                    <p class="quick-action-title mb-0">Registrar préstamo</p>
+                                    <p class="quick-action-subtitle">
+                                        Lector + ejemplar → nuevo préstamo
+                                    </p>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="col-12 col-md-6 col-lg-3">
+                            <a href="/bibliotecario/devoluciones" class="quick-action-card"
+                               th:href="@{/bibliotecario/devoluciones}">
+                                <span class="quick-action-icon">
+                                    <i class="bi bi-arrow-counterclockwise"></i>
+                                </span>
+                                <div>
+                                    <p class="quick-action-title mb-0">Registrar devolución</p>
+                                    <p class="quick-action-subtitle">
+                                        Marcar préstamo como devuelto
+                                    </p>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="col-12 col-md-6 col-lg-3">
+                            <a href="/bibliotecario/lectores" class="quick-action-card"
+                               th:href="@{/bibliotecario/lectores}">
+                                <span class="quick-action-icon">
+                                    <i class="bi bi-people"></i>
+                                </span>
+                                <div>
+                                    <p class="quick-action-title mb-0">Buscar lector</p>
+                                    <p class="quick-action-subtitle">
+                                        Ver estado, préstamos y bloqueos
+                                    </p>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="col-12 col-md-6 col-lg-3">
+                            <a href="/catalogo" class="quick-action-card"
+                               th:href="@{/catalogo}">
+                                <span class="quick-action-icon">
+                                    <i class="bi bi-book-half"></i>
+                                </span>
+                                <div>
+                                    <p class="quick-action-title mb-0">Buscar libro / copia</p>
+                                    <p class="quick-action-subtitle">
+                                        Consultar datos de libros y ejemplares
+                                    </p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        
+
+        <!-- Columna izquierda: préstamos activos/vencidos -->
+        <div class="col-lg-8">
+            <div class="card card-soft mb-3">
+                <div class="card-body">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-3">
+                        <div>
+                            <p class="section-title mb-1">Préstamos</p>
+                            <h2 class="h5 mb-1">Resumen de préstamos activos</h2>
+                            <p class="small text-soft-muted mb-0">
+                                Muestra algunos préstamos cercanos al vencimiento. El listado completo está en la sección "Préstamos".
+                            </p>
+                        </div>
+                        <div class="text-md-end">
+                            <p class="small-label mb-1">Resumen general</p>
+                            <p class="mb-0">
+                                <span class="badge-estado badge-estado-activo me-1"
+                                      th:text="${resumen?.cantidadActivos ?: 42} + ' activos'">
+                                    42 activos
+                                </span>
+                                <span class="badge-estado badge-estado-vencido"
+                                      th:text="${resumen?.cantidadVencidos ?: 5} + ' vencidos'">
+                                    5 vencidos
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Tabla de préstamos -->
+                    <div class="table-responsive">
+                        <table class="table table-dark-custom table-striped table-hover align-middle mb-0">
+                            <thead>
+                            <tr>
+                                <th scope="col">Lector</th>
+                                <th scope="col">Libro</th>
+                                <th scope="col">Fecha préstamo</th>
+                                <th scope="col">Fecha vencimiento</th>
+                                <th scope="col">Estado</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="prestamo : ${prestamosDestacados}" th:if="${prestamosDestacados != null and !prestamosDestacados.empty}">
+                                <td>
+                                    <div class="fw-semibold" th:text="${prestamo.nombreLector}">Nombre Lector</div>
+                                    <div class="small text-soft-muted" th:text="${'ID Lector: ' + prestamo.idLector}">ID Lector</div>
+                                </td>
+                                <td>
+                                    <div class="fw-semibold" th:text="${prestamo.tituloLibro}">Título del libro</div>
+                                    <div class="small text-soft-muted" th:text="${'Ejemplar #' + prestamo.idEjemplar}">Ejemplar #</div>
+                                </td>
+                                <td>
+                                    <span class="small" th:text="${prestamo.fechaPrestamo}">01/01/2025</span>
+                                </td>
+                                <td>
+                                    <span class="small" th:text="${prestamo.fechaVencimiento}">21/01/2025</span>
+                                </td>
+                                <td>
+                                    <span th:switch="${prestamo.estado}">
+                                        <span th:case="'ACTIVO'" class="badge-estado badge-estado-activo">Activo</span>
+                                        <span th:case="'VENCIDO'" class="badge-estado badge-estado-vencido">Vencido</span>
+                                        <span th:case="'DEVUELTO'" class="badge-estado badge-estado-devuelto">Devuelto</span>
+                                    </span>
+                                </td>
+                            </tr>
+                            
+                            <!-- Datos de ejemplo cuando no hay datos del controlador -->
+                            <tr th:if="${prestamosDestacados == null or prestamosDestacados.empty}">
+                                <td>
+                                    <div class="fw-semibold">Juan Pérez</div>
+                                    <div class="small text-soft-muted">ID Lector: 102</div>
+                                </td>
+                                <td>
+                                    <div class="fw-semibold">Cien años de soledad</div>
+                                    <div class="small text-soft-muted">Ejemplar #145</div>
+                                </td>
+                                <td><span class="small">20/10/2025</span></td>
+                                <td><span class="small">10/11/2025</span></td>
+                                <td>
+                                    <span class="badge-estado badge-estado-activo">Activo</span>
+                                </td>
+                            </tr>
+                            <tr th:if="${prestamosDestacados == null or prestamosDestacados.empty}">
+                                <td>
+                                    <div class="fw-semibold">María López</div>
+                                    <div class="small text-soft-muted">ID Lector: 210</div>
+                                </td>
+                                <td>
+                                    <div class="fw-semibold">Introducción a la algoritmia</div>
+                                    <div class="small text-soft-muted">Ejemplar #12</div>
+                                </td>
+                                <td><span class="small">01/09/2025</span></td>
+                                <td><span class="small">22/09/2025</span></td>
+                                <td>
+                                    <span class="badge-estado badge-estado-vencido">Vencido</span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="mt-3">
+                        <a href="/bibliotecario/prestamos" class="btn btn-outline-primary btn-sm"
+                           th:href="@{/bibliotecario/prestamos}">
+                            <i class="bi bi-journal-text me-1"></i>
+                            Ver todos los préstamos
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna derecha: reglas -->
+        <div class="col-lg-4">
+            <div class="card card-soft-light">
+                <div class="card-body">
+                    <p class="section-title mb-2">Reglas del sistema</p>
+                    <ul class="list-unstyled small mb-0 text-soft-muted">
+                        <li>• Máximo 5 préstamos activos por lector.</li>
+                        <li>• Cada préstamo vence a los 21 días desde su creación.</li>
+                        <li>• Si hay atraso, el lector queda no elegible según la política de penalización.</li>
+                        <li>• Un ejemplar no puede estar prestado dos veces al mismo tiempo.</li>
+                        <li>• Ante dudas sobre bloqueos, revisar los detalles del lector.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
     </div>
 </main>
 
