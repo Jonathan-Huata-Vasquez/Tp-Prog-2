@@ -120,7 +120,8 @@
             </div>
             <div class="col-12 col-md-4">
               <p class="small-label mb-1">Días de atraso</p>
-              <p class="highlight-number mb-0" style="font-size: 1.4rem;"
+              <p class="highlight-number mb-0" style="font-size: 1.4rem;" 
+                 th:classappend="${prestamo.diasAtraso > 0} ? 'text-danger' : ''"
                  th:text="${prestamo.diasAtraso}">0</p>
             </div>
             <div class="col-12 col-md-4">

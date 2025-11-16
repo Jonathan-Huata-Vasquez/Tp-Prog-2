@@ -298,6 +298,25 @@ public class DatosDemoH2 implements CommandLineRunner {
                 hoy.minusDays(5),  // vencía hace 5 días
                 hoy.minusDays(7)   // devuelto hace 7 días - DEVUELTO A TIEMPO
         ));
+
+        // Préstamo 3 para lector demo: Préstamo DEVUELTO CON ATRASO (hace un año)
+        // Esto debería activar las reglas de bloqueo del dominio Lector
+        CopiaEntity cienAniosCopiaDemo = copiaRepo.save(
+                new CopiaEntity(null, cienAnios.getId(), EstadoCopia.EnBiblioteca) // Ahora disponible nuevamente
+        );
+        
+        LocalDate fechaPrestamoAntiguo = hoy.minusYears(1).minusDays(30); // Prestado hace 1 año y 30 días
+        LocalDate fechaVencimientoAntiguo = fechaPrestamoAntiguo.plusDays(21); // Vencía 21 días después (hace 1 año y 9 días)
+        LocalDate fechaDevolucionTarde = fechaVencimientoAntiguo.plusDays(15); // Devuelto 15 días tarde
+        
+        prestamoRepo.save(new PrestamoEntity(
+                null,
+                1, // lectorId del usuario lector@demo.com
+                cienAniosCopiaDemo.getId(),
+                fechaPrestamoAntiguo,     // hace 1 año y 30 días
+                fechaVencimientoAntiguo,  // vencía hace 1 año y 9 días
+                fechaDevolucionTarde      // devuelto hace ~11 meses (15 días de atraso)
+        ));
     }
 
 }

@@ -1,5 +1,7 @@
 package biblioteca.biblioteca.web.mvc.controller;
 
+import biblioteca.biblioteca.application.query.LectorDashboardQuery;
+import biblioteca.biblioteca.application.query.LectorDashboardQueryHandler;
 import biblioteca.biblioteca.infrastructure.security.UsuarioDetalles;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -9,36 +11,52 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 /**
  * Controllers MVC (Thymeleaf) para dashboards.
- * Nota: este método reemplaza el anterior que devolvía "dashboard-lector".
  */
 @Controller
 @RequiredArgsConstructor
 public class DashboardController {
 
-    // private final ILectorResumenQuery lectorResumenQuery;
+    private final LectorDashboardQueryHandler lectorDashboardQueryHandler;
 
     @GetMapping("/dashboard/lector")
     public String vistaLector(@AuthenticationPrincipal UsuarioDetalles usuario, Model model) {
-        // Datos mínimos para la vista (placeholder hasta conectar queries reales)
-        model.addAttribute("bloqueado", false);
-        model.addAttribute("bloqueadoHasta", null);
-        model.addAttribute("prestamosActivos", 0);
-        model.addAttribute("proximoVencimiento", null);
+        
+        if (usuario.getLectorId() == null) {
+            // Si no tiene lectorId, mostrar vista con datos vacíos
+            model.addAttribute("dashboard", null);
+            return "lector/dashboard";
+        }
 
-        // Ejemplo con servicios reales:
-        // var resumen = lectorResumenQuery.obtenerResumen(usuario.getLectorId());
-        // model.addAttribute("bloqueado", resumen.isBloqueado());
-        // model.addAttribute("bloqueadoHasta", resumen.getBloqueadoHasta());
-        // model.addAttribute("prestamosActivos", resumen.getPrestamosActivos());
-        // model.addAttribute("proximoVencimiento", resumen.getProximoVencimiento());
+        // Construir la query
+        LectorDashboardQuery query = LectorDashboardQuery.builder()
+                .idLector(usuario.getLectorId())
+                .build();
 
-        return "lector/dashboard"; // <-- NUEVA vista
+        // Ejecutar la query usando el handler
+        var dashboard = lectorDashboardQueryHandler.handle(query);
+
+        model.addAttribute("dashboard", dashboard);
+        // Mantener compatibilidad con template existente
+        model.addAttribute("bloqueado", dashboard.isBloqueado());
+        model.addAttribute("bloqueadoHasta", dashboard.getBloqueadoHasta());
+        model.addAttribute("prestamosActivos", dashboard.getPrestamosActivos());
+        model.addAttribute("proximoVencimiento", dashboard.getProximoVencimiento());
+
+        return "lector/dashboard";
     }
 
     // Los otros dashboards pueden seguir como estaban:
     @GetMapping("/dashboard/bibliotecario")
-    public String vistaBibliotecario() { return "dashboard-bibliotecario"; }
+    public String vistaBibliotecario() { 
+        return "dashboard-bibliotecario"; 
+    }
 
     @GetMapping("/dashboard/admin")
-    public String vistaAdmin() { return "dashboard-admin"; }
+    public String vistaAdmin() { 
+        return "dashboard-admin"; 
+    }
+
 }
+
+
+
