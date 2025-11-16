@@ -269,6 +269,35 @@ public class DatosDemoH2 implements CommandLineRunner {
                 hoy.minusDays(14),
                 hoy.minusDays(5) // devuelto hace 5 días
         ));
+
+        // -------- Préstamos para lector demo (lectorId = 1) --------
+        // Necesitamos crear copias adicionales para estos préstamos
+        CopiaEntity alephCopiaDemo = copiaRepo.save(
+                new CopiaEntity(null, aleph.getId(), EstadoCopia.ConRetraso) // Con retraso
+        );
+        CopiaEntity rayuelaCopiaDemo = copiaRepo.save(
+                new CopiaEntity(null, rayuela.getId(), EstadoCopia.EnBiblioteca) // Para préstamo devuelto
+        );
+
+        // Préstamo 1 para lector demo: Préstamo con retraso (vencido hace 3 días)
+        prestamoRepo.save(new PrestamoEntity(
+                null,
+                1, // lectorId del usuario lector@demo.com
+                alephCopiaDemo.getId(),
+                hoy.minusDays(25), // prestado hace 25 días
+                hoy.minusDays(3),  // vencía hace 3 días
+                null // no devuelto - CON RETRASO
+        ));
+
+        // Préstamo 2 para lector demo: Préstamo devuelto a tiempo
+        prestamoRepo.save(new PrestamoEntity(
+                null,
+                1, // lectorId del usuario lector@demo.com
+                rayuelaCopiaDemo.getId(),
+                hoy.minusDays(20), // prestado hace 20 días
+                hoy.minusDays(5),  // vencía hace 5 días
+                hoy.minusDays(7)   // devuelto hace 7 días - DEVUELTO A TIEMPO
+        ));
     }
 
 }

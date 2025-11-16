@@ -48,7 +48,7 @@ public class Prestamo {
         if (vencimiento.isBefore(inicio)) {
             throw new DatoInvalidoException("La fecha de vencimiento no puede ser anterior a la de inicio");
         }
-        return new Prestamo(idPrestamo, idLector, idCopia, inicio, vencimiento, null);
+        return new Prestamo(idPrestamo, idLector, idCopia, inicio, vencimiento, devolucion);
         
     }
 

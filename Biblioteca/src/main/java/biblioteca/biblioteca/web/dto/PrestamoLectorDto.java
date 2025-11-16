@@ -12,5 +12,6 @@ public class PrestamoLectorDto {
     Integer idEjemplar;
     String fechaPrestamo;    // Formateada para mostrar
     String fechaVencimiento; // Formateada para mostrar
+    String fechaDevolucion;  // Formateada para mostrar, null si no devuelto
     String estado;           // Mapeado del enum: "ACTIVO", "VENCIDO", "DEVUELTO"
 }
