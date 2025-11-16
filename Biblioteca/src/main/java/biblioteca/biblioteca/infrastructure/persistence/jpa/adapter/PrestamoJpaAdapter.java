@@ -8,6 +8,7 @@ import biblioteca.biblioteca.infrastructure.persistence.jpa.spring.PrestamoSprin
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Component
@@ -50,5 +51,41 @@ public class PrestamoJpaAdapter implements IPrestamoRepository {
                 .stream()
                 .map(mapper::toDomain)
                 .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Prestamo> todosLosPorLector(Integer idLector) {
+        return repo.findByLectorId(idLector)
+                .stream()
+                .map(mapper::toDomain)
+                .toList();
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public List<Prestamo> todosLosPorLectorOrdenadosPorVencimiento(Integer idLector) {
+        return repo.findByLectorIdOrderByFechaDevolucionNullsFirstFechaVencimientoAsc(idLector)
+                .stream()
+                .map(mapper::toDomain)
+                .toList();
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public int contarActivosPorLector(Integer idLector) {
+        return repo.countByLectorIdAndFechaDevolucionIsNull(idLector);
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public int contarVencidosPorLector(Integer idLector) {
+        return repo.countByLectorIdAndFechaDevolucionIsNullAndFechaVencimientoBefore(idLector, LocalDate.now());
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public int contarDevueltosPorLector(Integer idLector) {
+        return repo.countByLectorIdAndFechaDevolucionIsNotNull(idLector);
     }
 }

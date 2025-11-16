@@ -87,7 +87,7 @@
                         <div class="fw-semibold" th:text="${p.tituloLibro}">
                           Título
                         </div>
-                        <div class="small text-soft-muted" th:text="${p.autor}">
+                        <div class="small text-soft-muted" th:text="${p.autorNombre}">
                           Autor
                         </div>
                       </td>
@@ -95,17 +95,15 @@
                         <span
                           class="small text-soft-muted"
                           th:text="${'Ejemplar #'+ p.idEjemplar}"
-                          >Ejemplar #1</span
+                          ></span
                         >
                       </td>
                       <td>
-                        <span class="small" th:text="${p.fechaPrestamo}"
-                          >01/01/2025</span
+                        <span class="small" th:text="${p.fechaPrestamo}"></span
                         >
                       </td>
                       <td>
-                        <span class="small" th:text="${p.fechaVencimiento}"
-                          >21/01/2025</span
+                        <span class="small" th:text="${p.fechaVencimiento}"></span
                         >
                       </td>
                       <td>
@@ -147,7 +145,12 @@
                       th:if="${prestamos == null or #lists.isEmpty(prestamos)}"
                     >
                       <td colspan="6" class="text-center text-soft-muted small">
-                        No tenés préstamos registrados.
+                        <span th:if="${resumen == null}">
+                          No tenés permisos de lector asociados a tu cuenta.
+                        </span>
+                        <span th:unless="${resumen == null}">
+                          No tenés préstamos registrados.
+                        </span>
                       </td>
                     </tr>
                   </tbody>
