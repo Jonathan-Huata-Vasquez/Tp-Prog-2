@@ -14,8 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 @RequiredArgsConstructor
 public class DashboardController {
-
-    // Si luego querés traer datos reales, podés inyectar servicios de consulta aquí
+    
     // private final ILectorResumenQuery lectorResumenQuery;
 
     @GetMapping("/dashboard/lector")

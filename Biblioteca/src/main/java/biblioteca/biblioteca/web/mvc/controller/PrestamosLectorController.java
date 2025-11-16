@@ -24,10 +24,10 @@ public class PrestamosLectorController {
                 "cantidadActivos", 2
         );
 
-        // Placeholder de préstamos (reemplazar por query real con el lectorId del usuario)
+
         List<Map<String, Object>> prestamos = List.of(
                 Map.of(
-                        "libroId", 1,
+                        "idPrestamo", 1,
                         "tituloLibro", "Cien años de soledad",
                         "autor", "Gabriel García Márquez",
                         "idEjemplar", 145,
@@ -36,7 +36,7 @@ public class PrestamosLectorController {
                         "estado", "ACTIVO"
                 ),
                 Map.of(
-                        "libroId", 2,
+                        "idPrestamo", 2,
                         "tituloLibro", "Introducción a la algoritmia",
                         "autor", "J. Pérez · M. López",
                         "idEjemplar", 12,
@@ -45,7 +45,7 @@ public class PrestamosLectorController {
                         "estado", "VENCIDO"
                 ),
                 Map.of(
-                        "libroId", 3,
+                        "idPrestamo", 3,
                         "tituloLibro", "El nombre del viento",
                         "autor", "Patrick Rothfuss",
                         "idEjemplar", 87,

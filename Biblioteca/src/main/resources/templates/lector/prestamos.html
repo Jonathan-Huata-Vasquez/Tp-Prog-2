@@ -1,25 +1,169 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: head(titulo='Mis préstamos - Biblioteca')}"></head>
-<body>
+  <head
+    th:replace="~{fragments/head :: head(titulo='Mis préstamos - Biblioteca')}"
+  ></head>
+  <body>
+    <div
+      th:replace="~{fragments/navbar-lector :: navbarLector('prestamos')}"
+    ></div>
 
-<div th:replace="~{fragments/navbar-lector :: navbarLector('prestamos')}"></div>
-
-<main class="container">
-    <div class="row g-4 mt-4">
-
-        <!-- Encabezado reutilizable -->
+    <main class="container">
+      <div class="row g-4 mt-4">
+        <!-- Encabezado simple inline -->
         <section class="col-12">
-            <div th:replace="~{fragments/lector-header :: headerSeccion('Mis préstamos','Préstamos registrados a tu nombre','Préstamos activos', ${resumen.cantidadActivos})}"></div>
+          <div class="card card-soft mb-3">
+            <div
+              class="card-body d-flex flex-column flex-md-row justify-content-between align-items-md-center"
+            >
+              <div class="mb-3 mb-md-0">
+                <p class="section-title mb-1">Mis préstamos</p>
+                <h1 class="h4 mb-2">Préstamos registrados a tu nombre</h1>
+                <p class="mb-0 text-soft-muted">
+                  Aquí podés consultar el estado de cada préstamo, las fechas y
+                  si tiene atraso.
+                </p>
+              </div>
+              <div class="text-md-end">
+                <p class="small-label mb-1">Préstamos activos</p>
+                <p
+                  class="highlight-number mb-0"
+                  th:text="${resumen.cantidadActivos}"
+                >
+                  0
+                </p>
+              </div>
+            </div>
+          </div>
         </section>
 
-        <!-- Tabla de préstamos (fragment) -->
+        <!-- Tabla de préstamos inline -->
         <section class="col-12">
-            <div th:replace="~{fragments/lector-tabla-prestamos :: tablaPrestamos(${prestamos})}"></div>
+          <div class="card card-soft">
+            <div class="card-body">
+              <div
+                class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-3"
+              >
+                <div class="mb-2 mb-md-0">
+                  <p class="section-title mb-1">Listado</p>
+                  <h2 class="h5 mb-1">Tus préstamos</h2>
+                  <p class="small text-soft-muted mb-0">
+                    Ordenados por fecha de vencimiento.
+                  </p>
+                </div>
+                <div class="text-md-end">
+                  <p class="small-label mb-1">Leyenda de estado</p>
+                  <div class="d-flex flex-wrap gap-2 justify-content-md-end">
+                    <span class="badge badge-estado badge-estado-activo"
+                      >Activo</span
+                    >
+                    <span class="badge badge-estado badge-estado-vencido"
+                      >Vencido</span
+                    >
+                    <span class="badge badge-estado badge-estado-devuelto"
+                      >Devuelto</span
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <div class="table-responsive">
+                <table
+                  class="table table-dark-custom table-striped table-hover align-middle mb-0"
+                >
+                  <thead>
+                    <tr>
+                      <th scope="col">Libro</th>
+                      <th scope="col">Ejemplar</th>
+                      <th scope="col">Fecha préstamo</th>
+                      <th scope="col">Fecha vencimiento</th>
+                      <th scope="col">Estado</th>
+                      <th scope="col" class="text-end">Consulta</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr th:each="p : ${prestamos}">
+                      <td>
+                        <div class="fw-semibold" th:text="${p.tituloLibro}">
+                          Título
+                        </div>
+                        <div class="small text-soft-muted" th:text="${p.autor}">
+                          Autor
+                        </div>
+                      </td>
+                      <td>
+                        <span
+                          class="small text-soft-muted"
+                          th:text="${'Ejemplar #'+ p.idEjemplar}"
+                          >Ejemplar #1</span
+                        >
+                      </td>
+                      <td>
+                        <span class="small" th:text="${p.fechaPrestamo}"
+                          >01/01/2025</span
+                        >
+                      </td>
+                      <td>
+                        <span class="small" th:text="${p.fechaVencimiento}"
+                          >21/01/2025</span
+                        >
+                      </td>
+                      <td>
+                        <span th:switch="${p.estado}">
+                          <span
+                            th:case="'ACTIVO'"
+                            class="badge badge-estado badge-estado-activo"
+                            >Activo</span
+                          >
+                          <span
+                            th:case="'VENCIDO'"
+                            class="badge badge-estado badge-estado-vencido"
+                            >Vencido</span
+                          >
+                          <span
+                            th:case="'DEVUELTO'"
+                            class="badge badge-estado badge-estado-devuelto"
+                            >Devuelto</span
+                          >
+                          <span
+                            th:case="*"
+                            class="badge badge-estado badge-estado-devuelto"
+                            >—</span
+                          >
+                        </span>
+                      </td>
+                      <td class="text-end">
+                        <a
+                          class="btn btn-outline-secondary btn-sm"
+                          th:href="@{/prestamos/{id}(id=${p['idPrestamo']})}"
+                        >
+                          <i class="bi bi-file-text me-1"></i>
+                          Ver préstamo
+                        </a>
+                      </td>
+                    </tr>
+
+                    <tr
+                      th:if="${prestamos == null or #lists.isEmpty(prestamos)}"
+                    >
+                      <td colspan="6" class="text-center text-soft-muted small">
+                        No tenés préstamos registrados.
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="mt-3">
+                <p class="small text-soft-muted mb-0">
+                  Ante cualquier duda sobre fechas o bloqueos, consultá al
+                  personal de la biblioteca.
+                </p>
+              </div>
+            </div>
+          </div>
         </section>
-
-    </div>
-</main>
-
-</body>
+      </div>
+    </main>
+  </body>
 </html>
