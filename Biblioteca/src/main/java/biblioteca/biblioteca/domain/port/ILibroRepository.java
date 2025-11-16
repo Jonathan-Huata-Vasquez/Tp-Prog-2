@@ -5,9 +5,9 @@ import biblioteca.biblioteca.domain.model.Libro;
 import java.util.List;
 
 public interface ILibroRepository {
-    Libro guardar(Libro libro);
-    Libro porId(Integer idLibro);
-    List<Libro> buscarPorAutor(Integer idAutor);
-    void eliminar(Integer idLibro);
+    Libro porId(Integer id);
     List<Libro> todos();
+    List<Libro> buscarPorTitulo(String q);
+    void eliminar(Integer idLibro);
+    Libro guardar(Libro libro);
 }

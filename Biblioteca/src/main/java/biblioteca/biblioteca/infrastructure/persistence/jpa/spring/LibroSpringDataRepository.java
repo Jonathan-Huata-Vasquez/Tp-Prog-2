@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface LibroSpringDataRepository extends JpaRepository<LibroEntity, Integer> {
     List<LibroEntity> findByAutorId(Integer autorId);
+    List<LibroEntity> findByTituloContainingIgnoreCase(String q);
 }

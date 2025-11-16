@@ -1,6 +1,7 @@
 package biblioteca.biblioteca.domain.port;
 
 import biblioteca.biblioteca.domain.model.Copia;
+import biblioteca.biblioteca.domain.model.EstadoCopia;
 
 import java.util.List;
 
@@ -11,4 +12,6 @@ public interface ICopiaRepository {
     void eliminar(Integer idCopia);
     List<Copia> todas();
     List<Copia> porLibro(Integer idLibro);
+    int contarPorLibro(Integer idLibro);
+    int contarPorLibroYEstado(Integer idLibro, EstadoCopia estado);
 }

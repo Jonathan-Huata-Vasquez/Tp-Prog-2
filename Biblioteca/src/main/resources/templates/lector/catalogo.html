@@ -2,110 +2,121 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 
 <head th:replace="~{fragments/head :: head(titulo='Catálogo de libros - Biblioteca')}"></head>
+
 <body>
+    <div th:replace="~{fragments/navbar-lector :: navbarLector('catalogo')}"></div>
 
-<div th:replace="~{fragments/navbar-lector :: navbarLector('catalogo')}"></div>
-
-<main class="container">
-    <div class="row g-4 mt-4">
-        <div class="col-12">
-            <div class="card card-soft mb-3">
-                <div class="card-body">
-                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-                        <div>
-                            <p class="section-title mb-1">Catálogo</p>
-                            <h1 class="h4 mb-2">Explorá todos los libros de la biblioteca</h1>
-                            <p class="mb-0 text-soft-muted">Buscá por título, autor o género. El listado muestra todos los libros.</p>
+    <main class="container">
+        <div class="row g-4 mt-4">
+            <div class="col-12">
+                <div class="card card-soft mb-3">
+                    <div class="card-body">
+                        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                            <div>
+                                <p class="section-title mb-1">Catálogo</p>
+                                <h1 class="h4 mb-2">
+                                    Explorá todos los libros de la biblioteca
+                                </h1>
+                                <p class="mb-0 text-soft-muted">
+                                    Buscá por título, autor o género. El listado muestra todos
+                                    los libros.
+                                </p>
+                            </div>
+                            <div class="text-md-end">
+                                <p class="small-label mb-1">Total de libros</p>
+                                <p class="highlight-number mb-0" th:text="${totalLibros}">
+                                    128
+                                </p>
+                            </div>
                         </div>
-                        <div class="text-md-end">
-                            <p class="small-label mb-1">Total de libros</p>
-                            <p class="highlight-number mb-0" th:text="${totalLibros}">128</p>
+
+                        <form th:action="@{/catalogo/buscar}" method="get" class="row g-2 align-items-center mt-3">
+                            <div class="col-12 col-md-8 col-lg-9">
+                                <label for="q" class="visually-hidden">Buscar en catálogo</label>
+                                <input type="text" id="q" name="q" class="form-control form-control-lg"
+                                    th:value="${criterioBusqueda}"
+                                    placeholder="Ej: 'Rayuela', 'Borges' o 'novela histórica'" />
+                            </div>
+                            <div class="col-12 col-md-4 col-lg-3 d-grid d-md-block">
+                                <button type="submit" class="btn btn-primary btn-lg w-100">
+                                    <i class="bi bi-search me-1"></i> Buscar
+                                </button>
+                            </div>
+                        </form>
+
+                        <div class="mt-2">
+                            <p class="small text-soft-muted mb-0">
+                                El personal de la biblioteca es quien registra los préstamos;
+                                desde aquí solo consultás la información.
+                            </p>
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    <form th:action="@{/catalogo/buscar}" method="get" class="row g-2 align-items-center mt-3">
-                        <div class="col-12 col-md-8 col-lg-9">
-                            <label for="q" class="visually-hidden">Buscar en catálogo</label>
-                            <input type="text" id="q" name="q" class="form-control form-control-lg"
-                                   th:value="${criterioBusqueda}" placeholder="Ej: 'Rayuela', 'Borges' o 'novela histórica'">
-                        </div>
-                        <div class="col-12 col-md-4 col-lg-3 d-grid d-md-block">
-                            <button type="submit" class="btn btn-primary btn-lg w-100">
-                                <i class="bi bi-search me-1"></i> Buscar
-                            </button>
-                        </div>
-                    </form>
 
-                    <div class="mt-2">
+            <div class="col-12">
+                <div class="card-soft-light p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <p class="section-title mb-0">Resultados</p>
                         <p class="small text-soft-muted mb-0">
-                            El personal de la biblioteca es quien registra los préstamos; desde aquí solo consultás la información.
+                            Mostrando todos los libros registrados
                         </p>
                     </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- Listado sin paginar -->
-        <div class="col-12">
-            <div class="card-soft-light p-3">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <p class="section-title mb-0">Resultados</p>
-                    <p class="small text-soft-muted mb-0">Mostrando todos los libros registrados</p>
-                </div>
+                    <div class="row g-3 g-md-4" th:if="${libros != null}">
+                        <div class="col-12 col-md-6 col-xl-4" th:each="libro : ${libros}">
+                            <article class="book-card p-3">
+                                <div class="book-card-header mb-2">
+                                    <div class="book-card-cover"><i class="bi bi-book-half"></i></div>
+                                    <div>
+                                        <h2 class="book-card-title" th:text="${libro.titulo}">Título del libro</h2>
 
-                <div class="row g-3 g-md-4" th:if="${libros != null}">
-                    <div class="col-12 col-md-6 col-xl-4" th:each="libro : ${libros}">
-                        <article class="book-card p-3">
-                            <div class="book-card-header mb-2">
-                                <div class="book-card-cover"><i class="bi bi-book-half"></i></div>
-                                <div>
-                                    <h2 class="book-card-title" th:text="${libro.titulo}">Título del libro</h2>
-                                    <p class="book-card-author mb-1" th:text="${libro.autor}">Autor</p>
-                                    <div class="d-flex flex-wrap gap-1">
-                    <span class="chip" th:if="${libro.categoria}">
-                      <i class="bi bi-bookmark"></i>
-                      <span th:text="${libro.categoria}">Género</span>
-                    </span>
-                                        <span class="chip" th:if="${libro.anio}">
-                      <i class="bi bi-calendar"></i>
-                      <span th:text="${libro.anio}">Año</span>
-                    </span>
+                                        <p class="book-card-author mb-1" th:text="${libro.autorNombre}">Autor</p>
+
+                                        <div class="d-flex flex-wrap gap-1">
+                                            <span class="chip" th:if="${libro.categoria}">
+                                                <i class="bi bi-bookmark"></i>
+                                                <span th:text="${libro.categoria}">Género</span>
+                                            </span>
+
+                                            <span class="chip" th:if="${libro.anioPublicacion}">
+                                                <i class="bi bi-calendar"></i>
+                                                <span th:text="${libro.anioPublicacion}">Año</span>
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <p class="book-card-description mb-2" th:text="${libro.descripcionCorta}">Breve descripción...</p>
+                                <p class="book-card-description mb-2" th:text="${libro.descripcionCorta}">Breve
+                                    descripción...</p>
 
-                            <div class="book-card-footer d-flex justify-content-between align-items-center mt-2">
-                                <div class="d-flex flex-column">
-                                    <span class="small-label mb-0">Disponibilidad</span>
+                                <div class="book-card-footer d-flex justify-content-between align-items-center mt-2">
+                                    <div class="d-flex flex-column">
+                                        <span class="small-label mb-0">Disponibilidad</span>
 
-                                    <span class="badge-disponible mt-1"
-                                          th:if="${libro.copiasDisponibles > 0}"
-                                          th:text="${libro.copiasDisponibles} + ' de ' + ${libro.totalCopias} + ' copias disponibles'">
-                    1 de 3 copias disponibles
-                  </span>
+                                        <span class="badge-disponible mt-1" th:if="${libro.copiasDisponibles > 0}"
+                                            th:text="${libro.copiasDisponibles} + ' de ' + libro.totalCopias + ' copias disponibles'">
+                                        </span>
 
-                                    <span class="badge-sindisponible mt-1"
-                                          th:if="${libro.copiasDisponibles == 0}">
-                    Sin copias disponibles
-                  </span>
+                                        <span class="badge-sindisponible mt-1" th:if="${libro.copiasDisponibles == 0}">
+                                            Sin copias disponibles
+                                        </span>
+                                    </div>
+
+                                    <div>
+                                        <a class="btn btn-outline-primary btn-sm"
+                                            th:href="@{/catalogo/libro/{id}(id=${libro.id})}">
+                                            <i class="bi bi-eye me-1"></i> Ver detalle
+                                        </a>
+                                    </div>
                                 </div>
-                                <div>
-                                    <a class="btn btn-outline-primary btn-sm"
-                                       th:href="@{/catalogo/libro/{id}(id=${libro.id})}">
-                                        <i class="bi bi-eye me-1"></i> Ver detalle
-                                    </a>
-                                </div>
-                            </div>
-                        </article>
+                            </article>
+                        </div>
                     </div>
                 </div>
-
             </div>
-        </div>
-    </div>
-</main>
-
+    </main>
 </body>
+
 </html>

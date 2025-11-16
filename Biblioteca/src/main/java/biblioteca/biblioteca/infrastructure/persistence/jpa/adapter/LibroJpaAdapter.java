@@ -32,11 +32,6 @@ public class LibroJpaAdapter implements ILibroRepository {
         return repo.findById(idLibro).map(mapper::toDomain).orElse(null);
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public List<Libro> buscarPorAutor(Integer idAutor) {
-        return repo.findByAutorId(idAutor).stream().map(mapper::toDomain).toList();
-    }
 
     @Override
     @Transactional
@@ -48,5 +43,14 @@ public class LibroJpaAdapter implements ILibroRepository {
     @Transactional(readOnly = true)
     public List<Libro> todos() {
         return repo.findAll().stream().map(mapper::toDomain).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Libro> buscarPorTitulo(String q) {
+        return repo.findByTituloContainingIgnoreCase(q)
+                .stream()
+                .map(mapper::toDomain)
+                .toList();
     }
 }

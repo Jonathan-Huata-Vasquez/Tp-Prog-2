@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 @RequiredArgsConstructor
 public class DashboardController {
-    
+
     // private final ILectorResumenQuery lectorResumenQuery;
 
     @GetMapping("/dashboard/lector")

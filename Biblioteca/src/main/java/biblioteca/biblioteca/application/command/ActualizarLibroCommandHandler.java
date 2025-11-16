@@ -24,7 +24,7 @@ public class ActualizarLibroCommandHandler {
         if (l == null) throw new EntidadNoEncontradaException("Libro inexistente: " + cmd.getIdLibro());
 
         l.actualizarMetadatos(cmd.getTitulo(), cmd.getAnioPublicacion(),
-                cmd.getIdAutor(), cmd.getIdEditorial(), cmd.getCategoria());
+                cmd.getIdAutor(), cmd.getIdEditorial(), cmd.getCategoria(),cmd.getDescripcion());
 
         Libro actualizado = libroRepo.guardar(l);
         return dtoMapper.toDto(actualizado);

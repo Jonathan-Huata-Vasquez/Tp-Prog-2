@@ -20,7 +20,7 @@ public class CrearLibroCommandHandler {
     public LibroDto handle(CrearLibroCommand cmd) {
         if (cmd == null) throw new DatoInvalidoException("El comando no puede ser null");
         Libro nuevo = Libro.nuevo(cmd.getTitulo(), cmd.getAnioPublicacion(),
-                cmd.getIdAutor(), cmd.getIdEditorial(), cmd.getCategoria());
+                cmd.getIdAutor(), cmd.getIdEditorial(), cmd.getCategoria(),cmd.getDescripcion());
         Libro guardado = libroRepo.guardar(nuevo); // retorna con ID
         return dtoMapper.toDto(guardado);
     }

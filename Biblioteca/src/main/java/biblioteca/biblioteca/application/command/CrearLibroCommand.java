@@ -14,4 +14,5 @@ public class CrearLibroCommand {
     @NotNull Integer idAutor;
     @NotNull Integer idEditorial;
     @NotNull Categoria categoria;
+    @NotNull String descripcion;
 }

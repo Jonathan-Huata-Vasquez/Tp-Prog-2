@@ -6,12 +6,12 @@ import biblioteca.biblioteca.domain.port.ICopiaRepository;
 import biblioteca.biblioteca.infrastructure.persistence.jpa.entity.CopiaEntity;
 import biblioteca.biblioteca.infrastructure.persistence.jpa.spring.CopiaSpringDataRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Component
+@Repository
 @RequiredArgsConstructor
 public class CopiaJpaAdapter implements ICopiaRepository {
 
@@ -55,5 +55,15 @@ public class CopiaJpaAdapter implements ICopiaRepository {
     @Transactional(readOnly = true)
     public List<Copia> porLibro(Integer idLibro) {
         return repo.findByLibroId(idLibro).stream().map(mapper::toDomain).toList();
+    }
+
+    @Override
+    public int contarPorLibro(Integer idLibro) {
+        return repo.countByLibroId(idLibro);
+    }
+
+    @Override
+    public int contarPorLibroYEstado(Integer idLibro, EstadoCopia estado) {
+        return repo.countByLibroIdAndEstado(idLibro, estado);
     }
 }

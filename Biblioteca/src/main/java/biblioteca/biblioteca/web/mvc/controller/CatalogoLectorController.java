@@ -1,5 +1,7 @@
 package biblioteca.biblioteca.web.mvc.controller;
 
+import biblioteca.biblioteca.application.command.ListarCatalogoCommand;
+import biblioteca.biblioteca.application.command.ListarCatalogoCommandHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,47 +15,14 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class CatalogoLectorController {
 
-    // private final ILibroCatalogoQuery libroCatalogoQuery;
+    private final ListarCatalogoCommandHandler listarHandler;
 
-    @GetMapping({"/lector/catalogo", "/catalogo", "/catalogo/buscar"})
-    public String catalogo(
-            @RequestParam(name = "q", required = false) String q,
-            Model model
-    ) {
-        model.addAttribute("criterioBusqueda", q);
-
-        // Placeholders (reemplazar por resultados reales)
-        List<Map<String, Object>> libros = List.of(
-                Map.of(
-                        "id", 1,
-                        "titulo", "Cien años de soledad",
-                        "autor", "Gabriel García Márquez",
-                        "categoria", "Novela",
-                        "anio", 1967,
-                        "descripcionCorta", "Obra clave del realismo mágico.",
-                        "copiasDisponibles", 2,
-                        "totalCopias", 4
-                ),
-                Map.of(
-                        "id", 2,
-                        "titulo", "Introducción a la algoritmia",
-                        "autor", "J. Pérez · M. López",
-                        "categoria", "Informática",
-                        "anio", 2015,
-                        "descripcionCorta", "Manual introductorio.",
-                        "copiasDisponibles", 0,
-                        "totalCopias", 1
-                )
-        );
-
-        model.addAttribute("libros", libros);
-        model.addAttribute("totalLibros", libros.size());
-
-        // Ejemplo real:
-        // var resultado = libroCatalogoQuery.listar(q);
-        // model.addAttribute("libros", resultado);
-        // model.addAttribute("totalLibros", resultado.size());
-
+    @GetMapping({"/catalogo", "/lector/catalogo", "/bibliotecario/catalogo"})
+    public String catalogo(@RequestParam(value = "q", required = false) String q, Model model) {
+        var result = listarHandler.handle(new ListarCatalogoCommand(q));
+        model.addAttribute("totalLibros", result.getTotalLibros());
+        model.addAttribute("criterioBusqueda", result.getCriterio());
+        model.addAttribute("libros", result.getItems()); // lista de LibroCatalogoItemDto
         return "lector/catalogo";
     }
 }

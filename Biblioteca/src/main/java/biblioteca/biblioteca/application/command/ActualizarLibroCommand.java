@@ -15,4 +15,5 @@ public class ActualizarLibroCommand {
     @NotNull Integer idAutor;
     @NotNull Integer idEditorial;
     @NotNull Categoria categoria;
+    @NotNull String descripcion;
 }
