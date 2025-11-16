@@ -35,6 +35,11 @@ public class SecurityConfig {
                         .requestMatchers("/dashboard/bibliotecario/**").hasRole("BIBLIOTECARIO")
                         .requestMatchers("/dashboard/lector/**").hasRole("LECTOR")
 
+                        // Áreas específicas protegidas
+                        .requestMatchers("/lector/**").hasRole("LECTOR")
+                        .requestMatchers("/bibliotecario/**").hasRole("BIBLIOTECARIO")
+                        .requestMatchers("/prestamos/**").authenticated()
+
                         // Selector de rol requiere login
                         .requestMatchers("/seleccionar-rol").authenticated()
 

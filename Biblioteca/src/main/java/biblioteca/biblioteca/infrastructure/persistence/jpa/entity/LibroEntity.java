@@ -33,4 +33,8 @@ public class LibroEntity {
 
     @Column(name = "descripcion", nullable = false, length = 2000)
     private String descripcion;
+    
+    // TODO: Implementar en el futuro
+    // @Column(name = "url_portada")
+    // private String urlPortada;
 }
