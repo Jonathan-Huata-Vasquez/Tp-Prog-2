@@ -10,19 +10,23 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import biblioteca.biblioteca.domain.model.Categoria;
+import biblioteca.biblioteca.domain.model.EstadoCopia;
 import biblioteca.biblioteca.infrastructure.persistence.jpa.entity.AutorEntity;
 import biblioteca.biblioteca.infrastructure.persistence.jpa.entity.EditorialEntity;
 import biblioteca.biblioteca.infrastructure.persistence.jpa.entity.LibroEntity;
+import biblioteca.biblioteca.infrastructure.persistence.jpa.entity.CopiaEntity;
+import biblioteca.biblioteca.infrastructure.persistence.jpa.entity.LectorEntity;
+import biblioteca.biblioteca.infrastructure.persistence.jpa.entity.PrestamoEntity;
 import biblioteca.biblioteca.infrastructure.persistence.jpa.spring.AutorSpringDataRepository;
 import biblioteca.biblioteca.infrastructure.persistence.jpa.spring.EditorialSpringDataRepository;
 import biblioteca.biblioteca.infrastructure.persistence.jpa.spring.LibroSpringDataRepository;
+import biblioteca.biblioteca.infrastructure.persistence.jpa.spring.CopiaSpringDataRepository;
+import biblioteca.biblioteca.infrastructure.persistence.jpa.spring.LectorSpringDataRepository;
+import biblioteca.biblioteca.infrastructure.persistence.jpa.spring.PrestamoSpringDataRepository;
 
 import java.time.LocalDate;
 import java.util.List;
-
-
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -37,6 +41,9 @@ public class DatosDemoH2 implements CommandLineRunner {
     private final AutorSpringDataRepository autorRepo;
     private final EditorialSpringDataRepository editorialRepo;
     private final LibroSpringDataRepository libroRepo;
+    private final CopiaSpringDataRepository copiaRepo;
+    private final LectorSpringDataRepository lectorRepo;
+    private final PrestamoSpringDataRepository prestamoRepo;
 
     @Override
     public void run(String... args) {
@@ -75,6 +82,7 @@ public class DatosDemoH2 implements CommandLineRunner {
         );
 
         cargarLibrosDemo();
+        cargarCopiasYPrestamosDemo();
     }
 
     private RolEntity ensureRol(String nombre) {
@@ -163,6 +171,104 @@ public class DatosDemoH2 implements CommandLineRunner {
         );
 
         libroRepo.saveAll(List.of(l1, l2, l3));
+    }
+
+    private void cargarCopiasYPrestamosDemo() {
+        // Si ya hay copias, no hacer nada
+        if (!copiaRepo.findAll().isEmpty()) {
+            return;
+        }
+
+        // -------- Lectores --------
+        LectorEntity lector1 = lectorRepo.save(
+                new LectorEntity(null, "Juan Pérez", null)
+        );
+        LectorEntity lector2 = lectorRepo.save(
+                new LectorEntity(null, "María González", null)
+        );
+        LectorEntity lector3 = lectorRepo.save(
+                new LectorEntity(null, "Carlos Rodríguez", null)
+        );
+
+        // Obtener los libros ya creados
+        List<LibroEntity> libros = libroRepo.findAll();
+        LibroEntity aleph = libros.stream().filter(l -> "El Aleph".equals(l.getTitulo())).findFirst().orElse(null);
+        LibroEntity rayuela = libros.stream().filter(l -> "Rayuela".equals(l.getTitulo())).findFirst().orElse(null);
+        LibroEntity cienAnios = libros.stream().filter(l -> "Cien años de soledad".equals(l.getTitulo())).findFirst().orElse(null);
+
+        if (aleph == null || rayuela == null || cienAnios == null) {
+            return; // Si no hay libros, no crear copias
+        }
+
+        // -------- Copias del Aleph --------
+        copiaRepo.save(new CopiaEntity(null, aleph.getId(), EstadoCopia.EnBiblioteca)); // Disponible
+        CopiaEntity alephCopia2 = copiaRepo.save(
+                new CopiaEntity(null, aleph.getId(), EstadoCopia.Prestada)     // Prestada - usada en préstamo
+        );
+        copiaRepo.save(new CopiaEntity(null, aleph.getId(), EstadoCopia.EnBiblioteca)); // Disponible
+
+        // -------- Copias de Rayuela --------
+        CopiaEntity rayuelaCopia1 = copiaRepo.save(
+                new CopiaEntity(null, rayuela.getId(), EstadoCopia.Prestada)    // Prestada - usada en préstamo
+        );
+        CopiaEntity rayuelaCopia2 = copiaRepo.save(
+                new CopiaEntity(null, rayuela.getId(), EstadoCopia.EnBiblioteca) // Disponible - usada para préstamo histórico
+        );
+        copiaRepo.save(new CopiaEntity(null, rayuela.getId(), EstadoCopia.EnReparacion)); // En reparación
+        copiaRepo.save(new CopiaEntity(null, rayuela.getId(), EstadoCopia.EnBiblioteca)); // Disponible
+
+        // -------- Copias de Cien años de soledad --------
+        copiaRepo.save(new CopiaEntity(null, cienAnios.getId(), EstadoCopia.EnBiblioteca)); // Disponible
+        copiaRepo.save(new CopiaEntity(null, cienAnios.getId(), EstadoCopia.EnBiblioteca)); // Disponible
+        copiaRepo.save(new CopiaEntity(null, cienAnios.getId(), EstadoCopia.ConRetraso));       // Perdida
+        CopiaEntity cienAniosCopia4 = copiaRepo.save(
+                new CopiaEntity(null, cienAnios.getId(), EstadoCopia.Prestada)      // Prestada - usada en préstamo
+        );
+        copiaRepo.save(new CopiaEntity(null, cienAnios.getId(), EstadoCopia.EnBiblioteca)); // Disponible
+
+        // -------- Préstamos activos --------
+        LocalDate hoy = LocalDate.now();
+        
+        // Préstamo 1: Juan tiene una copia de El Aleph (prestada hace 5 días, vence en 16 días)
+        prestamoRepo.save(new PrestamoEntity(
+                null,
+                lector1.getId(),
+                alephCopia2.getId(),
+                hoy.minusDays(5),
+                hoy.plusDays(16),
+                null // no devuelto
+        ));
+
+        // Préstamo 2: María tiene una copia de Rayuela (prestada hace 10 días, vence en 11 días)
+        prestamoRepo.save(new PrestamoEntity(
+                null,
+                lector2.getId(),
+                rayuelaCopia1.getId(),
+                hoy.minusDays(10),
+                hoy.plusDays(11),
+                null // no devuelto
+        ));
+
+        // Préstamo 3: Carlos tiene una copia de Cien años de soledad (prestada hace 2 días, vence en 19 días)
+        prestamoRepo.save(new PrestamoEntity(
+                null,
+                lector3.getId(),
+                cienAniosCopia4.getId(),
+                hoy.minusDays(2),
+                hoy.plusDays(19),
+                null // no devuelto
+        ));
+
+        // Préstamo 4: Préstamo ya devuelto (María devolvió una copia hace 5 días)
+        // Usamos una copia existente que ahora está disponible
+        prestamoRepo.save(new PrestamoEntity(
+                null,
+                lector2.getId(),
+                rayuelaCopia2.getId(), // Usa la copia que ahora está EnBiblioteca
+                hoy.minusDays(35),
+                hoy.minusDays(14),
+                hoy.minusDays(5) // devuelto hace 5 días
+        ));
     }
 
 }

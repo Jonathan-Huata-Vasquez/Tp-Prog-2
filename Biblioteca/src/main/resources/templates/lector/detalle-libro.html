@@ -27,7 +27,7 @@
                   </h1>
                   <p class="mb-2 text-soft-muted">
                     de
-                    <span class="fw-semibold" th:text="${libro.autor}"
+                    <span class="fw-semibold" th:text="${libro.autorNombre}"
                       >Autor</span
                     >
                   </p>
@@ -37,13 +37,13 @@
                       <i class="bi bi-bookmark"></i
                       ><span th:text="${libro.categoria}">Categoría</span>
                     </span>
-                    <span class="chip" th:if="${libro.anio}">
+                    <span class="chip" th:if="${libro.anioPublicacion}">
                       <i class="bi bi-calendar"></i
-                      ><span th:text="${libro.anio}">Año</span>
+                      ><span th:text="${libro.anioPublicacion}">Año</span>
                     </span>
-                    <span class="chip" th:if="${libro.editorial}">
+                    <span class="chip" th:if="${libro.editorialNombre}">
                       <i class="bi bi-building"></i
-                      ><span th:text="${libro.editorial}">Editorial</span>
+                      ><span th:text="${libro.editorialNombre}">Editorial</span>
                     </span>
                   </div>
 
@@ -100,16 +100,30 @@
                         >
                       </td>
                       <td>
-                        <span th:switch="${c.disponible}">
+                        <span th:switch="${c.estado}">
                           <span
-                            th:case="true"
+                            th:case="'Disponible'"
                             class="badge badge-estado badge-estado-disponible"
+                            th:text="${c.estado}"
                             >Disponible</span
                           >
                           <span
-                            th:case="false"
+                            th:case="'Prestado'"
                             class="badge badge-estado badge-estado-prestado"
+                            th:text="${c.estado}"
                             >Prestado</span
+                          >
+                          <span
+                            th:case="'En reparación'"
+                            class="badge badge-estado badge-estado-reparacion"
+                            th:text="${c.estado}"
+                            >En reparación</span
+                          >
+                          <span
+                            th:case="'Con retraso'"
+                            class="badge badge-estado badge-estado-retraso"
+                            th:text="${c.estado}"
+                            >Con retraso</span
                           >
                         </span>
                       </td>
