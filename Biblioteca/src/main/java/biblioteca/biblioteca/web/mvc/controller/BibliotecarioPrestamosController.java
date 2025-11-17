@@ -2,6 +2,8 @@ package biblioteca.biblioteca.web.mvc.controller;
 
 import biblioteca.biblioteca.application.command.PrestarCopiaCommand;
 import biblioteca.biblioteca.application.command.PrestarCopiaCommandHandler;
+import biblioteca.biblioteca.application.command.DevolverCopiaCommand;
+import biblioteca.biblioteca.application.command.DevolverCopiaCommandHandler;
 import biblioteca.biblioteca.application.query.ListarPrestamosQuery;
 import biblioteca.biblioteca.application.query.ListarPrestamosQueryHandler;
 import biblioteca.biblioteca.application.query.ValidarPrestamoQuery;
@@ -191,6 +193,7 @@ public class BibliotecarioPrestamosController {
     private final ListarPrestamosQueryHandler listarPrestamosHandler;
     private final PrestarCopiaCommandHandler prestarCommandHandler;
     private final ValidarPrestamoQueryHandler validarPrestamoHandler;
+    private final DevolverCopiaCommandHandler devolverCommandHandler;
 
     @GetMapping("/prestamos")
     public String prestamos(@RequestParam(value = "pagina", defaultValue = "0") int pagina,
@@ -226,5 +229,60 @@ public class BibliotecarioPrestamosController {
                  pagina + 1, resultado.getPaginaPrestamos().getTotalPaginas(), 
                  resultado.getPaginaPrestamos().getContenido().size());
         return "bibliotecario/prestamos";
+    }
+
+    // === Devolución de préstamo ===
+    @GetMapping("/prestamos/devolver")
+    public String devolverPrestamoForm(@RequestParam(value = "idLector", required = false) Integer idLector,
+                                       @RequestParam(value = "idCopia", required = false) Integer idCopia,
+                                       @AuthenticationPrincipal UsuarioDetalles usuario,
+                                       HttpSession session,
+                                       Model model) {
+        var command = DevolverCopiaCommand.builder()
+                .idLector(idLector)
+                .idCopia(idCopia)
+                .enviarAReparacion(false)
+                .build();
+        model.addAttribute("devolverCopiaCommand", command);
+        model.addAttribute("fechaHoy", java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        controllerHelper.agregarRolActualAlModelo(model, usuario, session);
+        return "bibliotecario/prestamo-devolver";
+    }
+
+    @PostMapping("/prestamos/devolver")
+    public String procesarDevolucion(@Valid @ModelAttribute("devolverCopiaCommand") DevolverCopiaCommand command,
+                                     BindingResult bindingResult,
+                                     @AuthenticationPrincipal UsuarioDetalles usuario,
+                                     HttpSession session,
+                                     Model model,
+                                     RedirectAttributes redirectAttributes) {
+        log.debug("Procesando devolución: lector={}, copia={}, reparar={}", command.getIdLector(), command.getIdCopia(), command.getEnviarAReparacion());
+        if (bindingResult.hasErrors()) {
+            log.warn("Errores de binding al devolver: {}", bindingResult.getAllErrors());
+            model.addAttribute("fechaHoy", java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            controllerHelper.agregarRolActualAlModelo(model, usuario, session);
+            return "bibliotecario/prestamo-devolver";
+        }
+
+        if (usuario != null && usuario.getIdUsuario() != null) {
+            command = DevolverCopiaCommand.builder()
+                    .idUsuario(usuario.getIdUsuario())
+                    .idLector(command.getIdLector())
+                    .idCopia(command.getIdCopia())
+                    .enviarAReparacion(command.getEnviarAReparacion())
+                    .build();
+        }
+        try {
+            var dto = devolverCommandHandler.handle(command);
+            log.info("Devolución registrada idPrestamo={} lector={} copia={}", dto.getId(), dto.getIdLector(), dto.getIdCopia());
+            redirectAttributes.addFlashAttribute("mensajeExito", "Devolución registrada exitosamente");
+            return "redirect:/bibliotecario/prestamos";
+        } catch (Exception e) {
+            log.error("Error al registrar devolución", e);
+            model.addAttribute("mensajeError", "Error al registrar devolución: " + e.getMessage());
+            model.addAttribute("fechaHoy", java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            controllerHelper.agregarRolActualAlModelo(model, usuario, session);
+            return "bibliotecario/prestamo-devolver";
+        }
     }
 }
