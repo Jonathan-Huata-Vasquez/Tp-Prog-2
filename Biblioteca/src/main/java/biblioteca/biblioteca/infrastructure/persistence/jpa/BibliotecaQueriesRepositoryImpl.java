@@ -113,4 +113,84 @@ public class BibliotecaQueriesRepositoryImpl implements IBibliotecaQueriesReposi
         }
         return EstadoPrestamo.ACTIVO;
     }
+
+    @Override
+    public List<biblioteca.biblioteca.web.dto.PrestamoBibliotecarioDto> obtenerTodosLosPrestamos(
+            LocalDate fechaActual, int pagina, int tamanoPagina, String estadoFiltro) {
+        
+        int offset = pagina * tamanoPagina;
+        List<Object[]> resultados;
+        
+        if (estadoFiltro == null || estadoFiltro.trim().isEmpty()) {
+            resultados = bibliotecaQueriesJpaRepo.obtenerPrestamosPaginados(
+                fechaActual, offset, tamanoPagina);
+        } else {
+            resultados = bibliotecaQueriesJpaRepo.obtenerPrestamosPaginadosConFiltro(
+                fechaActual, estadoFiltro.toUpperCase(), offset, tamanoPagina);
+        }
+        
+        return resultados.stream()
+                .map(this::mapearResultadoAPrestamoBibliotecarioDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public biblioteca.biblioteca.web.dto.ResumenPrestamosDto obtenerResumenPrestamos(LocalDate fechaActual) {
+        List<Object[]> resultados = bibliotecaQueriesJpaRepo.obtenerResumenEstadisticas(fechaActual);
+        Object[] resumen = resultados.get(0);
+        
+        int totalPrestamos = ((Number) resumen[0]).intValue();
+        int prestamosActivos = ((Number) resumen[1]).intValue(); 
+        int prestamosVencidos = ((Number) resumen[2]).intValue();
+        int prestamosDevueltos = ((Number) resumen[3]).intValue();
+        
+        return biblioteca.biblioteca.web.dto.ResumenPrestamosDto.builder()
+                .totalPrestamos(totalPrestamos)
+                .prestamosActivos(prestamosActivos)
+                .prestamosVencidos(prestamosVencidos)
+                .prestamosDevueltos(prestamosDevueltos)
+                .build();
+    }
+    
+    private biblioteca.biblioteca.web.dto.PrestamoBibliotecarioDto mapearResultadoAPrestamoBibliotecarioDto(Object[] resultado) {
+        Number idPrestamo = (Number) resultado[0];
+        Number idLector = (Number) resultado[1];
+        String nombreLector = (String) resultado[2];
+        Boolean lectorBloqueado = (Boolean) resultado[3];
+        String tituloLibro = (String) resultado[4];
+        String autorNombre = (String) resultado[5];
+        Number idCopia = (Number) resultado[6];
+        java.sql.Date fechaInicioSql = (java.sql.Date) resultado[7];
+        java.sql.Date fechaVencimientoSql = (java.sql.Date) resultado[8];
+        java.sql.Date fechaDevolucionSql = (java.sql.Date) resultado[9];
+        Number diasAtraso = (Number) resultado[10];
+        
+        LocalDate fechaInicio = fechaInicioSql.toLocalDate();
+        LocalDate fechaVencimiento = fechaVencimientoSql.toLocalDate();
+        LocalDate fechaDevolucion = fechaDevolucionSql != null ? fechaDevolucionSql.toLocalDate() : null;
+        
+        String estado;
+        if (fechaDevolucion != null) {
+            estado = "DEVUELTO";
+        } else if (fechaVencimiento.isBefore(LocalDate.now())) {
+            estado = "VENCIDO";
+        } else {
+            estado = "ACTIVO";
+        }
+        
+        return biblioteca.biblioteca.web.dto.PrestamoBibliotecarioDto.builder()
+                .idPrestamo(idPrestamo.intValue())
+                .idLector(idLector.intValue())
+                .nombreLector(nombreLector)
+                .lectorBloqueado(Boolean.TRUE.equals(lectorBloqueado))
+                .tituloLibro(tituloLibro)
+                .autorNombre(autorNombre)
+                .idCopia(idCopia.intValue())
+                .fechaInicio(fechaInicio)
+                .fechaVencimiento(fechaVencimiento)
+                .fechaDevolucion(fechaDevolucion)
+                .estado(estado)
+                .diasAtraso(diasAtraso != null ? diasAtraso.intValue() : 0)
+                .build();
+    }
 }

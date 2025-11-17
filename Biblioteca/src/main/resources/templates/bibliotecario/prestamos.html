@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(titulo='Préstamos - Bibliotecario')}"></head>
+
+<body>
+    <!-- Navbar dinámico -->
+    <div th:replace="~{fragments/navbar-bibliotecario :: navbarBibliotecario('prestamos')}"></div>
+
+    <main class="container">
+        <div class="row g-4 mt-4">
+
+            <!-- Encabezado -->
+            <div class="col-12">
+                <div class="card card-soft mb-3">
+                    <div
+                        class="card-body d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                        <div>
+                            <p class="section-title mb-1">Préstamos</p>
+                            <h1 class="h4 mb-2">
+                                Listado de todos los préstamos
+                            </h1>
+                            <p class="mb-0 text-soft-muted">
+                                Esta vista muestra todos los préstamos registrados en el sistema (activos, vencidos y
+                                devueltos).
+                            </p>
+                        </div>
+                        <div class="text-md-end">
+                            <p class="small-label mb-1">Resumen</p>
+                            <p class="mb-1">
+                                <span class="badge-estado badge-estado-activo me-1"
+                                      th:text="${resumen?.prestamosActivos ?: 0} + ' activos'">
+                                    0 activos
+                                </span>
+                                <span class="badge-estado badge-estado-vencido me-1"
+                                      th:text="${resumen?.prestamosVencidos ?: 0} + ' vencidos'">
+                                    0 vencidos
+                                </span>
+                                <span class="badge-estado badge-estado-devuelto"
+                                      th:text="${resumen?.prestamosDevueltos ?: 0} + ' devueltos'">
+                                    0 devueltos
+                                </span>
+                            </p>
+                            <a th:href="@{/dashboard/bibliotecario}" class="btn btn-outline-secondary btn-sm mt-2">
+                                <i class="bi bi-arrow-left me-1"></i>
+                                Volver al panel
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabla de préstamos (sin paginación) -->
+            <div class="col-12">
+                <div class="card card-soft">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <p class="section-title mb-1">Listado completo</p>
+                                <p class="small text-soft-muted mb-0">
+                                    Mostrando página <span th:text="${paginaPrestamos.numeroPagina + 1}">1</span> 
+                                    de <span th:text="${paginaPrestamos.totalPaginas}">1</span> 
+                                    (<span th:text="${paginaPrestamos.totalElementos}">0</span> préstamos en total)
+                                </p>
+                            </div>
+                            <div class="text-end">
+                                <!-- Filtros -->
+                                <form method="get" class="d-inline-block me-3 estado-filter">
+                                    <div class="input-group input-group-sm">
+                                        <select name="estado" class="form-select" onchange="this.form.submit()">
+                                            <option value="">Todos los estados</option>
+                                            <option value="ACTIVO" th:selected="${estadoFiltro == 'ACTIVO'}">Solo activos</option>
+                                            <option value="VENCIDO" th:selected="${estadoFiltro == 'VENCIDO'}">Solo vencidos</option>
+                                            <option value="DEVUELTO" th:selected="${estadoFiltro == 'DEVUELTO'}">Solo devueltos</option>
+                                        </select>
+                                        <input type="hidden" name="pagina" th:value="0">
+                                        <input type="hidden" name="tamano" th:value="${paginaPrestamos.tamanoPagina}">
+                                    </div>
+                                </form>
+                                
+                                <div class="d-inline-block">
+                                    <p class="small-label mb-1">Leyenda de estado</p>
+                                    <div class="d-flex flex-wrap gap-2 justify-content-end">
+                                        <span class="badge-estado badge-estado-activo">Activo</span>
+                                        <span class="badge-estado badge-estado-vencido">Vencido</span>
+                                        <span class="badge-estado badge-estado-devuelto">Devuelto</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-dark-custom table-striped table-hover align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">ID</th>
+                                        <th scope="col">Lector</th>
+                                        <th scope="col">Libro</th>
+                                        <th scope="col">Ejemplar</th>
+                                        <th scope="col">Fecha préstamo</th>
+                                        <th scope="col">Fecha vencimiento</th>
+                                        <th scope="col">Estado</th>
+                                        <th scope="col">Días atraso</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Iteración sobre préstamos paginados -->
+                                    <tr th:each="prestamo : ${paginaPrestamos.contenido}" 
+                                        th:if="${paginaPrestamos.contenido != null and !paginaPrestamos.contenido.empty}">
+                                        <td>
+                                            <span class="small" th:text="${prestamo.idPrestamo}">1</span>
+                                        </td>
+                                        <td>
+                                            <div class="fw-semibold d-flex align-items-center gap-1">
+                                                <span th:text="${prestamo.nombreLector}">Nombre Lector</span>
+                                                <span th:if="${prestamo.lectorBloqueado}" class="badge-bloqueado">
+                                                    Bloqueado
+                                                </span>
+                                            </div>
+                                            <div class="small text-soft-muted" 
+                                                 th:text="'ID Lector: ' + ${prestamo.idLector}">ID Lector: 0</div>
+                                        </td>
+                                        <td>
+                                            <div class="fw-semibold" th:text="${prestamo.tituloLibro}">Título del libro</div>
+                                            <div class="small text-soft-muted" th:text="${prestamo.autorNombre}">Autor</div>
+                                        </td>
+                                        <td>
+                                            <span class="small text-soft-muted" 
+                                                  th:text="'Ejemplar #' + ${prestamo.idCopia}">Ejemplar #1</span>
+                                        </td>
+                                        <td>
+                                            <span class="small" th:text="${#temporals.format(prestamo.fechaInicio, 'dd/MM/yyyy')}">01/01/2025</span>
+                                        </td>
+                                        <td>
+                                            <span class="small" th:text="${#temporals.format(prestamo.fechaVencimiento, 'dd/MM/yyyy')}">21/01/2025</span>
+                                        </td>
+                                        <td>
+                                            <span th:switch="${prestamo.estado}">
+                                                <span th:case="'ACTIVO'" class="badge-estado badge-estado-activo">Activo</span>
+                                                <span th:case="'VENCIDO'" class="badge-estado badge-estado-vencido">Vencido</span>
+                                                <span th:case="'DEVUELTO'" class="badge-estado badge-estado-devuelto">Devuelto</span>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="small" th:text="${prestamo.diasAtraso ?: 0}">0</span>
+                                        </td>
+                                    </tr>
+
+                                    <!-- Mensaje cuando no hay datos -->
+                                    <tr th:if="${paginaPrestamos.contenido == null or paginaPrestamos.contenido.empty}">
+                                        <td colspan="8" class="text-center py-4">
+                                            <div class="text-soft-muted">
+                                                <i class="bi bi-inbox h3 d-block mb-2"></i>
+                                                <p class="mb-0" th:if="${estadoFiltro != null}">
+                                                    No hay préstamos en estado <strong th:text="${estadoFiltro}">filtrado</strong>.
+                                                </p>
+                                                <p class="mb-0" th:unless="${estadoFiltro != null}">
+                                                    No hay préstamos registrados en el sistema.
+                                                </p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Navegación de paginación -->
+                        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-4 gap-3" 
+                             th:if="${paginaPrestamos.totalPaginas > 1}">
+                            <!-- Info de página actual -->
+                            <div class="pagination-info text-center text-md-start">
+                                <span th:text="'Página ' + ${paginaPrestamos.numeroPagina + 1} + ' de ' + ${paginaPrestamos.totalPaginas}">
+                                    Página 1 de 1
+                                </span>
+                            </div>
+
+                            <!-- Controles de paginación -->
+                            <div class="d-flex pagination-controls">
+                                <!-- Primera página -->
+                                <a th:href="@{/bibliotecario/prestamos(pagina=0, tamano=${paginaPrestamos.tamanoPagina}, estado=${estadoFiltro})}"
+                                   th:class="'btn btn-outline-secondary btn-sm' + ${paginaPrestamos.numeroPagina == 0 ? ' disabled' : ''}"
+                                   th:classappend="${paginaPrestamos.numeroPagina == 0 ? ' pe-none' : ''}"
+                                   title="Primera página">
+                                    <i class="bi bi-chevron-double-left"></i>
+                                </a>
+
+                                <!-- Página anterior -->
+                                <a th:href="@{/bibliotecario/prestamos(pagina=${paginaPrestamos.numeroPagina - 1}, tamano=${paginaPrestamos.tamanoPagina}, estado=${estadoFiltro})}"
+                                   th:class="'btn btn-outline-secondary btn-sm' + ${paginaPrestamos.numeroPagina == 0 ? ' disabled' : ''}"
+                                   th:classappend="${paginaPrestamos.numeroPagina == 0 ? ' pe-none' : ''}"
+                                   title="Página anterior">
+                                    <i class="bi bi-chevron-left"></i>
+                                </a>
+
+                                <!-- Números de página -->
+                                <th:block th:each="pageNum : ${#numbers.sequence(T(java.lang.Math).max(0, paginaPrestamos.numeroPagina - 2), 
+                                                                T(java.lang.Math).min(paginaPrestamos.totalPaginas - 1, paginaPrestamos.numeroPagina + 2))}">
+                                    <a th:href="@{/bibliotecario/prestamos(pagina=${pageNum}, tamano=${paginaPrestamos.tamanoPagina}, estado=${estadoFiltro})}"
+                                       th:class="'btn btn-sm' + ${pageNum == paginaPrestamos.numeroPagina ? ' btn-primary' : ' btn-outline-secondary'}"
+                                       th:text="${pageNum + 1}">1</a>
+                                </th:block>
+
+                                <!-- Página siguiente -->
+                                <a th:href="@{/bibliotecario/prestamos(pagina=${paginaPrestamos.numeroPagina + 1}, tamano=${paginaPrestamos.tamanoPagina}, estado=${estadoFiltro})}"
+                                   th:class="'btn btn-outline-secondary btn-sm' + ${paginaPrestamos.numeroPagina >= paginaPrestamos.totalPaginas - 1 ? ' disabled' : ''}"
+                                   th:classappend="${paginaPrestamos.numeroPagina >= paginaPrestamos.totalPaginas - 1 ? ' pe-none' : ''}"
+                                   title="Página siguiente">
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+
+                                <!-- Última página -->
+                                <a th:href="@{/bibliotecario/prestamos(pagina=${paginaPrestamos.totalPaginas - 1}, tamano=${paginaPrestamos.tamanoPagina}, estado=${estadoFiltro})}"
+                                   th:class="'btn btn-outline-secondary btn-sm' + ${paginaPrestamos.numeroPagina >= paginaPrestamos.totalPaginas - 1 ? ' disabled' : ''}"
+                                   th:classappend="${paginaPrestamos.numeroPagina >= paginaPrestamos.totalPaginas - 1 ? ' pe-none' : ''}"
+                                   title="Última página">
+                                    <i class="bi bi-chevron-double-right"></i>
+                                </a>
+                            </div>
+
+                            <!-- Selector de tamaño de página -->
+                            <form method="get" class="page-size-selector">
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text">Por página:</span>
+                                    <select name="tamano" class="form-select" onchange="this.form.submit()">
+                                        <option value="10" th:selected="${paginaPrestamos.tamanoPagina == 10}">10</option>
+                                        <option value="20" th:selected="${paginaPrestamos.tamanoPagina == 20}">20</option>
+                                        <option value="50" th:selected="${paginaPrestamos.tamanoPagina == 50}">50</option>
+                                        <option value="100" th:selected="${paginaPrestamos.tamanoPagina == 100}">100</option>
+                                    </select>
+                                    <input type="hidden" name="pagina" value="0">
+                                    <input type="hidden" name="estado" th:value="${estadoFiltro}">
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Mensaje cuando solo hay una página -->
+                        <div class="text-center mt-3" th:if="${paginaPrestamos.totalPaginas <= 1}">
+                            <small class="text-soft-muted">
+                                <span th:if="${paginaPrestamos.totalElementos == 0}">No hay préstamos para mostrar</span>
+                                <span th:if="${paginaPrestamos.totalElementos > 0 and paginaPrestamos.totalElementos <= paginaPrestamos.tamanoPagina}">
+                                    Mostrando todos los <span th:text="${paginaPrestamos.totalElementos}">0</span> préstamos
+                                </span>
+                            </small>
+                        </div>
+
+                        <div class="mt-3">
+                            <p class="small text-soft-muted mb-0">
+                                Los días de atraso se calculan según la diferencia entre la fecha de vencimiento y la
+                                fecha actual;
+                                la penalización se gestiona por la política de dominio (no desde esta vista).
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

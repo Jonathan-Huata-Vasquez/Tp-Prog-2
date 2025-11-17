@@ -14,10 +14,10 @@
            th:classappend="${activeSection == 'home'} ? 'active text-white' : 'nav-link-muted'"
            href="#" th:href="@{/dashboard/bibliotecario}">Inicio</a>
         <a class="nav-link"
-           th:classappend="${activeSection == 'prestamos'} ? 'nav-link-muted' : 'nav-link-muted'"
+           th:classappend="${activeSection == 'prestamos'} ? 'active text-white' : 'nav-link-muted'"
            href="#" th:href="@{/bibliotecario/prestamos}">Préstamos</a>
         <a class="nav-link"
-           th:classappend="${activeSection == 'lectores'} ? 'nav-link-muted' : 'nav-link-muted'"
+           th:classappend="${activeSection == 'lectores'} ? 'active text-white' : 'nav-link-muted'"
            href="#" th:href="@{/bibliotecario/lectores}">Lectores</a>
         <a class="nav-link"
            th:classappend="${activeSection == 'catalogo'} ? 'active text-white' : 'nav-link-muted'"

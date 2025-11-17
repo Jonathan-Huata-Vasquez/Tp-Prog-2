@@ -53,4 +53,95 @@ public interface BibliotecaQueriesJpaRepository extends JpaRepository<PrestamoEn
         Integer getVencenHoy();
         Integer getProximosVencimientos();
     }
+
+    /**
+     * Query nativa optimizada para obtener préstamos paginados con JOIN.
+     * Incluye información completa de lector, libro y autor en una sola consulta.
+     */
+    @Query(value = """
+        SELECT 
+            p.id,
+            p.lector_id, 
+            l.nombre as nombre_lector,
+            CASE WHEN l.bloqueado_hasta IS NOT NULL AND l.bloqueado_hasta >= CURRENT_DATE THEN true ELSE false END as bloqueado,
+            lib.titulo as titulo_libro,
+            a.nombre as autor_nombre,
+            p.copia_id,
+            p.fecha_inicio,
+            p.fecha_vencimiento,
+            p.fecha_devolucion,
+            CASE 
+                WHEN p.fecha_devolucion IS NULL AND p.fecha_vencimiento < :fechaActual 
+                THEN DATEDIFF('DAY', p.fecha_vencimiento, :fechaActual)
+                ELSE 0
+            END as dias_atraso
+        FROM prestamo p
+        INNER JOIN lector l ON p.lector_id = l.id
+        INNER JOIN copia c ON p.copia_id = c.id  
+        INNER JOIN libro lib ON c.libro_id = lib.id
+        INNER JOIN autor a ON lib.autor_id = a.id
+        ORDER BY p.fecha_inicio DESC, p.id DESC
+        LIMIT :limite OFFSET :offset
+        """, nativeQuery = true)
+    List<Object[]> obtenerPrestamosPaginados(
+        @Param("fechaActual") LocalDate fechaActual,
+        @Param("offset") int offset,
+        @Param("limite") int limite
+    );
+
+    /**
+     * Query nativa optimizada para préstamos paginados con filtro de estado.
+     */
+    @Query(value = """
+        SELECT 
+            p.id,
+            p.lector_id, 
+            l.nombre as nombre_lector,
+            CASE WHEN l.bloqueado_hasta IS NOT NULL AND l.bloqueado_hasta >= CURRENT_DATE THEN true ELSE false END as bloqueado,
+            lib.titulo as titulo_libro,
+            a.nombre as autor_nombre,
+            p.copia_id,
+            p.fecha_inicio,
+            p.fecha_vencimiento,
+            p.fecha_devolucion,
+            CASE 
+                WHEN p.fecha_devolucion IS NULL AND p.fecha_vencimiento < :fechaActual 
+                THEN DATEDIFF('DAY', p.fecha_vencimiento, :fechaActual)
+                ELSE 0
+            END as dias_atraso
+        FROM prestamo p
+        INNER JOIN lector l ON p.lector_id = l.id
+        INNER JOIN copia c ON p.copia_id = c.id  
+        INNER JOIN libro lib ON c.libro_id = lib.id
+        INNER JOIN autor a ON lib.autor_id = a.id
+        WHERE 
+            CASE 
+                WHEN :estadoFiltro = 'ACTIVO' THEN p.fecha_devolucion IS NULL AND p.fecha_vencimiento >= :fechaActual
+                WHEN :estadoFiltro = 'VENCIDO' THEN p.fecha_devolucion IS NULL AND p.fecha_vencimiento < :fechaActual
+                WHEN :estadoFiltro = 'DEVUELTO' THEN p.fecha_devolucion IS NOT NULL
+                ELSE 1=1
+            END
+        ORDER BY p.fecha_inicio DESC, p.id DESC
+        LIMIT :limite OFFSET :offset
+        """, nativeQuery = true)
+    List<Object[]> obtenerPrestamosPaginadosConFiltro(
+        @Param("fechaActual") LocalDate fechaActual,
+        @Param("estadoFiltro") String estadoFiltro,
+        @Param("offset") int offset,
+        @Param("limite") int limite
+    );
+
+    /**
+     * Query nativa para obtener resumen estadístico de préstamos.
+     * Optimizada para calcular todos los contadores en una sola consulta.
+     */
+    @Query(value = """
+        SELECT 
+            COUNT(*) as total_prestamos,
+            COUNT(CASE WHEN p.fecha_devolucion IS NULL AND p.fecha_vencimiento >= :fechaActual THEN 1 END) as prestamos_activos,
+            COUNT(CASE WHEN p.fecha_devolucion IS NULL AND p.fecha_vencimiento < :fechaActual THEN 1 END) as prestamos_vencidos,
+            COUNT(CASE WHEN p.fecha_devolucion IS NOT NULL THEN 1 END) as prestamos_devueltos
+        FROM prestamo p
+        """, nativeQuery = true)
+    List<Object[]> obtenerResumenEstadisticas(@Param("fechaActual") LocalDate fechaActual);
 }

@@ -22,13 +22,13 @@ public class CatalogoController {
     private final ListarCatalogoCommandHandler listarHandler;
     private final ControllerHelper controllerHelper;
 
-    @GetMapping({"/catalogo", "/lector/catalogo", "/bibliotecario/catalogo", "/catalogo/buscar"})
+    @GetMapping({"/catalogo", "/lector/catalogo", "/bibliotecario/catalogo"})
     public String catalogo(@RequestParam(value = "q", required = false) String q, 
                           @AuthenticationPrincipal UsuarioDetalles usuario,
                           HttpSession session,
                           Model model) {
-        log.debug("CatalogoController.catalogo() llamado para usuario: {}, query: {}", 
-                 usuario != null ? usuario.getUsername() : "null", q);
+        log.debug("CatalogoController.catalogo() llamado para usuario: {}", 
+                 usuario != null ? usuario.getUsername() : "null");
         
         var result = listarHandler.handle(new ListarCatalogoCommand(q));
         model.addAttribute("totalLibros", result.getTotalLibros());
@@ -37,10 +37,6 @@ public class CatalogoController {
         
         // Agregar rol actual para mostrar navbar correcto
         controllerHelper.agregarRolActualAlModelo(model, usuario, session);
-        
-        // Debug: verificar qué rol se está pasando
-        String rolActual = controllerHelper.obtenerRolActual(usuario, session);
-        log.debug("CatalogoController: rol determinado = '{}'", rolActual);
         
         log.debug("CatalogoController: retornando vista shared/catalogo");
         return "shared/catalogo";
