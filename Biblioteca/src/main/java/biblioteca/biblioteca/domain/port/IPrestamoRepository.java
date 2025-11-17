@@ -3,6 +3,7 @@ package biblioteca.biblioteca.domain.port;
 
 
 import biblioteca.biblioteca.domain.model.Prestamo;
+import java.time.LocalDate;
 import java.util.List;
 
 public interface IPrestamoRepository {
@@ -12,7 +13,7 @@ public interface IPrestamoRepository {
     List<Prestamo> activosPorLector(Integer idLector);
     List<Prestamo> todosLosPorLector(Integer idLector);        // incluye devueltos
     
-    // Queries optimizadas
+    // Queries optimizadas para lector
     List<Prestamo> todosLosPorLectorOrdenadosPorVencimiento(Integer idLector);
     int contarActivosPorLector(Integer idLector);
     int contarVencidosPorLector(Integer idLector);

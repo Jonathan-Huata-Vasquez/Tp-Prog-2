@@ -23,6 +23,9 @@ public class PrestamoDetalleDto {
     String anioPublicacion;
     String urlPortada;           // null por ahora (futuro)
     
+    // Información de la copia
+    Integer idCopia;             // ID de la copia prestada
+    
     // Información del lector
     Integer idLector;
     String nombreLector;
