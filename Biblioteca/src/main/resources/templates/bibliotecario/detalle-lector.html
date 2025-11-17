@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(titulo='Detalle Lector - Bibliotecario')}"></head>
+<link rel="stylesheet" th:href="@{/css/detalle-lector.css}">
+
+<body>
+    <!-- Navbar dinámico -->
+    <div th:replace="~{fragments/navbar-bibliotecario :: navbarBibliotecario('lectores')}"></div>
+
+<main class="container">
+    <div class="row g-4 mt-4">
+
+        <!-- Encabezado -->
+        <div class="col-12">
+            <div class="card card-soft mb-3">
+                <div class="card-body d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                    <div>
+                        <p class="section-title mb-1">Lector</p>
+                        <h1 class="h4 mb-2">
+                            Detalle del lector
+                        </h1>
+                        <p class="mb-0 text-soft-muted">
+                            Información general del lector y sus préstamos (activos, vencidos y devueltos).
+                        </p>
+                    </div>
+                    <div class="text-md-end">
+                        <p class="small-label mb-1">ID Lector</p>
+                        <p class="highlight-number mb-1" style="font-size: 1.6rem;" th:text="${lector != null ? lector.idLector : 'N/A'}">
+                            102
+                        </p>
+                        <p class="mb-0">
+                            <span th:if="${lector != null and !lector.bloqueado}" class="badge-estado badge-estado-activo">
+                                Habilitado
+                            </span>
+                            <span th:if="${lector != null and lector.bloqueado}" class="badge-bloqueado">
+                                Bloqueado
+                            </span>
+                        </p>
+                        <a th:href="@{/bibliotecario/lectores}" class="btn btn-outline-secondary btn-sm mt-2">
+                            <i class="bi bi-arrow-left me-1"></i>
+                            Volver al listado
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna principal: info lector + préstamos -->
+        <div class="col-md-8">
+            <!-- Info del lector -->
+            <div class="card card-soft mb-3">
+                <div class="card-body">
+                    <p class="section-title mb-2">Información del lector</p>
+
+                    <h2 class="h5 mb-1" th:text="${lector != null ? lector.nombreCompleto : 'Nombre no disponible'}">
+                        Juan Pérez
+                    </h2>
+
+                    <p class="small mb-2">
+                        Estado:
+                        <span class="text-soft-muted">
+                            <span th:if="${lector != null and !lector.bloqueado}">Habilitado</span>
+                            <span th:if="${lector != null and lector.bloqueado}">Bloqueado hasta </span>
+                            <span th:if="${lector != null and lector.bloqueado and lector.bloqueadoHasta != null}" th:text="${#temporals.format(lector.bloqueadoHasta, 'dd/MM/yyyy')}"></span>
+                        </span>
+                    </p>
+
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <p class="small-label mb-1">Préstamos activos</p>
+                            <p class="highlight-number mb-0" style="font-size: 1.4rem;">
+                                <span th:text="${resumen != null ? resumen.prestamosActivos : 0}">3</span>
+                                <span class="small text-soft-muted ms-1">de máximo 5</span>
+                            </p>
+                        </div>
+                        <div class="col-md-4">
+                            <p class="small-label mb-1">Préstamos vencidos</p>
+                            <p class="highlight-number mb-0" style="font-size: 1.4rem; color: #f97373;" th:text="${resumen != null ? resumen.prestamosVencidos : 0}">
+                                1
+                            </p>
+                        </div>
+                        <div class="col-md-4">
+                            <p class="small-label mb-1">Total devueltos</p>
+                            <p class="highlight-number mb-0" style="font-size: 1.4rem; color: #a5b4fc;" th:text="${resumen != null ? resumen.totalDevueltos : 0}">
+                                8
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <!-- Botón eliminado - ya existe en encabezado -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Préstamos activos y vencidos del lector -->
+            <div class="card card-soft-light mb-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <p class="section-title mb-1">Préstamos activos y vencidos</p>
+                            <p class="small text-soft-muted mb-0">
+                                Préstamos que todavía no fueron devueltos por este lector.
+                            </p>
+                        </div>
+                        <div class="text-end">
+                            <p class="small-label mb-1">Leyenda</p>
+                            <div class="d-flex flex-wrap gap-2 justify-content-end">
+                                <span class="badge-estado badge-estado-activo">Activo</span>
+                                <span class="badge-estado badge-estado-vencido">Vencido</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-dark-custom table-striped table-hover align-middle mb-0">
+                            <thead>
+                            <tr>
+                                <th scope="col">ID préstamo</th>
+                                <th scope="col">Libro</th>
+                                <th scope="col">Ejemplar</th>
+                                <th scope="col">F. préstamo</th>
+                                <th scope="col">F. vencimiento</th>
+                                <th scope="col">Estado</th>
+                                <th scope="col">Días atraso</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Iteración sobre préstamos activos y vencidos -->
+                                <tr th:each="prestamo : ${prestamosActivos}" 
+                                    th:if="${prestamosActivos != null and !prestamosActivos.empty}">
+                                    <td><span class="small" th:text="${prestamo.idPrestamo}">P-00123</span></td>
+                                    <td>
+                                        <div class="fw-semibold" th:text="${prestamo.tituloLibro}">Cien años de soledad</div>
+                                        <div class="small text-soft-muted" th:text="${prestamo.autorNombre}">Gabriel García Márquez</div>
+                                    </td>
+                                    <td><span class="small text-soft-muted" 
+                                              th:text="'Ejemplar #' + ${prestamo.idEjemplar}">Ejemplar #145</span></td>
+                                    <td><span class="small" 
+                                              th:text="${prestamo.fechaPrestamo}">20/10/2025</span></td>
+                                    <td><span class="small" 
+                                              th:text="${prestamo.fechaVencimiento}">10/11/2025</span></td>
+                                    <td>
+                                        <span th:switch="${prestamo.estado}">
+                                            <span th:case="'ACTIVO'" class="badge-estado badge-estado-activo">Activo</span>
+                                            <span th:case="'VENCIDO'" class="badge-estado badge-estado-vencido">Vencido</span>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${prestamo.estado == 'VENCIDO'}" class="small text-danger fw-semibold">
+                                            <!-- Calcular días de atraso: diferencia entre hoy y fecha de vencimiento -->
+                                            <span th:with="hoy=${#temporals.createToday()}, 
+                                                          fechaVenc=${#temporals.parseDate(prestamo.fechaVencimiento, 'dd/MM/yyyy')},
+                                                          diasAtraso=${#temporals.daysBetween(fechaVenc, hoy)}" 
+                                                  th:text="${diasAtraso > 0 ? diasAtraso : 0}">5</span> días
+                                        </span>
+                                        <span th:if="${prestamo.estado == 'ACTIVO'}" class="small text-soft-muted">-</span>
+                                    </td>
+                                </tr>
+
+                                <!-- Mensaje cuando no hay préstamos activos -->
+                                <tr th:if="${prestamosActivos == null or prestamosActivos.empty}">
+                                    <td colspan="7" class="text-center py-4">
+                                        <div class="text-soft-muted">
+                                            <i class="bi bi-journal-check h3 d-block mb-2"></i>
+                                            <p class="mb-0">Este lector no tiene préstamos activos o vencidos.</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Historial de préstamos devueltos -->
+            <div class="card card-soft-light">
+                <div class="card-body">
+                    <p class="section-title mb-2">Historial de préstamos devueltos</p>
+                    <p class="small text-soft-muted mb-2">
+                        Préstamos ya cerrados (devueltos). Sirve como referencia de historial del lector.
+                    </p>
+
+                    <div class="table-responsive">
+                        <table class="table table-dark-custom table-striped table-hover align-middle mb-0">
+                            <thead>
+                            <tr>
+                                <th scope="col">ID préstamo</th>
+                                <th scope="col">Libro</th>
+                                <th scope="col">Ejemplar</th>
+                                <th scope="col">F. préstamo</th>
+                                <th scope="col">F. vencimiento</th>
+                                <th scope="col">F. devolución</th>
+                                <th scope="col">Estado</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Iteración sobre préstamos devueltos -->
+                                <tr th:each="prestamo : ${prestamosDevueltos}" 
+                                    th:if="${prestamosDevueltos != null and !prestamosDevueltos.empty}">
+                                    <td><span class="small" th:text="${prestamo.idPrestamo}">P-00110</span></td>
+                                    <td>
+                                        <div class="fw-semibold" th:text="${prestamo.tituloLibro}">El nombre del viento</div>
+                                        <div class="small text-soft-muted" th:text="${prestamo.autorNombre}">Patrick Rothfuss</div>
+                                    </td>
+                                    <td><span class="small text-soft-muted" 
+                                              th:text="'Ejemplar #' + ${prestamo.idEjemplar}">Ejemplar #87</span></td>
+                                    <td><span class="small" 
+                                              th:text="${prestamo.fechaPrestamo}">02/08/2025</span></td>
+                                    <td><span class="small" 
+                                              th:text="${prestamo.fechaVencimiento}">23/08/2025</span></td>
+                                    <td><span class="small" 
+                                              th:text="${prestamo.fechaDevolucion}">23/08/2025</span></td>
+                                    <td>
+                                        <span th:with="fechaVenc=${#temporals.parseDate(prestamo.fechaVencimiento, 'dd/MM/yyyy')},
+                                                        fechaDev=${#temporals.parseDate(prestamo.fechaDevolucion, 'dd/MM/yyyy')},
+                                                        conAtraso=${fechaDev.isAfter(fechaVenc)}">
+                                            <span th:if="${conAtraso}" class="badge bg-warning text-dark">Con atraso</span>
+                                            <span th:if="${!conAtraso}" class="badge bg-success">A tiempo</span>
+                                        </span>
+                                    </td>
+                                </tr>
+
+                                <!-- Mensaje cuando no hay préstamos devueltos -->
+                                <tr th:if="${prestamosDevueltos == null or prestamosDevueltos.empty}">
+                                    <td colspan="7" class="text-center py-4">
+                                        <div class="text-soft-muted">
+                                            <i class="bi bi-archive h3 d-block mb-2"></i>
+                                            <p class="mb-0">Este lector no tiene historial de préstamos devueltos.</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna derecha: elegibilidad / penalización + reglas -->
+        <div class="col-md-4 ">
+            <!-- Estado de elegibilidad -->
+            <div class="card card-soft-light mb-3">
+                <div class="card-body">
+                    <p class="section-title mb-2">Estado de elegibilidad</p>
+
+                    <p class="small-label mb-1">Días de bloqueo restantes</p>
+                    <p class="highlight-number mb-2" style="font-size: 1.4rem;" th:text="${lector != null ? (lector.diasBloqueo ?: 0) : 0}">
+                        0
+                    </p>
+
+                    <p class="small mb-3">
+                        Actualmente:
+                        <span class="text-soft-muted">
+                            <span th:if="${lector != null and !lector.bloqueado}">Habilitado para nuevos préstamos</span>
+                            <span th:if="${lector != null and lector.bloqueado}">
+                                No elegible hasta el 
+                                <span th:if="${lector.bloqueadoHasta != null}" th:text="${#temporals.format(lector.bloqueadoHasta, 'dd/MM/yyyy')}">01/01/2025</span>
+                            </span>
+                        </span>
+                    </p>
+
+                    <div class="divider-soft"></div>
+
+                    <div class="d-grid gap-2">
+                        <a th:href="@{/bibliotecario/prestamos}" class="btn btn-outline-secondary btn-sm">
+                            <i class="bi bi-journal-text me-1"></i>
+                            Ver todos los préstamos
+                        </a>
+
+                        <a th:href="@{/dashboard/bibliotecario}" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-speedometer2 me-1"></i>
+                            Ir al panel de bibliotecario
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reglas del dominio -->
+            <div class="card card-soft-light">
+                <div class="card-body">
+                    <p class="section-title mb-2">Reglas del sistema</p>
+                    <ul class="list-unstyled small mb-0 text-soft-muted">
+                        <li>• Máximo 5 préstamos activos por lector.</li>
+                        <li>• Cada préstamo vence a los 21 días desde su creación.</li>
+                        <li>• Si hay atraso, el lector queda no elegible hasta cumplir penalización (días de atraso × 2).</li>
+                        <li>• Un ejemplar no puede estar prestado dos veces al mismo tiempo.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

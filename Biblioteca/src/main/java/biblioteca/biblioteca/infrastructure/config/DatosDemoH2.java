@@ -34,6 +34,8 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class DatosDemoH2 implements CommandLineRunner {
 
+    private static final String DEMO_PASSWORD = "password";
+
     private final RolSpringDataRepository rolRepo;
     private final UsuarioSpringDataRepository usuarioRepo;
     private final PasswordEncoder passwordEncoder;
@@ -55,30 +57,37 @@ public class DatosDemoH2 implements CommandLineRunner {
         // 2) Crear usuarios demo si no existen por email
         createUserIfMissing(
                 "lector@demo.com", "Lector Demo", "20000001",
-                passwordEncoder.encode("password"),
+                passwordEncoder.encode(DEMO_PASSWORD),
                 Set.of(rolLector),
                 1 // lectorId opcional de ejemplo
         );
 
         createUserIfMissing(
                 "bibliotecario@demo.com", "Bibliotecario Demo", "20000002",
-                passwordEncoder.encode("password"),
+                passwordEncoder.encode(DEMO_PASSWORD),
                 Set.of(rolBibliotecario),
                 null
         );
 
         createUserIfMissing(
                 "admin@demo.com", "Admin Demo", "20000003",
-                passwordEncoder.encode("password"),
+                passwordEncoder.encode(DEMO_PASSWORD),
                 Set.of(rolAdmin),
                 null
         );
 
         createUserIfMissing(
                 "multi@demo.com", "Multi Rol Demo", "20000004",
-                passwordEncoder.encode("password"),
+                passwordEncoder.encode(DEMO_PASSWORD),
                 Set.of(rolLector, rolBibliotecario),
                 2 // otro lectorId de ejemplo (o null si preferís)
+        );
+
+        createUserIfMissing(
+                "ana@demo.com", "Ana Martínez", "20000005",
+                passwordEncoder.encode(DEMO_PASSWORD),
+                Set.of(rolLector),
+                4 // lectorId que corresponde al lector bloqueado
         );
 
         cargarLibrosDemo();
@@ -189,6 +198,13 @@ public class DatosDemoH2 implements CommandLineRunner {
         LectorEntity lector3 = lectorRepo.save(
                 new LectorEntity(null, "Carlos Rodríguez", null)
         );
+        
+        // Lector bloqueado por préstamo reciente con atraso
+        LocalDate hoy = LocalDate.now();
+        LocalDate bloqueadoHasta = hoy.plusDays(8); // Bloqueado por 8 días más
+        LectorEntity lectorBloqueado = lectorRepo.save(
+                new LectorEntity(null, "Ana Martínez", bloqueadoHasta)
+        );
 
         // Obtener los libros ya creados
         List<LibroEntity> libros = libroRepo.findAll();
@@ -227,7 +243,6 @@ public class DatosDemoH2 implements CommandLineRunner {
         copiaRepo.save(new CopiaEntity(null, cienAnios.getId(), EstadoCopia.EnBiblioteca)); // Disponible
 
         // -------- Préstamos activos --------
-        LocalDate hoy = LocalDate.now();
         
         // Préstamo 1: Juan tiene una copia de El Aleph (prestada hace 5 días, vence en 16 días)
         prestamoRepo.save(new PrestamoEntity(
@@ -270,6 +285,43 @@ public class DatosDemoH2 implements CommandLineRunner {
                 hoy.minusDays(5) // devuelto hace 5 días
         ));
 
+        // -------- Préstamos para lector bloqueado (Ana Martínez) --------
+        // Crear copia adicional para el lector bloqueado
+        CopiaEntity rayuelaCopiaAna = copiaRepo.save(
+                new CopiaEntity(null, rayuela.getId(), EstadoCopia.EnBiblioteca) // Ahora disponible
+        );
+
+        // Préstamo devuelto CON ATRASO reciente que causó el bloqueo
+        // Prestado hace 30 días, vencía hace 9 días, devuelto hace 3 días (6 días de atraso)
+        // Regla: 2 días de bloqueo por cada día de atraso = 6 * 2 = 12 días de bloqueo
+        // Si fue devuelto hace 3 días y el bloqueo es por 12 días, quedan 9 días
+        LocalDate fechaPrestamoReciente = hoy.minusDays(30);
+        LocalDate fechaVencimientoReciente = fechaPrestamoReciente.plusDays(21); // hace 9 días
+        LocalDate fechaDevolucionTarde = hoy.minusDays(3); // devuelto hace 3 días
+        
+        prestamoRepo.save(new PrestamoEntity(
+                null,
+                lectorBloqueado.getId(),
+                rayuelaCopiaAna.getId(),
+                fechaPrestamoReciente,    // prestado hace 30 días
+                fechaVencimientoReciente, // vencía hace 9 días  
+                fechaDevolucionTarde      // devuelto hace 3 días (6 días tarde)
+        ));
+
+        // Agregar otro préstamo anterior devuelto a tiempo para mostrar historial
+        CopiaEntity alephCopiaAnaAnterior = copiaRepo.save(
+                new CopiaEntity(null, aleph.getId(), EstadoCopia.EnBiblioteca)
+        );
+        
+        prestamoRepo.save(new PrestamoEntity(
+                null,
+                lectorBloqueado.getId(),
+                alephCopiaAnaAnterior.getId(),
+                hoy.minusDays(60),        // prestado hace 60 días
+                hoy.minusDays(39),        // vencía hace 39 días
+                hoy.minusDays(42)         // devuelto hace 42 días (a tiempo)
+        ));
+
         // -------- Préstamos para lector demo (lectorId = 1) --------
         // Necesitamos crear copias adicionales para estos préstamos
         CopiaEntity alephCopiaDemo = copiaRepo.save(
@@ -307,7 +359,7 @@ public class DatosDemoH2 implements CommandLineRunner {
         
         LocalDate fechaPrestamoAntiguo = hoy.minusYears(1).minusDays(30); // Prestado hace 1 año y 30 días
         LocalDate fechaVencimientoAntiguo = fechaPrestamoAntiguo.plusDays(21); // Vencía 21 días después (hace 1 año y 9 días)
-        LocalDate fechaDevolucionTarde = fechaVencimientoAntiguo.plusDays(15); // Devuelto 15 días tarde
+        fechaDevolucionTarde = fechaVencimientoAntiguo.plusDays(15); // Devuelto 15 días tarde
         
         prestamoRepo.save(new PrestamoEntity(
                 null,
