@@ -1,6 +1,9 @@
 package biblioteca.biblioteca.web.mvc.controller;
 
+import biblioteca.biblioteca.application.query.ListarLectoresQuery;
+import biblioteca.biblioteca.application.query.ListarLectoresQueryHandler;
 import biblioteca.biblioteca.infrastructure.security.UsuarioDetalles;
+import biblioteca.biblioteca.web.dto.ListarLectoresResultDto;
 import biblioteca.biblioteca.web.helper.ControllerHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,8 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.servlet.http.HttpSession;
-import java.util.List;
-import java.util.ArrayList;
 
 /**
  * Controller para gestión de lectores por bibliotecarios.
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 public class BibliotecarioLectoresController {
 
     private final ControllerHelper controllerHelper;
+    private final ListarLectoresQueryHandler listarLectoresQueryHandler;
 
     @GetMapping("/lectores")
     public String lectores(@AuthenticationPrincipal UsuarioDetalles usuario,
@@ -38,22 +40,26 @@ public class BibliotecarioLectoresController {
                   usuario != null ? usuario.getNombreCompleto() : "Anónimo", estadoFiltro, pagina, tamano);
 
         try {
-            // Por ahora, crear datos de ejemplo para que funcione la página
-            // TODO: Implementar query real cuando esté listo el backend
+            // Crear query
+            ListarLectoresQuery query = ListarLectoresQuery.builder()
+                    .estadoFiltro(estadoFiltro)
+                    .pagina(pagina)
+                    .tamano(tamano)
+                    .build();
             
-            // Crear resumen de ejemplo
-            ResumenLectores resumen = new ResumenLectores(50, 45, 5);
-            model.addAttribute("resumen", resumen);
+            // Ejecutar query
+            ListarLectoresResultDto resultado = listarLectoresQueryHandler.handle(query);
             
-            // Crear lista vacía de lectores por ahora
-            List<Object> lectores = new ArrayList<>();
-            model.addAttribute("lectores", lectores);
+            // Agregar datos al modelo
+            model.addAttribute("paginaLectores", resultado.getPaginaLectores());
+            model.addAttribute("resumen", resultado.getResumen());
             model.addAttribute("estadoFiltro", estadoFiltro);
             
             // Agregar rol actual para navbar
             controllerHelper.agregarRolActualAlModelo(model, usuario, session);
 
-            log.debug("Página de lectores cargada exitosamente");
+            log.debug("Página de lectores cargada exitosamente con {} lectores", 
+                     resultado.getPaginaLectores().getContenido().size());
             return "bibliotecario/lectores";
 
         } catch (Exception e) {
@@ -61,22 +67,5 @@ public class BibliotecarioLectoresController {
             model.addAttribute("error", "Error al cargar la página de lectores");
             return "error";
         }
-    }
-
-    // DTO temporal para el resumen
-    public static class ResumenLectores {
-        private final int totalLectores;
-        private final int habilitados;
-        private final int bloqueados;
-
-        public ResumenLectores(int totalLectores, int habilitados, int bloqueados) {
-            this.totalLectores = totalLectores;
-            this.habilitados = habilitados;
-            this.bloqueados = bloqueados;
-        }
-
-        public int getTotalLectores() { return totalLectores; }
-        public int getHabilitados() { return habilitados; }
-        public int getBloqueados() { return bloqueados; }
     }
 }
