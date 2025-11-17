@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(titulo='Panel de administración - Biblioteca')}">
+    <title>Panel de administración - Biblioteca</title>
+</head>
+<body>
+    <div th:replace="~{fragments/navbar-admin :: navbarAdmin('home')}"></div>
+
+    <main class="container">
+        <div class="row g-4 mt-4">
+
+            <!-- Encabezado -->
+            <div class="col-12">
+                <div class="card card-soft mb-3">
+                    <div
+                        class="card-body d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                        <div>
+                            <p class="section-title mb-1">Panel de administración</p>
+                            <h1 class="h4 mb-2">
+                                Configuración de usuarios y catálogo
+                            </h1>
+                            <p class="mb-0 text-soft-muted">
+                                Desde aquí podés administrar quién usa el sistema y qué libros forman parte de la
+                                biblioteca.
+                                Las operaciones de préstamos las maneja el panel de bibliotecarios.
+                            </p>
+                        </div>
+                        <div class="text-md-end">
+                            <p class="small-label mb-1">Resumen general</p>
+                            <p class="mb-1">
+                                <span class="highlight-number" style="font-size:1.4rem;">45</span>
+                                <span class="small text-soft-muted ms-1">usuarios</span>
+                            </p>
+                            <p class="mb-0 small text-soft-muted">
+                                Lectores, bibliotecarios y otros administradores.
+                                <!-- Thymeleaf: usar datos reales -->
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+                        <!-- KPIs principales -->
+                        <div class="col-12">
+                            <div class="admin-kpi-grid">
+                                <!-- Usuarios -->
+                                <div class="kpi-card">
+                                    <div class="kpi-head">
+                                        <div class="kpi-icon"><i class="bi bi-people"></i></div>
+                                        <div class="kpi-titles">
+                                            <p class="kpi-label mb-1">Usuarios</p>
+                                            <p class="kpi-title mb-0" title="Cuentas activas">Cuentas activas</p>
+                                        </div>
+                                    </div>
+                                    <div class="mt-1">
+                                        <span class="kpi-number" th:text="${resumen?.usuariosTotal ?: 45}">45</span>
+                                        <div class="kpi-sub" th:text="${resumen?.usuariosTotal == 1 ? 'usuario' : 'usuarios'}">usuarios</div>
+                                    </div>
+                                    <div class="kpi-actions">
+                                        <a th:href="@{/admin/usuarios}" class="btn btn-outline-primary btn-sm"><i class="bi bi-table me-1"></i>Ver</a>
+                                        <a th:href="@{/admin/usuarios/nuevo}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-person-plus me-1"></i>Nuevo</a>
+                                    </div>
+                                </div>
+                                <!-- Libros -->
+                                <div class="kpi-card">
+                                    <div class="kpi-head">
+                                        <div class="kpi-icon"><i class="bi bi-journal-bookmark"></i></div>
+                                        <div class="kpi-titles">
+                                            <p class="kpi-label mb-1">Libros</p>
+                                            <p class="kpi-title mb-0" title="Títulos registrados">Títulos registrados</p>
+                                        </div>
+                                    </div>
+                                    <div class="mt-1">
+                                        <span class="kpi-number" th:text="${resumen?.librosTotal ?: 320}">320</span>
+                                        <div class="kpi-sub">catálogo total</div>
+                                    </div>
+                                    <div class="kpi-actions">
+                                        <a th:href="@{/admin/libros}" class="btn btn-outline-primary btn-sm"><i class="bi bi-table me-1"></i>Ver</a>
+                                        <a th:href="@{/admin/libros/nuevo}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-plus-circle me-1"></i>Nuevo</a>
+                                    </div>
+                                </div>
+                                <!-- Copias -->
+                                <div class="kpi-card">
+                                    <div class="kpi-head">
+                                        <div class="kpi-icon"><i class="bi bi-collection"></i></div>
+                                        <div class="kpi-titles">
+                                            <p class="kpi-label mb-1">Copias</p>
+                                            <p class="kpi-title mb-0" title="Ejemplares físicos">Ejemplares físicos</p>
+                                        </div>
+                                    </div>
+                                    <div class="mt-1">
+                                        <span class="kpi-number" th:text="${resumen?.copiasTotal ?: 820}">820</span>
+                                        <div class="kpi-sub">inventario total</div>
+                                    </div>
+                                    <div class="kpi-actions">
+                                        <a th:href="@{/admin/copias}" class="btn btn-outline-primary btn-sm"><i class="bi bi-table me-1"></i>Ver</a>
+                                        <a th:href="@{/admin/copias/nueva}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-plus-circle me-1"></i>Nueva</a>
+                                    </div>
+                                </div>
+                                <!-- Autores -->
+                                <div class="kpi-card">
+                                    <div class="kpi-head">
+                                        <div class="kpi-icon"><i class="bi bi-pen"></i></div>
+                                        <div class="kpi-titles">
+                                            <p class="kpi-label mb-1">Autores</p>
+                                            <p class="kpi-title mb-0" title="Contribuyentes">Contribuyentes</p>
+                                        </div>
+                                    </div>
+                                    <div class="mt-1">
+                                        <span class="kpi-number" th:text="${resumen?.autoresTotal ?: 95}">95</span>
+                                        <div class="kpi-sub">en base</div>
+                                    </div>
+                                    <div class="kpi-actions">
+                                        <a th:href="@{/admin/autores}" class="btn btn-outline-primary btn-sm"><i class="bi bi-table me-1"></i>Ver</a>
+                                        <a th:href="@{/admin/autores/nuevo}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-plus-circle me-1"></i>Nuevo</a>
+                                    </div>
+                                </div>
+                                <!-- Editoriales -->
+                                <div class="kpi-card">
+                                    <div class="kpi-head">
+                                        <div class="kpi-icon"><i class="bi bi-building"></i></div>
+                                        <div class="kpi-titles">
+                                            <p class="kpi-label mb-1">Editoriales</p>
+                                            <p class="kpi-title mb-0" title="Sellos activos">Sellos activos</p>
+                                        </div>
+                                    </div>
+                                    <div class="mt-1">
+                                        <span class="kpi-number" th:text="${resumen?.editorialesTotal ?: 30}">30</span>
+                                        <div class="kpi-sub">proveedores</div>
+                                    </div>
+                                    <div class="kpi-actions">
+                                        <a th:href="@{/admin/editoriales}" class="btn btn-outline-primary btn-sm"><i class="bi bi-table me-1"></i>Ver</a>
+                                        <a th:href="@{/admin/editoriales/nueva}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-plus-circle me-1"></i>Nueva</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Roles y permisos -->
+                        <div class="col-12">
+                            <div class="roles-section p-3 p-md-4">
+                                <p class="section-title mb-3">Responsabilidades por rol</p>
+                                <div class="roles-grid">
+                                    <div class="role-block">
+                                        <p class="role-title mb-1">Admin</p>
+                                        <ul class="role-list mb-0">
+                                            <li>Gestiona cuentas de usuarios (alta, cambios, baja).</li>
+                                            <li>Administra catálogo: libros, copias, autores y editoriales.</li>
+                                            <li>No registra ni devuelve préstamos.</li>
+                                        </ul>
+                                    </div>
+                                    <div class="role-block">
+                                        <p class="role-title mb-1">Bibliotecario</p>
+                                        <ul class="role-list mb-0">
+                                            <li>Registra préstamos y devoluciones.</li>
+                                            <li>Evalúa elegibilidad del lector y disponibilidad de ejemplares.</li>
+                                            <li>No modifica datos generales del catálogo.</li>
+                                        </ul>
+                                    </div>
+                                    <div class="role-block">
+                                        <p class="role-title mb-1">Lector</p>
+                                        <ul class="role-list mb-0">
+                                            <li>Consulta su historial y estado de préstamos.</li>
+                                            <li>Explora el catálogo público.</li>
+                                            <li>No registra préstamos directamente.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+        </div>
+    </main>
+
+</body>
+
+</html>

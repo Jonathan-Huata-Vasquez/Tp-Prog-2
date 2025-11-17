@@ -1,29 +1,62 @@
 package biblioteca.biblioteca.web.mvc.controller;
 
 import biblioteca.biblioteca.infrastructure.security.UsuarioDetalles;
+import biblioteca.biblioteca.web.helper.ControllerHelper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import jakarta.servlet.http.HttpSession;
 
 /**
  * Controller específico para dashboard del administrador.
  */
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 public class AdminDashboardController {
 
-    // TODO: Agregar QueryHandler cuando se implemente funcionalidad
-    // private final AdminDashboardQueryHandler adminDashboardQueryHandler;
+    private final ControllerHelper controllerHelper;
+
+    // DTO temporal para métricas agregadas básicas
+    public record ResumenAdminDto(int usuariosTotal,
+                                  int librosTotal,
+                                  int copiasTotal,
+                                  int autoresTotal,
+                                  int editorialesTotal) {}
 
     @GetMapping("/dashboard/admin")
-    public String dashboard(@AuthenticationPrincipal UsuarioDetalles usuario, Model model) {
-        
-        // TODO: Implementar métricas específicas para administrador
-        // Por ahora solo datos placeholder
-        model.addAttribute("usuario", usuario);
+    public String dashboard(@AuthenticationPrincipal UsuarioDetalles usuario,
+                            HttpSession session,
+                            Model model) {
 
-        return "dashboard-admin";
+        log.debug("Cargando dashboard administrador para usuario: {}", usuario != null ? usuario.getNombreCompleto() : "Anónimo");
+
+        // Métricas placeholder (reemplazar por QueryHandler en evolución)
+        ResumenAdminDto resumen = new ResumenAdminDto(45, 320, 820, 95, 30);
+        model.addAttribute("resumen", resumen);
+
+        // Atributo esperado por fragment navbar-admin
+        model.addAttribute("admin", usuario);
+
+        // Iniciales seguras para avatar (primeras letras de hasta dos palabras)
+        String iniciales = "AD";
+        if (usuario != null && usuario.getNombreCompleto() != null) {
+            String[] partes = usuario.getNombreCompleto().trim().split("\\s+");
+            if (partes.length >= 1) {
+                iniciales = partes[0].substring(0,1).toUpperCase();
+                if (partes.length >= 2) {
+                    iniciales += partes[1].substring(0,1).toUpperCase();
+                }
+            }
+        }
+        model.addAttribute("adminIniciales", iniciales);
+
+        // Rol actual para navbar dinámico si se usa shared views
+        controllerHelper.agregarRolActualAlModelo(model, usuario, session);
+
+        return "admin/dashboard-admin"; // Ubicación real del template
     }
 }

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+  <th:block th:fragment="navbarAdmin(activeSection)">
+    <nav class="navbar navbar-main">
+      <div class="container d-flex align-items-center justify-content-between">
+        <a class="navbar-brand text-white" th:href="@{/admin}">BIBLIOTECA</a>
+        <div class="d-flex align-items-center gap-3">
+          <a class="nav-link text-white" th:classappend="${activeSection}=='home' ? ' active'" th:href="@{/admin}">Inicio</a>
+          <a class="nav-link nav-link-muted" th:classappend="${activeSection}=='usuarios' ? ' active text-white'" th:href="@{/admin/usuarios}">Usuarios</a>
+          <a class="nav-link nav-link-muted" th:classappend="${activeSection}=='libros' ? ' active text-white'" th:href="@{/admin/libros}">Libros</a>
+          <a class="nav-link nav-link-muted" th:classappend="${activeSection}=='copias' ? ' active text-white'" th:href="@{/admin/copias}">Copias</a>
+          <a class="nav-link nav-link-muted" th:classappend="${activeSection}=='autores' ? ' active text-white'" th:href="@{/admin/autores}">Autores</a>
+          <a class="nav-link nav-link-muted" th:classappend="${activeSection}=='editoriales' ? ' active text-white'" th:href="@{/admin/editoriales}">Editoriales</a>
+          <details class="user-menu ms-2">
+            <summary class="d-flex align-items-center gap-2">
+              <span class="user-avatar" th:text="${adminIniciales ?: 'AD'}">AD</span>
+            </summary>
+            <div class="user-menu-dropdown">
+              <div class="user-menu-header">
+                <div class="user-menu-name" th:text="${admin?.nombreCompleto ?: admin?.username ?: 'Admin Principal'}">Admin Principal</div>
+                <div class="user-menu-role"><span class="badge-role">Admin</span></div>
+              </div>
+              <div class="user-menu-divider"></div>
+              <a th:href="@{/admin/perfil}" class="user-menu-link">
+                <i class="bi bi-person-gear"></i><span>Configuración de perfil</span>
+              </a>
+              <a th:href="@{/logout}" class="user-menu-link">
+                <i class="bi bi-box-arrow-right"></i><span>Cerrar sesión</span>
+              </a>
+            </div>
+          </details>
+        </div>
+      </div>
+    </nav>
+  </th:block>
+</body>
+</html>
