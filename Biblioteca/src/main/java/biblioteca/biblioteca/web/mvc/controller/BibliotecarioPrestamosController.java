@@ -1,13 +1,21 @@
 package biblioteca.biblioteca.web.mvc.controller;
 
+import biblioteca.biblioteca.application.command.PrestarCopiaCommand;
+import biblioteca.biblioteca.application.command.PrestarCopiaCommandHandler;
 import biblioteca.biblioteca.application.query.ListarPrestamosQuery;
 import biblioteca.biblioteca.application.query.ListarPrestamosQueryHandler;
 import biblioteca.biblioteca.infrastructure.security.UsuarioDetalles;
 import biblioteca.biblioteca.web.helper.ControllerHelper;
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,9 +32,53 @@ import jakarta.servlet.http.HttpSession;
 @RequiredArgsConstructor
 @Slf4j
 public class BibliotecarioPrestamosController {
+    @GetMapping("/prestamos/nuevo")
+    public String registrarPrestamoNuevo(@AuthenticationPrincipal UsuarioDetalles usuario, HttpSession session, Model model) {
+        // Inicializar command vacío para el formulario
+        model.addAttribute("registrarPrestamoCommand", PrestarCopiaCommand.builder().build());
+        model.addAttribute("fechaHoy", java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        model.addAttribute("fechaVencimiento", java.time.LocalDate.now().plusDays(21).format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        // Puedes agregar resumenLector/resumenEjemplar si lo necesitas
+        controllerHelper.agregarRolActualAlModelo(model, usuario, session);
+        return "bibliotecario/prestamo-nuevo";
+    }
+
+    @PostMapping("/prestamos")
+    public String procesarRegistroPrestamo(@Valid @ModelAttribute("registrarPrestamoCommand") PrestarCopiaCommand command,
+                                          BindingResult bindingResult,
+                                          @AuthenticationPrincipal UsuarioDetalles usuario,
+                                          HttpSession session,
+                                          Model model,
+                                          RedirectAttributes redirectAttributes) {
+        log.debug("Procesando registro de préstamo: lector={}, copia={}", command.getIdLector(), command.getIdCopia());
+        
+        if (bindingResult.hasErrors()) {
+            // Si hay errores de validación, volver al formulario
+            model.addAttribute("fechaHoy", java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            model.addAttribute("fechaVencimiento", java.time.LocalDate.now().plusDays(21).format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            controllerHelper.agregarRolActualAlModelo(model, usuario, session);
+            return "bibliotecario/prestamo-nuevo";
+        }
+        
+        try {
+            // Procesar el comando
+            var prestamoDto = prestarCommandHandler.handle(command);
+            log.info("Préstamo registrado exitosamente: {}", prestamoDto.getId());
+            redirectAttributes.addFlashAttribute("mensajeExito", "Préstamo registrado exitosamente");
+            return "redirect:/bibliotecario/prestamos";
+        } catch (Exception e) {
+            log.error("Error al registrar préstamo", e);
+            model.addAttribute("mensajeError", "Error al registrar préstamo: " + e.getMessage());
+            model.addAttribute("fechaHoy", java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            model.addAttribute("fechaVencimiento", java.time.LocalDate.now().plusDays(21).format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            controllerHelper.agregarRolActualAlModelo(model, usuario, session);
+            return "bibliotecario/prestamo-nuevo";
+        }
+    }
 
     private final ControllerHelper controllerHelper;
     private final ListarPrestamosQueryHandler listarPrestamosHandler;
+    private final PrestarCopiaCommandHandler prestarCommandHandler;
 
     @GetMapping("/prestamos")
     public String prestamos(@RequestParam(value = "pagina", defaultValue = "0") int pagina,

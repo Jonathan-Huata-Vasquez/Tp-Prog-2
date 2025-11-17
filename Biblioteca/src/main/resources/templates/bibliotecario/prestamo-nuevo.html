@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head(titulo='Registrar préstamo - Bibliotecario')}">
+    <title>Registrar préstamo - Bibliotecario</title>
+    <!-- CSS común para toda la biblioteca -->
+    <link rel="stylesheet" th:href="@{/css/biblioteca-common.css}">
+    <!-- CSS específico para préstamos -->
+    <link rel="stylesheet" th:href="@{/css/prestamos.css}">
+</head>
+<body>
+
+<!-- NAVBAR BIBLIOTECARIO -->
+<nav class="navbar navbar-main">
+    <div class="container d-flex align-items-center justify-content-between">
+        <a class="navbar-brand text-white" href="#">
+            BIBLIOTECA
+        </a>
+
+        <div class="d-flex align-items-center gap-3">
+            <a class="nav-link nav-link-muted" href="/bibliotecario">Inicio</a>
+            <a class="nav-link active text-white" href="/bibliotecario/prestamos">Préstamos</a>
+            <a class="nav-link nav-link-muted" href="/bibliotecario/lectores">Lectores</a>
+            <a class="nav-link nav-link-muted" href="/catalogo">Catálogo</a>
+
+            <!-- Menú usuario -->
+            <details class="user-menu ms-2">
+                <summary class="d-flex align-items-center gap-2">
+                    <span class="user-avatar">
+                        AB
+                        <!-- Thymeleaf:
+                             <span class="user-avatar"
+                                   th:text="${bibliotecario.iniciales}">AB</span>
+                        -->
+                    </span>
+                </summary>
+                <div class="user-menu-dropdown">
+                    <div class="user-menu-header">
+                        <div class="user-menu-name">
+                            Ana Bibliotecaria
+                            <!-- Thymeleaf:
+                                 <span class="user-menu-name"
+                                       th:text="${bibliotecario.nombre}">Ana Bibliotecaria</span>
+                            -->
+                        </div>
+                        <div class="user-menu-role">
+                            Rol: Bibliotecario
+                            <!-- Thymeleaf:
+                                 <span class="user-menu-role"
+                                       th:text="'Rol: ' + ${bibliotecario.rol}">Rol: Bibliotecario</span>
+                            -->
+                        </div>
+                    </div>
+
+                    <div class="user-menu-divider"></div>
+
+                    <a href="#" class="user-menu-link">
+                        <i class="bi bi-person-badge"></i>
+                        <span>Ver perfil</span>
+                    </a>
+
+                    <a href="#" class="user-menu-link">
+                        <i class="bi bi-box-arrow-right"></i>
+                        <span>Cerrar sesión</span>
+                        <!-- Thymeleaf: th:href="@{/logout}" -->
+                    </a>
+                </div>
+            </details>
+        </div>
+    </div>
+</nav>
+
+<main class="container">
+    <div class="row g-4 mt-4">
+
+        <!-- Encabezado -->
+        <div class="col-12">
+            <div class="card card-soft mb-3">
+                <div class="card-body d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                    <div>
+                        <p class="section-title mb-1">Préstamos</p>
+                        <h1 class="h4 mb-2">
+                            Registrar nuevo préstamo
+                        </h1>
+                        <p class="mb-0 text-soft-muted">
+                            Completá el lector y el ejemplar que se va a prestar. La fecha de vencimiento se calcula a los 21 días.
+                        </p>
+                    </div>
+                    <div class="text-md-end">
+                        <p class="small-label mb-1">Reglas</p>
+                        <p class="small text-soft-muted mb-0">
+                            Máx. 5 préstamos activos por lector · 21 días por préstamo.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulario + resumen -->
+        <div class="col-lg-8">
+            <div class="card card-soft mb-3">
+                <div class="card-body">
+                    <p class="section-title mb-3">Datos del préstamo</p>
+
+                    <!-- FORM -->
+                    <form th:action="@{/bibliotecario/prestamos}" method="post" th:object="${registrarPrestamoCommand}" class="row g-3">
+
+                        <!-- ID LECTOR -->
+                        <div class="col-12 col-md-6">
+                            <label for="idLector" class="small-label mb-1">ID del lector</label>
+                            <input type="number" id="idLector" class="form-control" th:field="*{idLector}" placeholder="Ej: 102" required />
+                            <div class="form-text text-soft-muted mt-1 small">
+                                Ingresá el identificador del lector. Podés obtenerlo desde “Lectores”.
+                            </div>
+                        </div>
+
+                        <!-- ID EJEMPLAR -->
+                        <div class="col-12 col-md-6">
+                            <label for="idCopia" class="small-label mb-1">ID del ejemplar</label>
+                            <input type="number" id="idCopia" class="form-control" th:field="*{idCopia}" placeholder="Ej: 145" required />
+                            <div class="form-text text-soft-muted mt-1 small">
+                                Ingresá el identificador del ejemplar que se va a prestar.
+                            </div>
+                        </div>
+
+                        <div class="divider-soft"></div>
+
+                        <!-- Fechas (solo informativo) -->
+                        <div class="col-12 col-md-4">
+                            <p class="small-label mb-1">Fecha de préstamo (hoy)</p>
+                            <p class="mb-0">
+                                  <span th:text="${fechaHoy}">20/10/2025</span>
+                            </p>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <p class="small-label mb-1">Fecha de vencimiento (estimada)</p>
+                            <p class="mb-0">
+                                  <span th:text="${fechaVencimiento}">10/11/2025</span>
+                                  <!-- (21 días después de fechaHoy calculado en dominio) -->
+                            </p>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <p class="small-label mb-1">Estado inicial</p>
+                            <p class="mb-0">
+                                <span class="badge-estado badge-estado-activo">
+                                    Activo
+                                </span>
+                            </p>
+                        </div>
+
+                        <div class="divider-soft"></div>
+
+                        <!-- Botones -->
+                        <div class="col-12 d-flex flex-wrap gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check2-circle me-1"></i>
+                                Registrar préstamo
+                            </button>
+
+                            <a th:href="@{/bibliotecario/prestamos}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-1"></i>
+                                Cancelar y volver al listado
+                            </a>
+                        </div>
+
+                        <!-- Mensajes de error/validación -->
+                        <div class="col-12" th:if="${#fields.hasErrors('*')}">
+                            <p class="small text-danger mb-0" th:errors="*{idLector}">Error lector</p>
+                            <p class="small text-danger mb-0" th:errors="*{idCopia}">Error ejemplar</p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Resumen dinámico (opcional, solo lectura) -->
+            <div class="card card-soft-light">
+                <div class="card-body">
+                    <p class="section-title mb-2">Resumen (opcional)</p>
+                    <p class="small text-soft-muted mb-3">
+                        Si el backend carga la página con datos del lector o ejemplar ya resueltos,
+                        se pueden mostrar debajo como referencia visual.
+                    </p>
+
+                    <div class="row g-3">
+                        <!-- Resumen lector -->
+                        <div class="col-md-6">
+                            <p class="small-label mb-1">Lector</p>
+                            <h2 class="h6 mb-1">
+                                <span th:text="${resumenLector?.nombre}">Juan Pérez</span>
+                            </h2>
+                            <p class="small text-soft-muted mb-1">
+                                  <span th:text="${'ID: ' + resumenLector.id + ' · Préstamos activos: ' + resumenLector.prestamosActivos + ' / 5'}">ID: 102 · Préstamos activos: 3 / 5</span>
+                            </p>
+                            <p class="small mb-0">
+                                Estado:
+                                <span class="text-soft-muted">
+                                     <span th:if="${!resumenLector.bloqueado}">Habilitado</span>
+                                     <span th:if="${resumenLector.bloqueado}">Bloqueado</span>
+                                </span>
+                            </p>
+                        </div>
+
+                        <!-- Resumen ejemplar -->
+                        <div class="col-md-6">
+                            <p class="small-label mb-1">Libro y ejemplar</p>
+                            <h2 class="h6 mb-1">
+                                <span th:text="${resumenEjemplar?.tituloLibro}">Cien años de soledad</span>
+                            </h2>
+                            <p class="small text-soft-muted mb-1">
+                                <span th:text="${'Autor: ' + resumenEjemplar.autor}">Autor: Gabriel García Márquez</span>
+                            </p>
+                            <p class="small mb-0">
+                                Ejemplar:
+                                <span class="text-soft-muted">
+                                     <span th:text="${'#' + resumenEjemplar.idEjemplar}">#145</span>
+                                     <span th:if="${resumenEjemplar.disponible}"> · Disponible para préstamo</span>
+                                     <span th:if="${!resumenEjemplar.disponible}"> · No disponible (ya prestado)</span>
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna derecha: recordatorios -->
+        <div class="col-lg-4">
+            <div class="card card-soft-light mb-3">
+                <div class="card-body">
+                    <p class="section-title mb-2">Recordatorios del dominio</p>
+                    <ul class="list-unstyled small mb-0 text-soft-muted">
+                        <li>• Un lector puede tener como máximo 5 préstamos activos.</li>
+                        <li>• Cada préstamo vence a los 21 días desde su creación.</li>
+                        <li>• Si hay atraso, el lector queda no elegible hasta cumplir penalización (días de atraso × 2).</li>
+                        <li>• Un ejemplar no puede estar prestado dos veces al mismo tiempo.</li>
+                        <li>• La validación de estas reglas se hace en el dominio, no en la vista.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card card-soft-light">
+                <div class="card-body">
+                    <p class="section-title mb-2">Navegación</p>
+                    <div class="d-grid gap-2">
+                        <a th:href="@{/bibliotecario}" class="btn btn-outline-secondary btn-sm">
+                            <i class="bi bi-speedometer2 me-1"></i>
+                            Panel de bibliotecario
+                        </a>
+                        <a th:href="@{/bibliotecario/prestamos}" class="btn btn-outline-secondary btn-sm">
+                            <i class="bi bi-journal-text me-1"></i>
+                            Listado de préstamos
+                        </a>
+                        <a th:href="@{/bibliotecario/lectores}" class="btn btn-outline-secondary btn-sm">
+                            <i class="bi bi-people me-1"></i>
+                            Listado de lectores
+                        </a>
+                        <a th:href="@{/catalogo}" class="btn btn-outline-secondary btn-sm">
+                            <i class="bi bi-book-half me-1"></i>
+                            Catálogo de libros
+                        </a>
+                        <!-- Thymeleaf: reemplazar href con th:href en cada link -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+</body>
+</html>
