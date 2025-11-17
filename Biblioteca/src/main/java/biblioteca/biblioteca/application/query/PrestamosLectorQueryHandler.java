@@ -85,10 +85,9 @@ public class PrestamosLectorQueryHandler {
                 .tituloLibro(libro.getTitulo())
                 .autorNombre(autor.getNombre())
                 .idEjemplar(copia.getIdCopia())
-                .fechaPrestamo(prestamo.getFechaInicio().format(FORMATO_FECHA))
-                .fechaVencimiento(prestamo.getFechaVencimiento().format(FORMATO_FECHA))
-                .fechaDevolucion(prestamo.getFechaDevolucion() != null ? 
-                    prestamo.getFechaDevolucion().format(FORMATO_FECHA) : null)
+                .fechaPrestamo(prestamo.getFechaInicio())
+                .fechaVencimiento(prestamo.getFechaVencimiento())
+                .fechaDevolucion(prestamo.getFechaDevolucion())
                 .estado(estado)
                 .build();
     }

@@ -150,17 +150,22 @@ public class DetalleLectorQueryHandler {
             log.error("Error al obtener información del libro para préstamo {}: {}", prestamo.getIdPrestamo(), e.getMessage());
         }
         
+        Integer diasAtraso = null;
+        if ("VENCIDO".equals(estado)) {
+            diasAtraso = (int) java.time.temporal.ChronoUnit.DAYS.between(prestamo.getFechaVencimiento(), hoy);
+            if (diasAtraso < 0) diasAtraso = 0;
+        }
         PrestamoLectorDto dto = PrestamoLectorDto.builder()
-                .idPrestamo(prestamo.getIdPrestamo())
-                .tituloLibro(tituloLibro)
-                .autorNombre(autorNombre)
-                .idEjemplar(prestamo.getIdCopia())
-                .fechaPrestamo(prestamo.getFechaInicio().format(DATE_FORMATTER))
-                .fechaVencimiento(prestamo.getFechaVencimiento().format(DATE_FORMATTER))
-                .fechaDevolucion(prestamo.getFechaDevolucion() != null ? 
-                    prestamo.getFechaDevolucion().format(DATE_FORMATTER) : null)
-                .estado(estado)
-                .build();
+            .idPrestamo(prestamo.getIdPrestamo())
+            .tituloLibro(tituloLibro)
+            .autorNombre(autorNombre)
+            .idEjemplar(prestamo.getIdCopia())
+            .fechaPrestamo(prestamo.getFechaInicio())
+            .fechaVencimiento(prestamo.getFechaVencimiento())
+            .fechaDevolucion(prestamo.getFechaDevolucion())
+            .estado(estado)
+            .diasAtraso(diasAtraso)
+            .build();
                 
         log.debug("PrestamoDto creado - ID: {}, Título: {}, Estado: {}", 
                  dto.getIdPrestamo(), dto.getTituloLibro(), dto.getEstado());

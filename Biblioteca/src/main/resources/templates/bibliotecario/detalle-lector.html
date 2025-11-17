@@ -26,14 +26,14 @@
                     </div>
                     <div class="text-md-end">
                         <p class="small-label mb-1">ID Lector</p>
-                        <p class="highlight-number mb-1" style="font-size: 1.6rem;" th:text="${lector != null ? lector.idLector : 'N/A'}">
+                        <p class="highlight-number mb-1" style="font-size: 1.6rem;" th:text="${lector.idLector}">
                             102
                         </p>
                         <p class="mb-0">
-                            <span th:if="${lector != null and !lector.bloqueado}" class="badge-estado badge-estado-activo">
+                            <span th:if="${!lector.bloqueado}" class="badge-estado badge-estado-activo">
                                 Habilitado
                             </span>
-                            <span th:if="${lector != null and lector.bloqueado}" class="badge-bloqueado">
+                            <span th:if="${lector.bloqueado}" class="badge-bloqueado">
                                 Bloqueado
                             </span>
                         </p>
@@ -47,22 +47,22 @@
         </div>
 
         <!-- Columna principal: info lector + préstamos -->
-        <div class="col-md-8">
+        <div class="col-lg-8">
             <!-- Info del lector -->
             <div class="card card-soft mb-3">
                 <div class="card-body">
                     <p class="section-title mb-2">Información del lector</p>
 
-                    <h2 class="h5 mb-1" th:text="${lector != null ? lector.nombreCompleto : 'Nombre no disponible'}">
+                    <h2 class="h5 mb-1" th:text="${lector.nombreCompleto}">
                         Juan Pérez
                     </h2>
 
                     <p class="small mb-2">
                         Estado:
                         <span class="text-soft-muted">
-                            <span th:if="${lector != null and !lector.bloqueado}">Habilitado</span>
-                            <span th:if="${lector != null and lector.bloqueado}">Bloqueado hasta </span>
-                            <span th:if="${lector != null and lector.bloqueado and lector.bloqueadoHasta != null}" th:text="${#temporals.format(lector.bloqueadoHasta, 'dd/MM/yyyy')}"></span>
+                            <span th:if="${!lector.bloqueado}">Habilitado</span>
+                            <span th:if="${lector.bloqueado}">Bloqueado hasta </span>
+                            <span th:if="${lector.bloqueado}" th:text="${#temporals.format(lector.bloqueadoHasta, 'dd/MM/yyyy')}"></span>
                         </span>
                     </p>
 
@@ -70,19 +70,19 @@
                         <div class="col-md-4">
                             <p class="small-label mb-1">Préstamos activos</p>
                             <p class="highlight-number mb-0" style="font-size: 1.4rem;">
-                                <span th:text="${resumen != null ? resumen.prestamosActivos : 0}">3</span>
+                                <span th:text="${resumen.prestamosActivos}">3</span>
                                 <span class="small text-soft-muted ms-1">de máximo 5</span>
                             </p>
                         </div>
                         <div class="col-md-4">
                             <p class="small-label mb-1">Préstamos vencidos</p>
-                            <p class="highlight-number mb-0" style="font-size: 1.4rem; color: #f97373;" th:text="${resumen != null ? resumen.prestamosVencidos : 0}">
+                            <p class="highlight-number mb-0" style="font-size: 1.4rem; color: #f97373;" th:text="${resumen.prestamosVencidos}">
                                 1
                             </p>
                         </div>
                         <div class="col-md-4">
                             <p class="small-label mb-1">Total devueltos</p>
-                            <p class="highlight-number mb-0" style="font-size: 1.4rem; color: #a5b4fc;" th:text="${resumen != null ? resumen.totalDevueltos : 0}">
+                            <p class="highlight-number mb-0" style="font-size: 1.4rem; color: #a5b4fc;" th:text="${resumen.totalDevueltos}">
                                 8
                             </p>
                         </div>
@@ -149,11 +149,7 @@
                                     </td>
                                     <td>
                                         <span th:if="${prestamo.estado == 'VENCIDO'}" class="small text-danger fw-semibold">
-                                            <!-- Calcular días de atraso: diferencia entre hoy y fecha de vencimiento -->
-                                            <span th:with="hoy=${#temporals.createToday()}, 
-                                                          fechaVenc=${#temporals.parseDate(prestamo.fechaVencimiento, 'dd/MM/yyyy')},
-                                                          diasAtraso=${#temporals.daysBetween(fechaVenc, hoy)}" 
-                                                  th:text="${diasAtraso > 0 ? diasAtraso : 0}">5</span> días
+                                            <span th:text="${prestamo.diasAtraso}">0</span> días
                                         </span>
                                         <span th:if="${prestamo.estado == 'ACTIVO'}" class="small text-soft-muted">-</span>
                                     </td>
@@ -213,9 +209,7 @@
                                     <td><span class="small" 
                                               th:text="${prestamo.fechaDevolucion}">23/08/2025</span></td>
                                     <td>
-                                        <span th:with="fechaVenc=${#temporals.parseDate(prestamo.fechaVencimiento, 'dd/MM/yyyy')},
-                                                        fechaDev=${#temporals.parseDate(prestamo.fechaDevolucion, 'dd/MM/yyyy')},
-                                                        conAtraso=${fechaDev.isAfter(fechaVenc)}">
+                                        <span th:with="conAtraso=${prestamo.fechaDevolucion.isAfter(prestamo.fechaVencimiento)}">
                                             <span th:if="${conAtraso}" class="badge bg-warning text-dark">Con atraso</span>
                                             <span th:if="${!conAtraso}" class="badge bg-success">A tiempo</span>
                                         </span>
@@ -239,24 +233,24 @@
         </div>
 
         <!-- Columna derecha: elegibilidad / penalización + reglas -->
-        <div class="col-md-4 ">
+        <div class="col-lg-4 ">
             <!-- Estado de elegibilidad -->
             <div class="card card-soft-light mb-3">
                 <div class="card-body">
                     <p class="section-title mb-2">Estado de elegibilidad</p>
 
                     <p class="small-label mb-1">Días de bloqueo restantes</p>
-                    <p class="highlight-number mb-2" style="font-size: 1.4rem;" th:text="${lector != null ? (lector.diasBloqueo ?: 0) : 0}">
+                    <p class="highlight-number mb-2" style="font-size: 1.4rem;" th:text="${lector.diasBloqueo ?: 0}">
                         0
                     </p>
 
                     <p class="small mb-3">
                         Actualmente:
                         <span class="text-soft-muted">
-                            <span th:if="${lector != null and !lector.bloqueado}">Habilitado para nuevos préstamos</span>
-                            <span th:if="${lector != null and lector.bloqueado}">
+                            <span th:if="${!lector.bloqueado}">Habilitado para nuevos préstamos</span>
+                            <span th:if="${lector.bloqueado}">
                                 No elegible hasta el 
-                                <span th:if="${lector.bloqueadoHasta != null}" th:text="${#temporals.format(lector.bloqueadoHasta, 'dd/MM/yyyy')}">01/01/2025</span>
+                                <span th:text="${#temporals.format(lector.bloqueadoHasta, 'dd/MM/yyyy')}">01/01/2025</span>
                             </span>
                         </span>
                     </p>

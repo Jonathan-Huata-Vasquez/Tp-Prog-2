@@ -10,8 +10,9 @@ public class PrestamoLectorDto {
     String tituloLibro;
     String autorNombre;
     Integer idEjemplar;
-    String fechaPrestamo;    // Formateada para mostrar
-    String fechaVencimiento; // Formateada para mostrar
-    String fechaDevolucion;  // Formateada para mostrar, null si no devuelto
+    java.time.LocalDate fechaPrestamo;    // LocalDate para cálculos y formato
+    java.time.LocalDate fechaVencimiento; // LocalDate para cálculos y formato
+    java.time.LocalDate fechaDevolucion;  // LocalDate, null si no devuelto
     String estado;           // Mapeado del enum: "ACTIVO", "VENCIDO", "DEVUELTO"
+    Integer diasAtraso;      // Solo para préstamos vencidos
 }
