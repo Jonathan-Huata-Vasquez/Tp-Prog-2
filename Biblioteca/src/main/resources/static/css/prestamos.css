@@ -180,3 +180,12 @@
         margin-top: 0.5rem;
     }
 }
+
+/* === Alerts específicos de prestamo-nuevo (migrados desde el template) === */
+.alert { border-radius: 0.75rem; border: none; font-size: 0.9rem; }
+.alert-success { background-color: #052f1a; color: #22c55e; }
+.alert-warning { background-color: #3a2505; color: #f59e0b; }
+.alert-danger { background-color: #0c0203; color: #f87171; }
+
+/* Ajuste de tamaño para badge genérica dentro de la vista */
+.badge { font-size: 0.7rem; }
