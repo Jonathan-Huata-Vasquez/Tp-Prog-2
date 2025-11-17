@@ -8,6 +8,7 @@ import biblioteca.biblioteca.infrastructure.persistence.jpa.adapter.PrestamoMapp
 import biblioteca.biblioteca.infrastructure.persistence.jpa.entity.PrestamoEntity;
 import biblioteca.biblioteca.web.dto.BibliotecarioDashboardDto;
 import biblioteca.biblioteca.web.dto.PrestamoDetalleDto;
+import biblioteca.biblioteca.web.dto.AdminDashboardDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -149,6 +150,31 @@ public class BibliotecaQueriesRepositoryImpl implements IBibliotecaQueriesReposi
                 .prestamosActivos(prestamosActivos)
                 .prestamosVencidos(prestamosVencidos)
                 .prestamosDevueltos(prestamosDevueltos)
+                .build();
+    }
+
+    @Override
+    public AdminDashboardDto obtenerResumenAdmin() {
+        List<Object[]> resultados = bibliotecaQueriesJpaRepo.obtenerResumenAdmin();
+        Object[] r = resultados.get(0);
+        int usuariosTotal = ((Number) r[0]).intValue();
+        int librosTotal = ((Number) r[1]).intValue();
+        int copiasTotal = ((Number) r[2]).intValue();
+        int autoresTotal = ((Number) r[3]).intValue();
+        int editorialesTotal = ((Number) r[4]).intValue();
+        int usuariosAdmin = ((Number) r[5]).intValue();
+        int usuariosBibliotecario = ((Number) r[6]).intValue();
+        int usuariosLector = ((Number) r[7]).intValue();
+
+        return AdminDashboardDto.builder()
+                .usuariosTotal(usuariosTotal)
+                .librosTotal(librosTotal)
+                .copiasTotal(copiasTotal)
+                .autoresTotal(autoresTotal)
+                .editorialesTotal(editorialesTotal)
+                .usuariosAdmin(usuariosAdmin)
+                .usuariosBibliotecario(usuariosBibliotecario)
+                .usuariosLector(usuariosLector)
                 .build();
     }
     

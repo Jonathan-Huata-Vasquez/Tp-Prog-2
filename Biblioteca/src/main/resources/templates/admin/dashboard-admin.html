@@ -28,8 +28,8 @@
                         <div class="text-md-end">
                             <p class="small-label mb-1">Resumen general</p>
                             <p class="mb-1">
-                                <span class="highlight-number" style="font-size:1.4rem;">45</span>
-                                <span class="small text-soft-muted ms-1">usuarios</span>
+                                <span class="highlight-number" style="font-size:1.4rem;" th:text="${resumen.usuariosTotal}">0</span>
+                                <span class="small text-soft-muted ms-1" th:text="${resumen.usuariosTotal == 1 ? 'usuario' : 'usuarios'}">usuarios</span>
                             </p>
                             <p class="mb-0 small text-soft-muted">
                                 Lectores, bibliotecarios y otros administradores.
@@ -53,8 +53,8 @@
                                         </div>
                                     </div>
                                     <div class="mt-1">
-                                        <span class="kpi-number" th:text="${resumen?.usuariosTotal ?: 45}">45</span>
-                                        <div class="kpi-sub" th:text="${resumen?.usuariosTotal == 1 ? 'usuario' : 'usuarios'}">usuarios</div>
+                                        <span class="kpi-number" th:text="${resumen.usuariosTotal}">0</span>
+                                        <div class="kpi-sub" th:text="${resumen.usuariosTotal == 1 ? 'usuario' : 'usuarios'}">usuarios</div>
                                     </div>
                                     <div class="kpi-actions">
                                         <a th:href="@{/admin/usuarios}" class="btn btn-outline-primary btn-sm"><i class="bi bi-table me-1"></i>Ver</a>
@@ -71,7 +71,7 @@
                                         </div>
                                     </div>
                                     <div class="mt-1">
-                                        <span class="kpi-number" th:text="${resumen?.librosTotal ?: 320}">320</span>
+                                        <span class="kpi-number" th:text="${resumen.librosTotal}">0</span>
                                         <div class="kpi-sub">catálogo total</div>
                                     </div>
                                     <div class="kpi-actions">
@@ -89,7 +89,7 @@
                                         </div>
                                     </div>
                                     <div class="mt-1">
-                                        <span class="kpi-number" th:text="${resumen?.copiasTotal ?: 820}">820</span>
+                                        <span class="kpi-number" th:text="${resumen.copiasTotal}">0</span>
                                         <div class="kpi-sub">inventario total</div>
                                     </div>
                                     <div class="kpi-actions">
@@ -107,7 +107,7 @@
                                         </div>
                                     </div>
                                     <div class="mt-1">
-                                        <span class="kpi-number" th:text="${resumen?.autoresTotal ?: 95}">95</span>
+                                        <span class="kpi-number" th:text="${resumen.autoresTotal}">0</span>
                                         <div class="kpi-sub">en base</div>
                                     </div>
                                     <div class="kpi-actions">
@@ -125,7 +125,7 @@
                                         </div>
                                     </div>
                                     <div class="mt-1">
-                                        <span class="kpi-number" th:text="${resumen?.editorialesTotal ?: 30}">30</span>
+                                        <span class="kpi-number" th:text="${resumen.editorialesTotal}">0</span>
                                         <div class="kpi-sub">proveedores</div>
                                     </div>
                                     <div class="kpi-actions">

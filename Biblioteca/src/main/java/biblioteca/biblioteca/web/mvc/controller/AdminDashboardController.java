@@ -4,6 +4,9 @@ import biblioteca.biblioteca.infrastructure.security.UsuarioDetalles;
 import biblioteca.biblioteca.web.helper.ControllerHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import biblioteca.biblioteca.application.query.AdminDashboardQuery;
+import biblioteca.biblioteca.application.query.AdminDashboardQueryHandler;
+import biblioteca.biblioteca.web.dto.AdminDashboardDto;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,12 +23,7 @@ public class AdminDashboardController {
 
     private final ControllerHelper controllerHelper;
 
-    // DTO temporal para métricas agregadas básicas
-    public record ResumenAdminDto(int usuariosTotal,
-                                  int librosTotal,
-                                  int copiasTotal,
-                                  int autoresTotal,
-                                  int editorialesTotal) {}
+    private final AdminDashboardQueryHandler adminDashboardQueryHandler;
 
     @GetMapping("/dashboard/admin")
     public String dashboard(@AuthenticationPrincipal UsuarioDetalles usuario,
@@ -34,8 +32,8 @@ public class AdminDashboardController {
 
         log.debug("Cargando dashboard administrador para usuario: {}", usuario != null ? usuario.getNombreCompleto() : "Anónimo");
 
-        // Métricas placeholder (reemplazar por QueryHandler en evolución)
-        ResumenAdminDto resumen = new ResumenAdminDto(45, 320, 820, 95, 30);
+        // Obtener métricas reales vía QueryHandler
+        AdminDashboardDto resumen = adminDashboardQueryHandler.handle(new AdminDashboardQuery());
         model.addAttribute("resumen", resumen);
 
         // Atributo esperado por fragment navbar-admin

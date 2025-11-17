@@ -144,4 +144,18 @@ public interface BibliotecaQueriesJpaRepository extends JpaRepository<PrestamoEn
         FROM prestamo p
         """, nativeQuery = true)
     List<Object[]> obtenerResumenEstadisticas(@Param("fechaActual") LocalDate fechaActual);
+
+    // Estadísticas agregadas para dashboard administrador (totales y desglose por rol)
+    @Query(value = """
+        SELECT 
+            (SELECT COUNT(*) FROM usuario) AS usuarios_total,
+            (SELECT COUNT(*) FROM libro) AS libros_total,
+            (SELECT COUNT(*) FROM copia) AS copias_total,
+            (SELECT COUNT(*) FROM autor) AS autores_total,
+            (SELECT COUNT(*) FROM editorial) AS editoriales_total,
+            (SELECT COUNT(*) FROM usuario_rol ur INNER JOIN rol r ON ur.rol_id = r.id WHERE r.nombre = 'ADMINISTRADOR') AS usuarios_admin,
+            (SELECT COUNT(*) FROM usuario_rol ur INNER JOIN rol r ON ur.rol_id = r.id WHERE r.nombre = 'BIBLIOTECARIO') AS usuarios_bibliotecario,
+            (SELECT COUNT(*) FROM usuario_rol ur INNER JOIN rol r ON ur.rol_id = r.id WHERE r.nombre = 'LECTOR') AS usuarios_lector
+        """, nativeQuery = true)
+    List<Object[]> obtenerResumenAdmin();
 }
