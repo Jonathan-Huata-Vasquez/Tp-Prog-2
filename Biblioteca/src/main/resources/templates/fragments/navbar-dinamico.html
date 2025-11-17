@@ -2,20 +2,15 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
   <body>
     <!-- Fragment que selecciona el navbar correcto automáticamente -->
-    <th:block
-      th:fragment="navbarDinamico(activeSection, rolActual)"
-      th:switch="${rolActual}"
-    >
-      <th:block
-        th:case="'BIBLIOTECARIO'"
-        th:replace="~{fragments/navbar-bibliotecario :: navbarBibliotecario(${activeSection})}"
-      >
+    <th:block th:fragment="navbarDinamico(activeSection, rolActual)">
+      <th:block th:if="${rolActual} == 'BIBLIOTECARIO'">
+        <div th:replace="~{fragments/navbar-bibliotecario :: navbarBibliotecario(${activeSection})}"></div>
       </th:block>
-
-      <!-- <th:block
-        th:case="LECTOR"
-        th:replace="~{fragments/navbar-lector :: navbarLector(${activeSection})}"
-      > -->
+      <th:block th:if="${rolActual} == 'ADMIN'">
+        <div th:replace="~{fragments/navbar-admin :: navbarAdmin(${activeSection})}"></div>
+      </th:block>
+      <th:block th:if="${rolActual} == 'LECTOR'">
+        <div th:replace="~{fragments/navbar-lector :: navbarLector(${activeSection})}"></div>
       </th:block>
     </th:block>
   </body>
