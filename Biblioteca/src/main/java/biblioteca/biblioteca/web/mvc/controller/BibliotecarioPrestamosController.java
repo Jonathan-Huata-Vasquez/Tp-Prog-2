@@ -25,15 +25,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.servlet.http.HttpSession;
 
-/**
- * Controller para la gestión de préstamos del bibliotecario.
- * Maneja las funcionalidades específicas del rol bibliotecario para préstamos.
- */
+
 @Controller
 @RequestMapping("/bibliotecario")
 @RequiredArgsConstructor
 @Slf4j
 public class BibliotecarioPrestamosController {
+
+
     @GetMapping("/prestamos/nuevo")
     public String registrarPrestamoNuevo(@RequestParam(value = "idLector", required = false) Integer idLector,
                                         @RequestParam(value = "idCopia", required = false) Integer idCopia,
@@ -131,6 +130,7 @@ public class BibliotecarioPrestamosController {
         
         if (bindingResult.hasErrors()) {
             // Si hay errores de validación, volver al formulario
+            log.warn("Errores de binding al registrar préstamo: {}", bindingResult.getAllErrors());
             model.addAttribute("fechaHoy", java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")));
             model.addAttribute("fechaVencimiento", java.time.LocalDate.now().plusDays(21).format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")));
             model.addAttribute("validado", false);
@@ -139,8 +139,38 @@ public class BibliotecarioPrestamosController {
             return "bibliotecario/prestamo-nuevo";
         }
         
+        // Revalidar dominio antes de ejecutar (defensa en profundidad)
+        var validacionFinal = ValidarPrestamoQuery.builder()
+                .idLector(command.getIdLector())
+                .idCopia(command.getIdCopia())
+                .build();
+        var resultadoValidacion = validarPrestamoHandler.handle(validacionFinal);
+        if (!resultadoValidacion.isPuedeRegistrar()) {
+            log.warn("Intento de registrar sin cumplir reglas: lector={}, copia={}", command.getIdLector(), command.getIdCopia());
+            model.addAttribute("registrarPrestamoCommand", command);
+            model.addAttribute("validado", true);
+            model.addAttribute("lectorValido", resultadoValidacion.isLectorValido());
+            model.addAttribute("copiaValida", resultadoValidacion.isCopiaValida());
+            model.addAttribute("puedeRegistrar", false);
+            model.addAttribute("mensajeError", resultadoValidacion.getMensajeError() != null ? resultadoValidacion.getMensajeError() : "Las reglas de negocio impiden registrar el préstamo en este momento");
+            if (resultadoValidacion.getResumenLector() != null) model.addAttribute("resumenLector", resultadoValidacion.getResumenLector());
+            if (resultadoValidacion.getResumenEjemplar() != null) model.addAttribute("resumenEjemplar", resultadoValidacion.getResumenEjemplar());
+            model.addAttribute("fechaHoy", java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            model.addAttribute("fechaVencimiento", java.time.LocalDate.now().plusDays(21).format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            controllerHelper.agregarRolActualAlModelo(model, usuario, session);
+            return "bibliotecario/prestamo-nuevo";
+        }
+
+        // Enriquecer comando con idUsuario para auditoría
+        if (usuario != null && usuario.getIdUsuario() != null) {
+            command = PrestarCopiaCommand.builder()
+                    .idUsuario(usuario.getIdUsuario())
+                    .idLector(command.getIdLector())
+                    .idCopia(command.getIdCopia())
+                    .build();
+        }
+
         try {
-            // Procesar el comando
             var prestamoDto = prestarCommandHandler.handle(command);
             log.info("Préstamo registrado exitosamente: {}", prestamoDto.getId());
             redirectAttributes.addFlashAttribute("mensajeExito", "Préstamo registrado exitosamente");

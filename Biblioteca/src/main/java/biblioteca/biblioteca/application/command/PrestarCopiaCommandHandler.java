@@ -13,6 +13,7 @@ import biblioteca.biblioteca.domain.port.IPrestamoRepository;
 import biblioteca.biblioteca.web.dto.PrestamoDto;
 import biblioteca.biblioteca.web.mapper.PrestamoDtoMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,8 +23,9 @@ import java.time.LocalDate;
  * Orquesta el caso de uso "prestar copia".
  * Regla: las invariantes viven en el dominio; aquí solo coordinamos y persistimos.
  */
-@Service                        // Spring: registra como bean de aplicación
-@RequiredArgsConstructor        // Lombok: inyección por ctor de campos final
+@Service                        
+@RequiredArgsConstructor 
+@Slf4j
 public class PrestarCopiaCommandHandler {
 
     private final ILectorRepository lectorRepo;
@@ -34,6 +36,7 @@ public class PrestarCopiaCommandHandler {
     @Transactional
     public PrestamoDto handle(PrestarCopiaCommand cmd) {
         if (cmd == null) throw new DatoInvalidoException("El comando no puede ser null");
+        log.debug("Iniciando préstamo: usuario={}, lector={}, copia={}", cmd.getIdUsuario(), cmd.getIdLector(), cmd.getIdCopia());
 
         Lector lector = lectorRepo.porId(cmd.getIdLector());
         if (lector == null) throw new EntidadNoEncontradaException("Lector inexistente: " + cmd.getIdLector());
@@ -57,6 +60,8 @@ public class PrestarCopiaCommandHandler {
         lectorRepo.guardar(lector);
         copiaRepo.guardar(copia);
 
-        return dtoMapper.toDto(guardado);
+        var dto = dtoMapper.toDto(guardado);
+        log.info("Préstamo creado id={} lector={} copia={}", dto.getId(), dto.getIdLector(), dto.getIdCopia());
+        return dto;
     }
 }
