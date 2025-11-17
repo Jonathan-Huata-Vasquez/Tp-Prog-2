@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(titulo='Usuarios - Administración')}">
+    <title>Usuarios - Administración</title>
+</head>
+<body>
+<div th:replace="~{fragments/navbar-admin :: navbarAdmin('usuarios')}"></div>
+
+<main class="container">
+    <div class="row g-4 mt-4">
+
+        <!-- Encabezado -->
+        <div class="col-12">
+            <div class="card card-soft mb-3">
+                <div class="card-body d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                    <div>
+                        <p class="section-title mb-1">Usuarios</p>
+                        <h1 class="h4 mb-2">
+                            Gestión de usuarios
+                        </h1>
+                        <p class="mb-0 text-soft-muted">
+                            Acá podés ver todas las cuentas que usan el sistema y crear, editar o borrar usuarios
+                            con rol de lector, bibliotecario o administrador.
+                        </p>
+                    </div>
+                    <div class="text-md-end">
+                        <a href="/admin/usuarios/nuevo" class="btn btn-primary btn-sm">
+                            <i class="bi bi-person-plus me-1"></i>
+                            Nuevo usuario
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla de usuarios -->
+        <div class="col-12">
+            <div class="card card-soft">
+                <div class="card-body">
+                    <p class="section-title mb-2">Listado de usuarios</p>
+                    <p class="small text-soft-muted mb-3">
+                        Cada fila representa una cuenta que puede ingresar al sistema. Usá las acciones de la derecha
+                        para editar los datos o dar de baja un usuario.
+                    </p>
+
+                    <div class="table-responsive">
+                        <table class="table table-dark-custom table-striped table-hover align-middle mb-0">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Correo</th>
+                                <th>Rol</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <!-- Ejemplos estáticos -->
+                            <tr>
+                                <td><span class="small">1</span></td>
+                                <td>Juan Pérez</td>
+                                <td><span class="small text-soft-muted">juan@example.com</span></td>
+                                <td><span class="badge-role">Lector</span></td>
+                                <td>
+                                    <span class="badge-estado badge-estado-activo">Activo</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <a href="/admin/usuarios/1/editar" class="btn btn-outline-secondary btn-sm" title="Editar">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <!-- En producción, esto debería ser un formulario POST -->
+                                        <a href="#modal-eliminar-usuario-1" class="btn btn-outline-danger btn-sm" title="Eliminar">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td><span class="small">2</span></td>
+                                <td>Ana Bibliotecaria</td>
+                                <td><span class="small text-soft-muted">ana.biblio@example.com</span></td>
+                                <td><span class="badge-role">Bibliotecario</span></td>
+                                <td>
+                                    <span class="badge-estado badge-estado-activo">Activo</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <a href="/admin/usuarios/2/editar" class="btn btn-outline-secondary btn-sm" title="Editar">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <a href="#modal-eliminar-usuario-2" class="btn btn-outline-danger btn-sm" title="Eliminar">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td><span class="small">3</span></td>
+                                <td>Admin Principal</td>
+                                <td><span class="small text-soft-muted">admin@example.com</span></td>
+                                <td><span class="badge-role">Admin</span></td>
+                                <td>
+                                    <span class="badge-estado badge-estado-activo">Activo</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <a href="/admin/usuarios/3/editar" class="btn btn-outline-secondary btn-sm" title="Editar">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <a href="#modal-eliminar-usuario-3" class="btn btn-outline-danger btn-sm" title="Eliminar">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<!-- MODALES ELIMINAR USUARIO (ejemplos estáticos) -->
+<div id="modal-eliminar-usuario-1" class="modal-overlay">
+    <div class="modal-card">
+        <div class="d-flex align-items-start gap-2 mb-2">
+            <div class="text-danger me-2"><i class="bi bi-exclamation-triangle-fill"></i></div>
+            <div>
+                <p class="modal-title mb-1">Eliminar usuario</p>
+                <p class="small text-soft-muted mb-0">Estás por eliminar la cuenta <strong>Juan Pérez</strong>. Esta acción no se puede deshacer. ¿Continuar?</p>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <a href="#" class="btn btn-outline-secondary btn-sm">Cancelar</a>
+            <form action="/admin/usuarios/1/eliminar" method="post" class="d-inline">
+                <button type="submit" class="btn btn-danger-soft btn-sm">Eliminar</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="modal-eliminar-usuario-2" class="modal-overlay">
+    <div class="modal-card">
+        <div class="d-flex align-items-start gap-2 mb-2">
+            <div class="text-danger me-2"><i class="bi bi-exclamation-triangle-fill"></i></div>
+            <div>
+                <p class="modal-title mb-1">Eliminar usuario</p>
+                <p class="small text-soft-muted mb-0">Estás por eliminar la cuenta <strong>Ana Bibliotecaria</strong>. Esta acción no se puede deshacer. ¿Continuar?</p>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <a href="#" class="btn btn-outline-secondary btn-sm">Cancelar</a>
+            <form action="/admin/usuarios/2/eliminar" method="post" class="d-inline">
+                <button type="submit" class="btn btn-danger-soft btn-sm">Eliminar</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="modal-eliminar-usuario-3" class="modal-overlay">
+    <div class="modal-card">
+        <div class="d-flex align-items-start gap-2 mb-2">
+            <div class="text-danger me-2"><i class="bi bi-exclamation-triangle-fill"></i></div>
+            <div>
+                <p class="modal-title mb-1">Eliminar usuario</p>
+                <p class="small text-soft-muted mb-0">Estás por eliminar la cuenta <strong>Admin Principal</strong>. Esta acción no se puede deshacer. ¿Continuar?</p>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <a href="#" class="btn btn-outline-secondary btn-sm">Cancelar</a>
+            <form action="/admin/usuarios/3/eliminar" method="post" class="d-inline">
+                <button type="submit" class="btn btn-danger-soft btn-sm">Eliminar</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+ 
+
+</body>
+</html>

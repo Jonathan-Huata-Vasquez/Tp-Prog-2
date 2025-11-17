@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(titulo='Usuarios - Administración')}">
+    <title>Usuarios - Administración</title>
+</head>
+<body>
+<div th:replace="~{fragments/navbar-admin :: navbarAdmin('usuarios')}"></div>
+
+<main class="container">
+    <div class="row g-4 mt-4">
+
+        <!-- Encabezado -->
+        <div class="col-12">
+            <div class="card card-soft mb-3">
+                <div class="card-body d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                    <div>
+                        <p class="section-title mb-1">Usuarios</p>
+                        <h1 class="h4 mb-2">
+                            Gestión de usuarios
+                        </h1>
+                        <p class="mb-0 text-soft-muted">
+                            Acá podés ver todas las cuentas que usan el sistema y crear, editar o borrar usuarios
+                            con rol de lector, bibliotecario o administrador.
+                        </p>
+                    </div>
+                    <div class="text-md-end">
+                        <a th:href="@{/admin/usuarios/nuevo}" href="/admin/usuarios/nuevo" class="btn btn-primary btn-sm">
+                            <i class="bi bi-person-plus me-1"></i>
+                            Nuevo usuario
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla de usuarios -->
+        <div class="col-12">
+            <div class="card card-soft">
+                <div class="card-body">
+                    <p class="section-title mb-2">Listado de usuarios</p>
+                    <p class="small text-soft-muted mb-3">
+                        Cada fila representa una cuenta que puede ingresar al sistema. Usá las acciones de la derecha
+                        para editar los datos o dar de baja un usuario.
+                    </p>
+
+                    <div class="table-responsive">
+                        <table class="table table-dark-custom table-striped table-hover align-middle mb-0">
+                            <thead>
+                            <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">Nombre</th>
+                                <th scope="col">Correo</th>
+                                <th scope="col">Rol</th>
+                                <th scope="col">Estado</th>
+                                <th scope="col">Acciones</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="usuario : ${usuarios}" th:id="${'fila-usuario-' + usuario.id}">
+                                <td><span class="small" th:text="${usuario.id}">1</span></td>
+                                <td th:text="${usuario.nombreCompleto}">Nombre Apellido</td>
+                                <td><span class="small text-soft-muted" th:text="${usuario.email}">correo@example.com</span></td>
+                                <td>
+                                    <span class="badge-role" th:text="${#lists.isEmpty(usuario.roles) ? 'Sin rol' : #strings.capitalize(usuario.roles.iterator().next().toString().toLowerCase())}">Rol</span>
+                                </td>
+                                <td>
+                                    <span class="badge-estado badge-estado-activo">Activo</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <a class="btn btn-outline-secondary btn-sm" th:href="@{/admin/usuarios/{id}/editar(id=${usuario.id})}" title="Editar"><i class="bi bi-pencil-square"></i></a>
+                                        <a class="btn btn-outline-danger btn-sm" th:href="${'#modal-eliminar-usuario-' + usuario.id}" title="Eliminar"><i class="bi bi-trash"></i></a>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<!-- Modales dinámicos eliminación -->
+<div th:each="usuario : ${usuarios}" th:id="${'modal-eliminar-usuario-' + usuario.id}" class="modal-overlay">
+    <div class="modal-card">
+        <div class="d-flex align-items-start gap-2 mb-2">
+            <div class="text-danger me-2"><i class="bi bi-exclamation-triangle-fill"></i></div>
+            <div>
+                <p class="modal-title mb-1">Eliminar usuario</p>
+                <p class="small text-soft-muted mb-0">Se eliminará la cuenta <strong th:text="${usuario.nombreCompleto}">Nombre Apellido</strong>. Acción irreversible.</p>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <a href="#" class="btn btn-outline-secondary btn-sm">Cancelar</a>
+            <form th:action="@{/admin/usuarios/{id}/eliminar(id=${usuario.id})}" method="post" class="d-inline">
+                <button type="submit" class="btn btn-danger-soft btn-sm">Eliminar</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+ 
+
+</body>
+</html>

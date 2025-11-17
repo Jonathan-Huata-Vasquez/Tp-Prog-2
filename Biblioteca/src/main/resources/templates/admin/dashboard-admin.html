@@ -28,12 +28,14 @@
                         <div class="text-md-end">
                             <p class="small-label mb-1">Resumen general</p>
                             <p class="mb-1">
-                                <span class="highlight-number" style="font-size:1.4rem;" th:text="${resumen.usuariosTotal}">0</span>
-                                <span class="small text-soft-muted ms-1" th:text="${resumen.usuariosTotal == 1 ? 'usuario' : 'usuarios'}">usuarios</span>
+                                <a th:href="@{/admin/usuarios}" href="/admin/usuarios" class="text-decoration-none d-inline-flex align-items-baseline" aria-label="Ir a gestión de usuarios">
+                                    <span class="highlight-number" style="font-size:1.4rem;" th:text="${resumen.usuariosTotal}">0</span>
+                                    <span class="small text-soft-muted ms-1" th:text="${resumen.usuariosTotal == 1 ? 'usuario' : 'usuarios'}">usuarios</span>
+                                </a>
                             </p>
                             <p class="mb-0 small text-soft-muted">
                                 Lectores, bibliotecarios y otros administradores.
-                                <!-- Thymeleaf: usar datos reales -->
+                                <a th:href="@{/admin/usuarios}" href="/admin/usuarios" class="ms-1 small">Gestionar</a>
                             </p>
                         </div>
                     </div>

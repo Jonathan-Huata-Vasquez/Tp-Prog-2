@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Usuario - Administración</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+    <!-- Bootstrap Icons -->
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    >
+
+    <style>
+        body {
+            min-height: 100vh;
+            margin: 0;
+            background: radial-gradient(circle at top left, #1e293b 0, #020617 45%, #020617 100%);
+            color: #e5e7eb;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        .navbar-main {
+            background: linear-gradient(90deg, #020617, #0f172a);
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.6);
+        }
+
+        .navbar-brand {
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+
+        .nav-link {
+            font-size: 0.9rem;
+        }
+
+        .nav-link.active {
+            color: #e5e7eb !important;
+            font-weight: 600;
+        }
+
+        .nav-link-muted {
+            color: #9ca3af !important;
+        }
+
+        .nav-link-muted:hover {
+            color: #e5e7eb !important;
+        }
+
+        main {
+            padding-top: 1.5rem;
+            padding-bottom: 2.5rem;
+        }
+
+        .card-soft {
+            border: none;
+            border-radius: 1rem;
+            box-shadow: 0 18px 45px rgba(15, 23, 42, 0.55);
+            background: #020617;
+            color: #e5e7eb;
+        }
+
+        .card-soft-light {
+            border: none;
+            border-radius: 1rem;
+            box-shadow: 0 14px 36px rgba(15, 23, 42, 0.5);
+            background: #020617;
+            color: #e5e7eb;
+        }
+
+        .section-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            color: #9ca3af;
+        }
+
+        .text-soft-muted {
+            color: #9ca3af;
+        }
+
+        .small-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: #9ca3af;
+        }
+
+        .btn-primary {
+            border-radius: 999px;
+            background-color: #6366f1;
+            border-color: #6366f1;
+            font-weight: 500;
+        }
+
+        .btn-primary:hover {
+            background-color: #4f46e5;
+            border-color: #4f46e5;
+        }
+
+        .btn-outline-secondary {
+            border-radius: 999px;
+            border-color: #374151;
+            color: #e5e7eb;
+            background-color: transparent;
+        }
+
+        .btn-outline-secondary:hover {
+            background-color: #111827;
+            border-color: #4b5563;
+            color: #e5e7eb;
+        }
+
+        .form-control,
+        .form-select,
+        .form-control:focus,
+        .form-select:focus {
+            background-color: #020617;
+            border-radius: 999px;
+            border-color: #1f2933;
+            color: #e5e7eb;
+            box-shadow: none;
+        }
+
+        .form-control::placeholder {
+            color: #6b7280;
+        }
+
+        .badge-role {
+            font-size: 0.75rem;
+            padding: 0.2rem 0.55rem;
+            border-radius: 999px;
+            background-color: rgba(129, 140, 248, 0.15);
+            color: #a5b4fc;
+        }
+
+        .divider-soft {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #1f2937, transparent);
+            margin: 0.75rem 0 1rem;
+        }
+
+        /* Avatar + menú usuario (sin JS) */
+        .user-menu { position: relative; list-style: none; }
+        .user-menu summary { list-style: none; cursor: pointer; }
+        .user-menu summary::-webkit-details-marker { display: none; }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 999px;
+            background: radial-gradient(circle at 30% 20%, #22c55e, #0ea5e9);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #0b1120;
+            font-weight: 700;
+            font-size: 0.85rem;
+            box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.9);
+        }
+
+        .user-menu-dropdown {
+            position: absolute;
+            right: 0;
+            margin-top: 0.75rem;
+            min-width: 210px;
+            background: #020617;
+            border-radius: 0.75rem;
+            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.85);
+            padding: 0.75rem 0.8rem;
+            border: 1px solid #1f2937;
+            z-index: 20;
+        }
+
+        .user-menu-header { padding: 0.35rem 0.5rem 0.5rem; }
+
+        .user-menu-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #e5e7eb;
+        }
+
+        .user-menu-role {
+            font-size: 0.75rem;
+            color: #9ca3af;
+        }
+
+        .user-menu-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #1f2937, transparent);
+            margin: 0.4rem 0.2rem 0.5rem;
+        }
+
+        .user-menu-link {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.35rem 0.6rem;
+            border-radius: 0.5rem;
+            font-size: 0.8rem;
+            color: #e5e7eb;
+            text-decoration: none;
+        }
+
+        .user-menu-link i { font-size: 0.95rem; }
+
+        .user-menu-link:hover {
+            background-color: #0b1120;
+            color: #f9fafb;
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR ADMIN -->
+<nav class="navbar navbar-main">
+    <div class="container d-flex align-items-center justify-content-between">
+        <a class="navbar-brand text-white" href="#">
+            BIBLIOTECA
+        </a>
+
+        <div class="d-flex align-items-center gap-3">
+            <a class="nav-link nav-link-muted" href="/admin">Inicio</a>
+            <a class="nav-link active text-white" href="/admin/usuarios">Usuarios</a>
+            <a class="nav-link nav-link-muted" href="/admin/libros">Libros</a>
+            <a class="nav-link nav-link-muted" href="/admin/copias">Copias</a>
+            <a class="nav-link nav-link-muted" href="/admin/autores">Autores</a>
+            <a class="nav-link nav-link-muted" href="/admin/editoriales">Editoriales</a>
+
+            <!-- Menú usuario -->
+            <details class="user-menu ms-2">
+                <summary class="d-flex align-items-center gap-2">
+                    <span class="user-avatar">
+                        AD
+                        <!-- Thymeleaf:
+                             <span class="user-avatar"
+                                   th:text="${admin.iniciales}">AD</span>
+                        -->
+                    </span>
+                </summary>
+                <div class="user-menu-dropdown">
+                    <div class="user-menu-header">
+                        <div class="user-menu-name">
+                            Admin Principal
+                            <!-- Thymeleaf: th:text="${admin.nombre}" -->
+                        </div>
+                        <div class="user-menu-role">
+                            <span class="badge-role">Admin</span>
+                        </div>
+                    </div>
+
+                    <div class="user-menu-divider"></div>
+
+                    <a href="#" class="user-menu-link">
+                        <i class="bi bi-person-gear"></i>
+                        <span>Configuración de perfil</span>
+                    </a>
+
+                    <a href="#" class="user-menu-link">
+                        <i class="bi bi-box-arrow-right"></i>
+                        <span>Cerrar sesión</span>
+                        <!-- Thymeleaf: th:href="@{/logout}" -->
+                    </a>
+                </div>
+            </details>
+        </div>
+    </div>
+</nav>
+
+<main class="container">
+    <div class="row g-4 mt-4">
+
+        <!-- Encabezado -->
+        <div class="col-12">
+            <div class="card card-soft mb-3">
+                <div class="card-body d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                    <div>
+                        <p class="section-title mb-1">Usuarios</p>
+                        <h1 class="h4 mb-2">
+                            Nuevo usuario
+                            <!-- Thymeleaf:
+                                 <h1 class="h4 mb-2"
+                                     th:text="${esEdicion} ? 'Editar usuario' : 'Nuevo usuario'">
+                                     Nuevo usuario
+                                 </h1>
+                            -->
+                        </h1>
+                        <p class="mb-0 text-soft-muted">
+                            Completá los datos básicos de la cuenta. Podés elegir si será lector, bibliotecario o administrador.
+                        </p>
+                    </div>
+                    <div class="text-md-end">
+                        <a href="/admin/usuarios" class="btn btn-outline-secondary btn-sm">
+                            <i class="bi bi-arrow-left me-1"></i>
+                            Volver al listado
+                        </a>
+                        <!-- Thymeleaf: th:href="@{/admin/usuarios}" -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulario principal -->
+        <div class="col-lg-8">
+            <div class="card card-soft">
+                <div class="card-body">
+                    <p class="section-title mb-3">Datos del usuario</p>
+
+                    <!-- FORMULARIO -->
+                    <form action="/admin/usuarios" method="post" class="row g-3">
+                        <!-- Thymeleaf:
+                             <form th:action="${esEdicion} ? @{'/admin/usuarios/' + ${usuario.id}} : @{/admin/usuarios}"
+                                   method="post"
+                                   th:object="${usuario}">
+                        -->
+
+                        <!-- ID oculto solo para edición -->
+                        <input type="hidden" name="id" value="">
+                        <!-- Thymeleaf (solo edición):
+                             <input type="hidden" th:if="${esEdicion}"
+                                    th:field="*{id}" />
+                        -->
+
+                        <!-- Nombre completo -->
+                        <div class="col-12">
+                            <label for="nombre" class="small-label mb-1">Nombre completo</label>
+                            <input
+                                type="text"
+                                id="nombre"
+                                name="nombre"
+                                class="form-control"
+                                placeholder="Ej: Juan Pérez"
+                                required
+                            >
+                            <!-- Thymeleaf:
+                                 <input type="text" id="nombre" class="form-control"
+                                        th:field="*{nombre}" placeholder="Ej: Juan Pérez" required />
+                            -->
+                            <div class="form-text text-soft-muted mt-1 small">
+                                Este nombre se usará para identificar al usuario dentro del sistema.
+                            </div>
+                        </div>
+
+                        <!-- Correo -->
+                        <div class="col-12">
+                            <label for="email" class="small-label mb-1">Correo electrónico</label>
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                class="form-control"
+                                placeholder="ejemplo@correo.com"
+                                required
+                            >
+                            <!-- Thymeleaf:
+                                 <input type="email" id="email" class="form-control"
+                                        th:field="*{email}" placeholder="ejemplo@correo.com" required />
+                            -->
+                            <div class="form-text text-soft-muted mt-1 small">
+                                Se utilizará para el inicio de sesión y, si en un futuro se desea, para notificaciones.
+                            </div>
+                        </div>
+
+                        <!-- Rol + Estado -->
+                        <div class="col-12 col-md-6">
+                            <label for="rol" class="small-label mb-1">Rol del usuario</label>
+                            <select id="rol" name="rol" class="form-select" required>
+                                <option value="" selected disabled>Seleccioná una opción</option>
+                                <option value="LECTOR">Lector</option>
+                                <option value="BIBLIOTECARIO">Bibliotecario</option>
+                                <option value="ADMIN">Administrador</option>
+                            </select>
+                            <!-- Thymeleaf:
+                                 <select id="rol" class="form-select" th:field="*{rol}" required>
+                                     <option value="" disabled
+                                             th:selected="${usuario.rol == null}">
+                                         Seleccioná una opción
+                                     </option>
+                                     <option value="LECTOR">Lector</option>
+                                     <option value="BIBLIOTECARIO">Bibliotecario</option>
+                                     <option value="ADMIN">Administrador</option>
+                                 </select>
+                            -->
+                            <div class="form-text text-soft-muted mt-1 small">
+                                El rol define qué puede hacer esta persona dentro del sistema.
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label for="estado" class="small-label mb-1">Estado de la cuenta</label>
+                            <select id="estado" name="estado" class="form-select" required>
+                                <option value="ACTIVO" selected>Activa</option>
+                                <option value="INACTIVO">Inactiva</option>
+                            </select>
+                            <!-- Thymeleaf:
+                                 <select id="estado" class="form-select" th:field="*{estado}" required>
+                                     <option value="ACTIVO">Activa</option>
+                                     <option value="INACTIVO">Inactiva</option>
+                                 </select>
+                            -->
+                            <div class="form-text text-soft-muted mt-1 small">
+                                Si la cuenta está inactiva, la persona no podrá ingresar al sistema.
+                            </div>
+                        </div>
+
+                        <div class="divider-soft"></div>
+
+                        <!-- Botones -->
+                        <div class="col-12 d-flex flex-wrap gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check2-circle me-1"></i>
+                                Guardar usuario
+                                <!-- Thymeleaf:
+                                     <span th:text="${esEdicion} ? 'Guardar cambios' : 'Crear usuario'">
+                                         Crear usuario
+                                     </span>
+                                -->
+                            </button>
+
+                            <a href="/admin/usuarios" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-lg me-1"></i>
+                                Cancelar
+                            </a>
+                        </div>
+
+                        <!-- Mensajes de error (ejemplo Thymeleaf, opcional)
+                             <div class="col-12 mt-2" th:if="${#fields.hasErrors('*')}">
+                                 <p class="small text-danger mb-0" th:errors="*{nombre}">Error nombre</p>
+                                 <p class="small text-danger mb-0" th:errors="*{email}">Error email</p>
+                             </div>
+                        -->
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna derecha: explicación de roles -->
+        <div class="col-lg-4">
+            <div class="card card-soft-light mb-3">
+                <div class="card-body">
+                    <p class="section-title mb-2">Ayuda rápida sobre roles</p>
+                    <p class="small text-soft-muted mb-2">
+                        Elegí el rol que mejor describe qué va a hacer esta persona dentro de la biblioteca.
+                    </p>
+
+                    <p class="small-label mb-1">Lector</p>
+                    <p class="small text-soft-muted mb-2">
+                        Usa el sistema solo para consultar sus propios préstamos
+                        y recorrer el catálogo de libros.
+                    </p>
+
+                    <p class="small-label mb-1">Bibliotecario</p>
+                    <p class="small text-soft-muted mb-2">
+                        Registra cuándo se presta un libro y cuándo se devuelve.
+                        También consulta el estado de los lectores y de los ejemplares.
+                    </p>
+
+                    <p class="small-label mb-1">Administrador</p>
+                    <p class="small text-soft-muted mb-0">
+                        Configura el sistema: crea y modifica usuarios, libros, copias,
+                        autores y editoriales. No registra préstamos ni devoluciones.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+</body>
+</html>
