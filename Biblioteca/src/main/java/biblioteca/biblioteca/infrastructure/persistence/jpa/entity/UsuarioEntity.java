@@ -23,11 +23,11 @@ public class UsuarioEntity {
     @Column(name = "nombre_completo", nullable = false, length = 150)
     private String nombreCompleto;
 
-    @Column(nullable = false, length = 12)
-    private String dni;
+        @Column(nullable = false, length = 12, unique = true)
+        private String dni;
 
-    @Column(nullable = false, length = 120)
-    private String email;
+        @Column(nullable = false, length = 120, unique = true)
+        private String email;
 
     @Column(name = "password_hash", nullable = false, length = 200)
     private String passwordHash;

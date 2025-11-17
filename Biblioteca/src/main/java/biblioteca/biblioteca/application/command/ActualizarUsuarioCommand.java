@@ -15,6 +15,7 @@ public class ActualizarUsuarioCommand {
     @NotNull Integer idUsuario;
     @NotBlank String nombreCompleto;
     @NotBlank String email;
+    @NotBlank String dni;
     @NotEmpty Set<Rol> roles;
     Integer lectorId; // opcional
 }

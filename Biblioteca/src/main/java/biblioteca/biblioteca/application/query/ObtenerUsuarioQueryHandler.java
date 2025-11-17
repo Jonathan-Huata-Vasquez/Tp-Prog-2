@@ -18,9 +18,11 @@ public class ObtenerUsuarioQueryHandler {
 
     @Transactional(readOnly = true)
     public UsuarioDto handle(ObtenerUsuarioQuery q) {
-        if (q == null) throw new DatoInvalidoException("La query no puede ser null");
+        if (q == null || q.getIdUsuario() == null) return null;
         var u = usuarioRepo.porId(q.getIdUsuario());
-        if (u == null) throw new EntidadNoEncontradaException("Usuario inexistente: " + q.getIdUsuario());
+        if (u == null) {
+            throw new EntidadNoEncontradaException("Usuario no encontrado (id=" + q.getIdUsuario() + ")");
+        }
         return dtoMapper.toDto(u);
     }
 }

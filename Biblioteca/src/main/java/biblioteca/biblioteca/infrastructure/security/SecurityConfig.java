@@ -35,6 +35,9 @@ public class SecurityConfig {
                         .requestMatchers("/dashboard/bibliotecario/**").hasRole("BIBLIOTECARIO")
                         .requestMatchers("/dashboard/lector/**").hasRole("LECTOR")
 
+                        // Prefijo administrativo adicional (controladores bajo /admin/...) solo para administradores
+                        .requestMatchers("/admin/**").hasRole("ADMINISTRADOR")
+
                         // Áreas específicas protegidas
                         .requestMatchers("/lector/**").hasRole("LECTOR")
                         .requestMatchers("/bibliotecario/**").hasRole("BIBLIOTECARIO")

@@ -1,34 +1,40 @@
-<!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
-<body>
+<!-- Fragmento reutilizable del menú de usuario -->
+<!-- Parámetros: iniciales, nombreCompleto, roleLabel, perfilPath -->
+<th:block th:fragment="userMenu(iniciales, nombreCompleto, roleLabel, perfilPath)">
+    <details class="user-menu ms-2">
+        <summary class="d-flex align-items-center gap-2">
+            <span class="user-avatar" th:text="${iniciales ?: 'US'}">US</span>
+        </summary>
+        <div class="user-menu-dropdown">
+            <!-- Encabezado con nombre y rol -->
+            <div class="user-menu-header">
+                <div class="user-menu-name" th:text="${nombreCompleto ?: 'Usuario'}">
+                    Usuario
+                </div>
 
-<!-- Fragment de menú de usuario con <details> -->
-<details th:fragment="userMenu(nombre, rol, iniciales)" class="user-menu ms-2">
-    <summary class="d-flex align-items-center gap-2">
-        <span class="user-avatar" th:text="${iniciales ?: 'AB'}">AB</span>
-    </summary>
-    <div class="user-menu-dropdown">
-        <div class="user-menu-header">
-            <div class="user-menu-name" th:text="${nombre ?: 'Usuario'}">Ana Bibliotecaria</div>
-            <div class="user-menu-role" th:text="${'Rol: ' + (rol ?: 'Usuario')}">Rol: Bibliotecario</div>
+                <div class="user-menu-role" th:text="${'Rol: ' + (roleLabel ?: 'N/D')}">
+                    Rol: N/D
+                </div>
+            </div>
+
+            <div class="user-menu-divider"></div>
+
+            <!-- Link a perfil -->
+            <a class="user-menu-link" th:href="${perfilPath}">
+                <i class="bi bi-person-badge"></i>
+                <span>Perfil</span>
+            </a>
+
+            <!-- Cerrar sesión -->
+            <form class="user-menu-form" th:action="@{/logout}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                <button type="submit" class="user-menu-link user-menu-logout-btn">
+                    <i class="bi bi-box-arrow-right"></i>
+                    <span>Cerrar sesión</span>
+                </button>
+            </form>
         </div>
 
-        <div class="user-menu-divider"></div>
-
-        <a th:href="@{/perfil}" class="user-menu-link">
-            <i class="bi bi-person-badge"></i>
-            <span>Ver perfil</span>
-        </a>
-
-        <form th:action="@{/logout}" method="post" style="margin: 0;">
-            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-            <button type="submit" class="user-menu-link" style="border: none; background: none; width: 100%;">
-                <i class="bi bi-box-arrow-right"></i>
-                <span>Cerrar sesión</span>
-            </button>
-        </form>
-    </div>
-</details>
-
-</body>
-</html>
+    </details>
+</th:block>

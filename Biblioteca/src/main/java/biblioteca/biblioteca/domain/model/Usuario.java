@@ -18,13 +18,11 @@ public class Usuario {
 
     private String nombreCompleto;
     private String dni;
-    private String email;         // almacenado en minúsculas
-    private String passwordHash;  // hash (BCrypt/Argon2), nunca el password plano
+    private String email;
+    private String passwordHash;
     private final Set<Rol> roles;
     private final Integer lectorId; // nullable
 
-    // --- Regex email (suficientemente estricta y práctica, no RFC completo) ---
-    // - Local-part: letras, dígitos y . _ % + - (al menos 1)
     // - Arroba obligatoria
     // - Dominio: etiquetas con letras/dígitos y guiones, separadas por puntos
     // - TLD: 2+ letras
@@ -66,12 +64,12 @@ public class Usuario {
         this.email = validarYNormalizarEmail(nuevoEmail);
     }
 
-    public void actualizarPasswordHash(String nuevoHash) {
-        this.passwordHash = validarHash(nuevoHash);
+    public void actualizarDni(String nuevoDni) {
+        this.dni = validarDniAR(nuevoDni);
     }
 
-    public boolean tieneRol(Rol r) {
-        return roles.contains(Objects.requireNonNull(r));
+    public void actualizarPasswordHash(String nuevoHash) {
+        this.passwordHash = validarHash(nuevoHash);
     }
 
     public void actualizarRoles(Set<Rol> nuevos) {
@@ -85,15 +83,6 @@ public class Usuario {
         roles.addAll(nuevos);   // queda exactamente la colección solicitada
     }
 
-    /** Regla: un usuario debe tener al menos un rol. */
-    public void quitarRol(Rol r) {
-        Objects.requireNonNull(r);
-        if (!roles.contains(r)) return;
-        if (roles.size() == 1) {
-            throw new ReglaDeNegocioException("El usuario debe tener al menos un rol");
-        }
-        roles.remove(r);
-    }
 
     /* ===== Validaciones ===== */
 

@@ -23,38 +23,12 @@
            th:classappend="${activeSection == 'catalogo'} ? 'active text-white' : 'nav-link-muted'"
            href="#" th:href="@{/bibliotecario/catalogo}">Catálogo</a>
 
-        <!-- Menú usuario -->
-        <details class="user-menu ms-2">
-            <summary class="d-flex align-items-center gap-2">
-                <span class="user-avatar"
-                      th:text="${#authentication?.principal?.nombreCompleto != null ? #authentication.principal.nombreCompleto.substring(0,1) + (#authentication.principal.nombreCompleto.split(' ').length > 1 ? #authentication.principal.nombreCompleto.split(' ')[1].substring(0,1) : '') : 'AB'}">
-                    AB
-                </span>
-            </summary>
-            <div class="user-menu-dropdown">
-                <div class="user-menu-header">
-                    <div class="user-menu-name"
-                         th:text="${#authentication?.principal?.nombreCompleto ?: 'Ana Bibliotecaria'}">
-                        Ana Bibliotecaria
-                    </div>
-                    <div class="user-menu-role">
-                        Rol: Bibliotecario
-                    </div>
-                </div>
-
-                <div class="user-menu-divider"></div>
-
-                <a href="#" class="user-menu-link" th:href="@{/bibliotecario/perfil}">
-                    <i class="bi bi-person-badge"></i>
-                    <span>Ver perfil</span>
-                </a>
-
-                <a href="#" class="user-menu-link" th:href="@{/logout}">
-                    <i class="bi bi-box-arrow-right"></i>
-                    <span>Cerrar sesión</span>
-                </a>
-            </div>
-        </details>
+      <!-- Menú usuario -->
+      <th:block th:with="nombre=${#authentication?.principal?.nombreCompleto?:'Bibliotecario Demo'},
+               iniciales=${#strings.arraySplit(nombre,' ').length()>1 ?
+                     #strings.substring(#strings.arraySplit(nombre,' ')[0],0,1) + #strings.substring(#strings.arraySplit(nombre,' ')[1],0,1) :
+                     #strings.substring(nombre,0,1)}"
+           th:replace="~{fragments/user-menu :: userMenu(${iniciales}, ${nombre}, 'Bibliotecario', @{/bibliotecario/perfil})}"></th:block>
   </div>
 </nav>
 

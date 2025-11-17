@@ -25,8 +25,10 @@ public class ActualizarUsuarioCommandHandler {
         if (u == null) throw new EntidadNoEncontradaException("Usuario inexistente: " + cmd.getIdUsuario());
 
         u.actualizarNombreCompleto(cmd.getNombreCompleto());
+
         u.actualizarEmail(cmd.getEmail());
         u.actualizarRoles(cmd.getRoles());
+        u.actualizarDni(cmd.getDni());
 
         var actualizado = usuarioRepo.guardar(u);
         return dtoMapper.toDto(actualizado);

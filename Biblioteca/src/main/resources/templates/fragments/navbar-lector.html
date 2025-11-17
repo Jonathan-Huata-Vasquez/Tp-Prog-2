@@ -15,31 +15,11 @@
             <a class="nav-link" th:classappend="${activo}=='prestamos' ? ' active text-white' : ' nav-link-muted'"
                th:href="@{/lector/prestamos}">Mis préstamos</a>
 
-            <details class="user-menu ms-2">
-                <summary class="d-flex align-items-center gap-2">
-          <span class="user-avatar"
-                th:text="${#strings.substring(#authentication.principal.nombreCompleto,0,1)}">U</span>
-                </summary>
-
-                <div class="user-menu-dropdown">
-                    <div class="user-menu-header">
-                        <div class="user-menu-name" th:text="${#authentication.principal.nombreCompleto}">Usuario</div>
-                        <div class="user-menu-role">Rol: Lector</div>
-                    </div>
-                    <div class="user-menu-divider"></div>
-
-                    <a class="user-menu-link" th:href="@{/lector/perfil}">
-                        <i class="bi bi-person-lines-fill"></i><span>Ver perfil</span>
-                    </a>
-
-                    <form th:action="@{/logout}" method="post" style="margin:0;">
-                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                        <button type="submit" class="user-menu-link" style="background:none;border:0;padding:0;">
-                            <i class="bi bi-box-arrow-right"></i><span>Cerrar sesión</span>
-                        </button>
-                    </form>
-                </div>
-            </details>
+            <th:block th:with="nombre=${#authentication?.principal?.nombreCompleto?:'Lector Demo'},
+                               iniciales=${#strings.arraySplit(nombre,' ').length()>1 ?
+                                          #strings.substring(#strings.arraySplit(nombre,' ')[0],0,1) + #strings.substring(#strings.arraySplit(nombre,' ')[1],0,1) :
+                                          #strings.substring(nombre,0,1)}"
+                      th:replace="~{fragments/user-menu :: userMenu(${iniciales}, ${nombre}, 'Lector', @{/lector/perfil})}"></th:block>
         </div>
     </div>
 </nav>
