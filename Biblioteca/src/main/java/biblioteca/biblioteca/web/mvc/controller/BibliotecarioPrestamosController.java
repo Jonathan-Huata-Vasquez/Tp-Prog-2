@@ -8,6 +8,8 @@ import biblioteca.biblioteca.application.query.ListarPrestamosQuery;
 import biblioteca.biblioteca.application.query.ListarPrestamosQueryHandler;
 import biblioteca.biblioteca.application.query.ValidarPrestamoQuery;
 import biblioteca.biblioteca.application.query.ValidarPrestamoQueryHandler;
+import biblioteca.biblioteca.application.query.ValidarDevolucionQuery;
+import biblioteca.biblioteca.application.query.ValidarDevolucionQueryHandler;
 import biblioteca.biblioteca.infrastructure.security.UsuarioDetalles;
 import biblioteca.biblioteca.web.helper.ControllerHelper;
 import jakarta.servlet.http.HttpSession;
@@ -194,6 +196,7 @@ public class BibliotecarioPrestamosController {
     private final PrestarCopiaCommandHandler prestarCommandHandler;
     private final ValidarPrestamoQueryHandler validarPrestamoHandler;
     private final DevolverCopiaCommandHandler devolverCommandHandler;
+    private final ValidarDevolucionQueryHandler validarDevolucionHandler;
 
     @GetMapping("/prestamos")
     public String prestamos(@RequestParam(value = "pagina", defaultValue = "0") int pagina,
@@ -244,9 +247,52 @@ public class BibliotecarioPrestamosController {
                 .enviarAReparacion(false)
                 .build();
         model.addAttribute("devolverCopiaCommand", command);
+        model.addAttribute("validadoDevolucion", false);
+        model.addAttribute("puedeDevolver", false);
         model.addAttribute("fechaHoy", java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")));
         controllerHelper.agregarRolActualAlModelo(model, usuario, session);
         return "bibliotecario/prestamo-devolver";
+    }
+
+    @PostMapping("/prestamos/devolver/validar")
+    public String validarDevolucion(@ModelAttribute("devolverCopiaCommand") DevolverCopiaCommand command,
+                                    @AuthenticationPrincipal UsuarioDetalles usuario,
+                                    HttpSession session,
+                                    Model model) {
+        log.debug("Validando devolución: lector={}, copia={}", command.getIdLector(), command.getIdCopia());
+        model.addAttribute("devolverCopiaCommand", command);
+        model.addAttribute("fechaHoy", java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+
+        if (command.getIdLector() == null || command.getIdCopia() == null) {
+            model.addAttribute("validadoDevolucion", false);
+            model.addAttribute("puedeDevolver", false);
+            model.addAttribute("mensajeError", "Debe completar ambos campos antes de validar");
+            controllerHelper.agregarRolActualAlModelo(model, usuario, session);
+            return "bibliotecario/prestamo-devolver";
+        }
+
+        var query = ValidarDevolucionQuery.builder()
+                .idLector(command.getIdLector())
+                .idCopia(command.getIdCopia())
+                .build();
+        var resultado = validarDevolucionHandler.handle(query);
+
+        model.addAttribute("validadoDevolucion", true);
+        model.addAttribute("puedeDevolver", resultado.isPuedeDevolver());
+        if (resultado.getResumenPrestamo() != null) {
+            model.addAttribute("resumenPrestamo", resultado.getResumenPrestamo());
+        }
+        if (resultado.getMensajeError() != null) {
+            model.addAttribute("mensajeError", resultado.getMensajeError());
+        }
+        controllerHelper.agregarRolActualAlModelo(model, usuario, session);
+        return "bibliotecario/prestamo-devolver";
+    }
+
+    @PostMapping("/prestamos/devolver/resetear")
+    public String resetearDevolucion() {
+        log.debug("Reseteando formulario de devolución");
+        return "redirect:/bibliotecario/prestamos/devolver";
     }
 
     @PostMapping("/prestamos/devolver")
@@ -259,6 +305,24 @@ public class BibliotecarioPrestamosController {
         log.debug("Procesando devolución: lector={}, copia={}, reparar={}", command.getIdLector(), command.getIdCopia(), command.getEnviarAReparacion());
         if (bindingResult.hasErrors()) {
             log.warn("Errores de binding al devolver: {}", bindingResult.getAllErrors());
+            model.addAttribute("fechaHoy", java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            controllerHelper.agregarRolActualAlModelo(model, usuario, session);
+            return "bibliotecario/prestamo-devolver";
+        }
+
+        // Defensa en profundidad: revalidar antes de ejecutar devolución
+        var validacionQuery = ValidarDevolucionQuery.builder()
+                .idLector(command.getIdLector())
+                .idCopia(command.getIdCopia())
+                .build();
+        var resultado = validarDevolucionHandler.handle(validacionQuery);
+        if (!resultado.isPuedeDevolver()) {
+            log.warn("Intento de devolver sin cumplir reglas: lector={}, copia={}", command.getIdLector(), command.getIdCopia());
+            model.addAttribute("devolverCopiaCommand", command);
+            model.addAttribute("validadoDevolucion", true);
+            model.addAttribute("puedeDevolver", false);
+            if (resultado.getResumenPrestamo() != null) model.addAttribute("resumenPrestamo", resultado.getResumenPrestamo());
+            model.addAttribute("mensajeError", resultado.getMensajeError() != null ? resultado.getMensajeError() : "No existe préstamo activo para esos datos");
             model.addAttribute("fechaHoy", java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")));
             controllerHelper.agregarRolActualAlModelo(model, usuario, session);
             return "bibliotecario/prestamo-devolver";

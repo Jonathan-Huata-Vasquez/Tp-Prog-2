@@ -41,8 +41,9 @@ public class DevolverCopiaCommandHandler {
 
         LocalDate hoy = LocalDate.now();
         lector.registrarDevolucionEn(cmd.getIdCopia(), hoy);
+        activo.cerrar(hoy);
 
-        if (Boolean.TRUE.equals(cmd.getEnviarAReparacion())) {
+        if (cmd.getEnviarAReparacion()) {
             copia.marcarEnReparacion();
         } else {
             copia.marcarDevuelta(true);

@@ -46,4 +46,13 @@ public class LibroDetalleController {
 
         return "shared/detalle-libro";
     }
+
+    // Alias para acceder al detalle desde el catálogo (/catalogo/libro/{id})
+    @GetMapping("/catalogo/libro/{id}")
+    public String detalleLibroDesdeCatalogo(@PathVariable("id") Integer id,
+                                            @AuthenticationPrincipal UsuarioDetalles usuario,
+                                            HttpSession session,
+                                            Model model) {
+        return detalleLibro(id, usuario, session, model);
+    }
 }

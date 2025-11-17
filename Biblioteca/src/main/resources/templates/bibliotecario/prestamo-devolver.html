@@ -46,162 +46,153 @@
                     <div class="card-body">
                         <p class="section-title mb-3">Datos para la devolución</p>
 
-                        <!-- FORM -->
-                                                <form th:action="@{/bibliotecario/prestamos/devolver}" method="post"
-                                                            th:object="${devolverCopiaCommand}" class="row g-3">
-                                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                        <!-- FORM principal devolución -->
+                        <form th:action="@{/bibliotecario/prestamos/devolver}" method="post"
+                              th:object="${devolverCopiaCommand}" class="row g-3">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
-                            <!-- ID PRÉSTAMO -->
+                            <!-- ID LECTOR -->
                             <div class="col-12 col-md-6">
-                                <label for="idPrestamo" class="small-label mb-1">ID del préstamo</label>
-                                <input type="number" id="idLector" class="form-control" th:field="*{idLector}" placeholder="ID lector" required />
-                                <div class="form-text text-soft-muted mt-1 small">ID del lector que hizo el préstamo.</div>
+                                <label for="idLector" class="small-label mb-1">ID del lector</label>
+                                <div th:if="${!validadoDevolucion}">
+                                    <input type="number" id="idLector" class="form-control" th:field="*{idLector}" placeholder="Ej: 102" required />
+                                </div>
+                                <div th:if="${validadoDevolucion}">
+                                    <input type="number" class="form-control" th:field="*{idLector}" readonly />
+                                </div>
+                                <div class="form-text text-soft-muted mt-1 small">Ingresá el identificador del lector.</div>
                             </div>
 
+                            <!-- ID COPIA -->
                             <div class="col-12 col-md-6">
                                 <label for="idCopia" class="small-label mb-1">ID de la copia</label>
-                                <input type="number" id="idCopia" class="form-control" th:field="*{idCopia}" placeholder="ID copia" required />
-                                <div class="form-text text-soft-muted mt-1 small">
-                                    ID del ejemplar prestado (lo ves en listado o detalle lector).
+                                <div th:if="${!validadoDevolucion}">
+                                    <input type="number" id="idCopia" class="form-control" th:field="*{idCopia}" placeholder="Ej: 145" required />
                                 </div>
+                                <div th:if="${validadoDevolucion}">
+                                    <input type="number" class="form-control" th:field="*{idCopia}" readonly />
+                                </div>
+                                <div class="form-text text-soft-muted mt-1 small">Ingresá el identificador del ejemplar.</div>
                             </div>
 
-                            <!-- Fecha devolución (informativa) -->
+                            <!-- Enviar a reparación -->
                             <div class="col-12 col-md-6">
                                 <label for="enviarAReparacion" class="small-label mb-1">Enviar a reparación</label>
-                                <select id="enviarAReparacion" class="form-control" th:field="*{enviarAReparacion}">
-                                    <option th:value="false" selected>No</option>
+                                <select id="enviarAReparacion" class="form-control"
+                                        th:field="*{enviarAReparacion}"
+                                        th:disabled="${!validadoDevolucion || !puedeDevolver || resumenPrestamo == null}">
+                                    <option th:value="false" th:selected="${true}">No</option>
                                     <option th:value="true">Sí</option>
                                 </select>
-                                <div class="form-text text-soft-muted mt-1 small">Elegí "Sí" si la copia vuelve dañada.</div>
+                                <input type="hidden" name="enviarAReparacion" value="false"
+                                       th:if="${!validadoDevolucion || !puedeDevolver || resumenPrestamo == null}" />
+                                <div class="form-text text-soft-muted mt-1 small">Disponible solo cuando existe préstamo activo/vencido.</div>
                             </div>
 
                             <div class="divider-soft"></div>
 
                             <!-- Botones -->
                             <div class="col-12 d-flex flex-wrap gap-2">
-                                <button type="submit" class="btn btn-primary">
+                                <!-- Confirmar devolución (solo luego de validar y si puedeDevolver) -->
+                                <button type="submit" class="btn btn-primary"
+                                        th:disabled="${!validadoDevolucion || !puedeDevolver}"
+                                        th:classappend="${!validadoDevolucion || !puedeDevolver} ? 'disabled' : ''">
                                     <i class="bi bi-arrow-counterclockwise me-1"></i>
                                     Confirmar devolución
+                                </button>
+
+                                <!-- Botón Validar -->
+                                <button type="submit" th:if="${!validadoDevolucion}" class="btn btn-success"
+                                        formaction="/bibliotecario/prestamos/devolver/validar" formmethod="post">
+                                    <i class="bi bi-check-circle me-1"></i>
+                                    Validar datos
+                                </button>
+
+                                <!-- Botón Resetear -->
+                                <button type="submit" th:if="${validadoDevolucion}" class="btn btn-warning"
+                                        formaction="/bibliotecario/prestamos/devolver/resetear" formmethod="post">
+                                    <i class="bi bi-arrow-counterclockwise me-1"></i>
+                                    Resetear
                                 </button>
 
                                 <a th:href="@{/bibliotecario/prestamos}" class="btn btn-outline-secondary">
                                     <i class="bi bi-arrow-left me-1"></i>
                                     Cancelar y volver al listado
                                 </a>
-                                <!-- Thymeleaf: th:href="@{/bibliotecario/prestamos}" -->
                             </div>
-
-                            <!-- Mensajes de error/validación (opcional)
-                             Thymeleaf:
-                             <div class="col-12 mt-2" th:if="${#fields.hasErrors('*')}">
-                                 <p class="small text-danger mb-0" th:errors="*{idPrestamo}">
-                                     Error en el ID de préstamo
-                                 </p>
-                             </div>
-                        -->
                         </form>
                     </div>
                 </div>
 
                 <!-- Resumen del préstamo (solo lectura, opcional si backend trae datos) -->
-                <div class="card card-soft-light" th:if="${mensajeError != null or mensajeExito != null}">
+                <div class="card card-soft-light" th:if="${validadoDevolucion}">
                     <div class="card-body">
-                        <p class="section-title mb-2">Estado de la operación</p>
-                        <div th:if="${mensajeExito}" class="alert alert-success mb-2">
-                            <i class="bi bi-check-circle-fill me-1"></i>
-                            <span th:text="${mensajeExito}">Devolución OK</span>
+                        <p class="section-title mb-2">Resultado de la validación</p>
+
+                        <div th:if="${puedeDevolver}" class="alert alert-success">
+                            <i class="bi bi-check-circle-fill me-2"></i>
+                            Datos válidos. Puede proceder a registrar la devolución.
                         </div>
-                        <div th:if="${mensajeError}" class="alert alert-danger mb-2">
-                            <i class="bi bi-x-circle-fill me-1"></i>
+                        <div th:if="${!puedeDevolver}" class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            No puede devolver: revise el estado del préstamo.
+                        </div>
+                        <div th:if="${mensajeError}" class="alert alert-danger">
+                            <i class="bi bi-x-circle-fill me-2"></i>
                             <span th:text="${mensajeError}">Error</span>
                         </div>
 
-                        <!-- Ejemplo estático -->
-                        <div class="row g-3">
+                        <div class="row g-3" th:if="${resumenPrestamo}">
                             <div class="col-md-6">
                                 <p class="small-label mb-1">Lector</p>
-                                <h2 class="h6 mb-1">
-                                    Juan Pérez
-                                    <!-- Thymeleaf: th:text="${prestamo?.nombreLector}" -->
-                                </h2>
+                                <h2 class="h6 mb-1" th:text="${resumenPrestamo.nombreLector}">Nombre Lector</h2>
                                 <p class="small text-soft-muted mb-1">
-                                    ID lector: 102
-                                    <!-- Thymeleaf:
-                                     <span th:text="${prestamo?.idLector}">102</span>
-                                -->
+                                    <span th:text="${'ID: ' + resumenPrestamo.idLector}">ID: 0</span>
                                 </p>
                                 <p class="small mb-0">
                                     Estado lector:
-                                    <span class="text-soft-muted">
-                                        Habilitado
-                                        <!-- Thymeleaf:
-                                         <span th:if="${!prestamo?.lectorBloqueado}">Habilitado</span>
-                                         <span th:if="${prestamo?.lectorBloqueado}">Bloqueado</span>
-                                    -->
+                                    <span th:if="${resumenPrestamo.lectorBloqueado}" class="text-danger">
+                                        <i class="bi bi-x-circle"></i> Bloqueado
+                                    </span>
+                                    <span th:if="${!resumenPrestamo.lectorBloqueado}" class="text-success">
+                                        <i class="bi bi-check-circle"></i> Habilitado
                                     </span>
                                 </p>
                             </div>
-
                             <div class="col-md-6">
                                 <p class="small-label mb-1">Libro y ejemplar</p>
-                                <h2 class="h6 mb-1">
-                                    Cien años de soledad
-                                    <!-- Thymeleaf: th:text="${prestamo?.tituloLibro}" -->
-                                </h2>
+                                <h2 class="h6 mb-1" th:text="${resumenPrestamo.tituloLibro}">Título</h2>
                                 <p class="small text-soft-muted mb-1">
-                                    Ejemplar: #145
-                                    <!-- Thymeleaf:
-                                     <span th:text="${prestamo?.idEjemplar}">145</span>
-                                -->
+                                    <span th:text="${'Autor: ' + resumenPrestamo.autorNombre}">Autor</span>
                                 </p>
                                 <p class="small mb-0">
-                                    Estado actual:
-                                    <span class="badge-estado badge-estado-vencido">
-                                        Vencido
-                                    </span>
-                                    <!-- Thymeleaf:
-                                     <span th:switch="${prestamo?.estado}">
-                                         <span th:case="'ACTIVO'"   class="badge-estado badge-estado-activo">Activo</span>
-                                         <span th:case="'VENCIDO'"  class="badge-estado badge-estado-vencido">Vencido</span>
-                                         <span th:case="'DEVUELTO'" class="badge-estado badge-estado-devuelto">Devuelto</span>
-                                     </span>
-                                -->
+                                    Ejemplar:
+                                    <span th:text="${'#' + resumenPrestamo.idCopia}">#0</span>
                                 </p>
                             </div>
                         </div>
 
-                        <div class="divider-soft"></div>
+                        <div class="divider-soft" th:if="${resumenPrestamo}"></div>
 
-                        <div class="row g-3">
+                        <div class="row g-3" th:if="${resumenPrestamo}">
                             <div class="col-md-4">
                                 <p class="small-label mb-1">Fecha préstamo</p>
-                                <p class="mb-0">
-                                    01/09/2025
-                                    <!-- Thymeleaf: th:text="${prestamo?.fechaPrestamo}" -->
-                                </p>
+                                <p class="mb-0" th:text="${#temporals.format(resumenPrestamo.fechaInicio,'dd/MM/yyyy')}">01/01/2025</p>
                             </div>
                             <div class="col-md-4">
                                 <p class="small-label mb-1">Fecha vencimiento</p>
-                                <p class="mb-0">
-                                    22/09/2025
-                                    <!-- Thymeleaf: th:text="${prestamo?.fechaVencimiento}" -->
-                                </p>
+                                <p class="mb-0" th:text="${#temporals.format(resumenPrestamo.fechaVencimiento,'dd/MM/yyyy')}">21/01/2025</p>
                             </div>
                             <div class="col-md-4">
                                 <p class="small-label mb-1">Días de atraso</p>
-                                <p class="highlight-number mb-0" style="font-size: 1.4rem;">
-                                    15
-                                    <!-- Thymeleaf: th:text="${prestamo?.diasAtraso}" -->
-                                </p>
+                                <p class="highlight-number mb-0" style="font-size:1.4rem;" th:text="${resumenPrestamo.diasAtraso}">0</p>
                             </div>
                         </div>
 
-                        <div class="divider-soft"></div>
+                        <div class="divider-soft" th:if="${resumenPrestamo}"></div>
 
-                        <p class="small text-soft-muted mb-0">
-                            La penalización correspondiente (días de atraso × 2) se aplica en el dominio al lector una
-                            vez registrada la devolución.
+                        <p class="small text-soft-muted mb-0" th:if="${resumenPrestamo}">
+                            La penalización (días atraso × 2) se aplicará al cerrar la devolución.
                         </p>
                     </div>
                 </div>
@@ -218,6 +209,7 @@
                             <li>• Si hay atraso, el lector queda no elegible hasta cumplir penalización (días de atraso × 2).</li>
                             <li>• Un ejemplar no puede estar prestado dos veces al mismo tiempo.</li>
                             <li>• La devolución libera el ejemplar para futuros préstamos.</li>
+                            <li>• Solo se puede devolver si el préstamo está activo o vencido (no devuelto).</li>
                         </ul>
                     </div>
                 </div>

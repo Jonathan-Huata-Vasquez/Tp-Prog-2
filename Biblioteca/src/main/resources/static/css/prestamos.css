@@ -189,3 +189,19 @@
 
 /* Ajuste de tamaño para badge genérica dentro de la vista */
 .badge { font-size: 0.7rem; }
+
+/* === Devolución: estilos para inputs readonly y selects disabled === */
+.form-control[readonly] {
+    background-color: #020617;
+    opacity: 0.85;
+    cursor: default;
+}
+
+select.form-control:disabled, .form-control.disabled-select:disabled {
+    background-color: #020617;
+    color: #9ca3af;
+    opacity: 0.7;
+}
+
+/* Mantener color del option seleccionado en select disabled */
+select.form-control:disabled option { color: #9ca3af; }
