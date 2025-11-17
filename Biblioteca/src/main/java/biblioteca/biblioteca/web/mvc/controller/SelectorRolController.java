@@ -1,31 +1,39 @@
 package biblioteca.biblioteca.web.mvc.controller;
 
+import biblioteca.biblioteca.application.service.RolActualService;
 import biblioteca.biblioteca.infrastructure.security.UsuarioDetalles;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.servlet.http.HttpSession;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Controller
+@RequiredArgsConstructor
 public class SelectorRolController {
 
+    private final RolActualService rolActualService;
+    
+    private static final String REDIRECT_LOGIN = "redirect:/login";
+
     @GetMapping("/seleccionar-rol")
-    public String selector(@AuthenticationPrincipal UsuarioDetalles usuario, Model model) {
-        if (usuario == null) return "redirect:/login";
+    public String selector(@AuthenticationPrincipal UsuarioDetalles usuario, 
+                          HttpSession session, Model model) {
+        if (usuario == null) return REDIRECT_LOGIN;
 
-        Set<String> roles = usuario.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority) // "ROLE_LECTOR"...
-                .collect(Collectors.toSet());
+        // Verificar si tiene múltiples roles
+        if (!rolActualService.tieneMultiplesRoles(usuario)) {
+            // Un solo rol, redirigir directamente
+            String rolActual = rolActualService.determinarRolActivo(usuario, session);
+            return redirigirPorRol("ROLE_" + rolActual);
+        }
 
-        // Si tiene 0 (raro) o 1 rol → redirigir a destino correspondiente
-        if (roles.isEmpty()) return "redirect:/login";
-        if (roles.size() == 1) return redirigirPorRol(roles.iterator().next());
-
-        // > 1 rol → mostrar selector
+        // Múltiples roles, mostrar selector
         model.addAttribute("nombre", usuario.getNombreCompleto());
         model.addAttribute("roles", usuario.getAuthorities());
         return "selector-rol";
@@ -33,17 +41,15 @@ public class SelectorRolController {
 
     @PostMapping("/seleccionar-rol")
     public String seleccionar(@AuthenticationPrincipal UsuarioDetalles usuario,
-                              @RequestParam("rol") String rol) {
-        if (usuario == null) return "redirect:/login";
+                              @RequestParam("rol") String rol,
+                              HttpSession session) {
+        if (usuario == null) return REDIRECT_LOGIN;
 
-        // Si el usuario tiene solo 1 rol, no debería llegar aquí: redirigir a su dashboard
-        long count = usuario.getAuthorities().size();
-        if (count <= 1) {
-            var unico = usuario.getAuthorities().iterator().next().getAuthority();
-            return redirigirPorRol(unico);
-        }
-
-        // Usuario multi-rol: usar el elegido
+        // Establecer el rol seleccionado en la sesión
+        String rolSinPrefix = rol.replace("ROLE_", "");
+        rolActualService.establecerRolActivo(rolSinPrefix, session);
+        
+        // Redirigir según el rol seleccionado
         return redirigirPorRol(rol);
     }
 

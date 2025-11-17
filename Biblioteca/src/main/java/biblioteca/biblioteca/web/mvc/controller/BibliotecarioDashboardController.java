@@ -4,12 +4,15 @@ import biblioteca.biblioteca.application.query.BibliotecarioDashboardQuery;
 import biblioteca.biblioteca.application.query.BibliotecarioDashboardQueryHandler;
 import biblioteca.biblioteca.infrastructure.security.UsuarioDetalles;
 import biblioteca.biblioteca.web.dto.BibliotecarioDashboardDto;
+import biblioteca.biblioteca.web.helper.ControllerHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+
+import jakarta.servlet.http.HttpSession;
 
 /**
  * Controller específico para dashboard del bibliotecario.
@@ -20,9 +23,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class BibliotecarioDashboardController {
 
     private final BibliotecarioDashboardQueryHandler dashboardQueryHandler;
+    private final ControllerHelper controllerHelper;
 
     @GetMapping("/dashboard/bibliotecario")
-    public String dashboard(@AuthenticationPrincipal UsuarioDetalles usuario, Model model) {
+    public String dashboard(@AuthenticationPrincipal UsuarioDetalles usuario, 
+                           HttpSession session,
+                           Model model) {
         
         log.debug("Cargando dashboard del bibliotecario para usuario: {}", 
                   usuario != null ? usuario.getNombreCompleto() : "Anónimo");
@@ -38,6 +44,9 @@ public class BibliotecarioDashboardController {
             model.addAttribute("resumen", dashboard); // Para los badges
             model.addAttribute("prestamosDestacados", dashboard.getPrestamosDestacados()); // Para la tabla
             model.addAttribute("usuario", usuario);
+            
+            // Agregar rol actual para navbar
+            controllerHelper.agregarRolActualAlModelo(model, usuario, session);
             
             log.debug("Dashboard cargado exitosamente: {} préstamos destacados", 
                       dashboard.getPrestamosDestacados().size());

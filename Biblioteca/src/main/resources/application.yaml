@@ -17,5 +17,6 @@ spring:
 
 logging:
   level:
+    biblioteca.biblioteca: DEBUG
     org.springdoc: DEBUG
     org.springframework.web: DEBUG

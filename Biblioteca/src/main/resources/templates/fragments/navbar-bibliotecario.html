@@ -20,8 +20,8 @@
            th:classappend="${activeSection == 'lectores'} ? 'nav-link-muted' : 'nav-link-muted'"
            href="#" th:href="@{/bibliotecario/lectores}">Lectores</a>
         <a class="nav-link"
-           th:classappend="${activeSection == 'catalogo'} ? 'nav-link-muted' : 'nav-link-muted'"
-           href="#" th:href="@{/catalogo}">Catálogo</a>
+           th:classappend="${activeSection == 'catalogo'} ? 'active text-white' : 'nav-link-muted'"
+           href="#" th:href="@{/bibliotecario/catalogo}">Catálogo</a>
 
         <!-- Menú usuario -->
         <details class="user-menu ms-2">

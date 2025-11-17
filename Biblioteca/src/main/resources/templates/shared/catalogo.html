@@ -4,7 +4,8 @@
 <head th:replace="~{fragments/head :: head(titulo='Catálogo de libros - Biblioteca')}"></head>
 
 <body>
-    <div th:replace="~{fragments/navbar-lector :: navbarLector('catalogo')}"></div>
+    <!-- Navbar dinámico según el rol del usuario -->
+    <div th:replace="~{fragments/navbar-dinamico :: navbarDinamico('catalogo', ${rolActual})}"></div>
 
     <main class="container">
         <div class="row g-4 mt-4">

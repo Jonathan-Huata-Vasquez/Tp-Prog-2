@@ -1,0 +1,48 @@
+package biblioteca.biblioteca.web.helper;
+
+import biblioteca.biblioteca.application.service.RolActualService;
+import biblioteca.biblioteca.infrastructure.security.UsuarioDetalles;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+import org.springframework.ui.Model;
+
+import jakarta.servlet.http.HttpSession;
+
+/**
+ * Helper para controllers web que centraliza operaciones comunes
+ * relacionadas con la determinación del rol activo del usuario.
+ */
+@Component
+@RequiredArgsConstructor
+@Slf4j
+public class ControllerHelper {
+    
+    private final RolActualService rolActualService;
+    
+    /**
+     * Agrega el rol actual del usuario al modelo para que los templates
+     * puedan mostrar el navbar correcto y elementos específicos del rol.
+     * 
+     * @param model Modelo de Thymeleaf
+     * @param usuario Usuario autenticado
+     * @param session Sesión HTTP
+     */
+    public void agregarRolActualAlModelo(Model model, UsuarioDetalles usuario, HttpSession session) {
+        String rolActual = rolActualService.determinarRolActivo(usuario, session);
+        log.debug("ControllerHelper: agregando rolActual='{}' al modelo para usuario: {}", 
+                 rolActual, usuario != null ? usuario.getUsername() : "null");
+        model.addAttribute("rolActual", rolActual);
+        
+        // También agregar si tiene múltiples roles (útil para mostrar selector)
+        boolean tieneMultiplesRoles = rolActualService.tieneMultiplesRoles(usuario);
+        model.addAttribute("tieneMultiplesRoles", tieneMultiplesRoles);
+    }
+    
+    /**
+     * Método sobrecargado para cuando no necesitamos toda la información extra.
+     */
+    public String obtenerRolActual(UsuarioDetalles usuario, HttpSession session) {
+        return rolActualService.determinarRolActivo(usuario, session);
+    }
+}
