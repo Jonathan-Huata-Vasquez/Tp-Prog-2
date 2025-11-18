@@ -33,8 +33,8 @@
                 <tr>
                   <th scope="col">ID</th>
                   <th scope="col">Título</th>
-                  <th scope="col">Autor (ID)</th>
-                  <th scope="col">Editorial (ID)</th>
+                  <th scope="col">Autor</th>
+                  <th scope="col">Editorial</th>
                   <th scope="col">Año</th>
                   <th scope="col">Acciones</th>
                 </tr>
@@ -43,8 +43,8 @@
                 <tr th:each="libro : ${libros}" th:id="${'fila-libro-' + libro.id}">
                   <td><span class="small" th:text="${libro.id}">1</span></td>
                   <td th:text="${libro.titulo}">Título</td>
-                  <td th:text="${libro.idAutor}">Autor</td>
-                  <td th:text="${libro.idEditorial}">Editorial</td>
+                  <td th:text="${libro.autorNombre}">Autor</td>
+                  <td th:text="${libro.editorialNombre}">Editorial</td>
                   <td><span class="small" th:text="${libro.anioPublicacion}">2024</span></td>
                   <td>
                     <div class="d-flex flex-wrap gap-2">

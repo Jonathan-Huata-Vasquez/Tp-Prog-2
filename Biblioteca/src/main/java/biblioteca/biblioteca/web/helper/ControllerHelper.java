@@ -45,4 +45,40 @@ public class ControllerHelper {
     public String obtenerRolActual(UsuarioDetalles usuario, HttpSession session) {
         return rolActualService.determinarRolActivo(usuario, session);
     }
+
+    /**
+     * Calcula iniciales a partir del nombre completo del usuario.
+     * Reglas:
+     *  - Si nombre es nulo o vacío retorna "US" (Usuario)
+     *  - Toma la primera letra de los dos primeros tokens (separados por espacios)
+     *  - Si sólo hay un token, usa su primera letra
+     *  - Siempre devuelve mayúsculas
+     *
+     * @param usuario detalles autenticación
+     * @return iniciales formateadas
+     */
+    public String calcularIniciales(UsuarioDetalles usuario) {
+        if (usuario == null) return "US";
+        String nombre = usuario.getNombreCompleto();
+        if (nombre == null || nombre.trim().isEmpty()) return "US";
+        String[] partes = nombre.trim().split("\\s+");
+        String iniciales = partes[0].substring(0, 1).toUpperCase();
+        if (partes.length > 1) {
+            iniciales += partes[1].substring(0, 1).toUpperCase();
+        }
+        return iniciales;
+    }
+
+    /**
+     * Variante para calcular iniciales desde un nombre directo.
+     */
+    public String calcularIniciales(String nombreCompleto) {
+        if (nombreCompleto == null || nombreCompleto.trim().isEmpty()) return "US";
+        String[] partes = nombreCompleto.trim().split("\\s+");
+        String iniciales = partes[0].substring(0, 1).toUpperCase();
+        if (partes.length > 1) {
+            iniciales += partes[1].substring(0, 1).toUpperCase();
+        }
+        return iniciales;
+    }
 }

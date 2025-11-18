@@ -10,6 +10,7 @@
   --radius-lg: 1rem;
   --radius-pill: 999px;
   --shadow-strong: 0 18px 45px rgba(15,23,42,.55);
+  color-scheme: dark; /* Hint para controles nativos en modo oscuro */
 }
 
 .card-soft, .card-soft-light { background: var(--bg-dark); color: var(--text-primary); border: none; border-radius: var(--radius-lg); box-shadow: var(--shadow-strong); }
@@ -24,7 +25,7 @@
 
 .badge-role { font-size:.7rem; padding:.2rem .55rem; border-radius:var(--radius-pill); background:#1e3a8a; color:#f8fafc; }
 .badge-estado { font-size:.7rem; padding:.2rem .55rem; border-radius:var(--radius-pill); }
-.badge-estado-activo { background:rgba(22,163,74,.35); color:#dcfce7; }
+.badge-estado-activo { background:#166534; color:#f0fdf4; } /* Solid for contrast */
 .badge-estado-inactivo { background:rgba(148,163,184,.18); color:var(--text-primary); }
 
 .btn-primary { border-radius:var(--radius-pill); background:#6366f1; border-color:#6366f1; font-weight:500; }
@@ -47,3 +48,54 @@
 
 /* Utility */
 .divider-soft { height:1px; background:linear-gradient(90deg,transparent,#1f2937,transparent); margin:.75rem 0 1rem; }
+
+/* Form controls unified */
+.form-control, .form-select {
+  background: linear-gradient(90deg, #101624 60%, #181e2e 100%);
+  border: 1.5px solid #334155;
+  color: #f8fafc;
+  border-radius: 2rem;
+  font-size: .95rem;
+  box-shadow: 0 2px 8px rgba(15,23,42,.12);
+  transition: border-color .2s, box-shadow .2s;
+}
+.form-control:focus, .form-select:focus {
+  background: linear-gradient(90deg, #181e2e 60%, #101624 100%);
+  color: #fff;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px rgba(99,102,241,.25), 0 2px 8px rgba(15,23,42,.18);
+}
+/* Opciones del select (limitado por motor del navegador) */
+.form-select option {
+  background: #181e2e;
+  color: #f8fafc;
+  border-bottom: 1px solid #334155;
+  font-size: .95rem;
+  padding: .35em 1em;
+}
+.form-select option[disabled] {
+  color: #64748b;
+  background: #101624;
+}
+/* Firefox ajustes */
+@-moz-document url-prefix() {
+  .form-select { background-color:var(--bg-dark-alt); }
+}
+/* Clase explícita para usar en templates si se quiere forzar apariencia bootstrap dark */
+.form-select-dark { background-color:#0b1120!important; color:var(--text-primary)!important; border-color:#334155!important; }
+.form-select-dark:focus { border-color:var(--accent-indigo)!important; box-shadow:0 0 0 2px rgba(99,102,241,.35)!important; }
+.form-select-pill {
+  border-radius: 2rem;
+  font-weight: 500;
+  letter-spacing: .04em;
+}
+.form-hint { font-size:.65rem; color:var(--text-muted); }
+.form-control::placeholder { color:#6b7280; }
+.form-error { color:#fca5a5; font-size:.7rem; margin-top:.25rem; }
+
+/* Compact grouping for label + input */
+.field-group { display:flex; flex-direction:column; gap:.25rem; }
+.field-inline-help { font-size:.65rem; color:var(--text-muted); }
+
+/* Select sizing adjustments */
+.form-select-sm { padding:.45rem 2.1rem .45rem .9rem; font-size:.75rem; }

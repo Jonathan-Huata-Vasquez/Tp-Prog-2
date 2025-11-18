@@ -1,7 +1,7 @@
 package biblioteca.biblioteca.web.mvc.controller;
 
-import biblioteca.biblioteca.application.command.ListarCatalogoCommand;
-import biblioteca.biblioteca.application.command.ListarCatalogoCommandHandler;
+import biblioteca.biblioteca.application.query.ListarCatalogoQuery;
+import biblioteca.biblioteca.application.query.ListarCatalogoQueryHandler;
 import biblioteca.biblioteca.infrastructure.security.UsuarioDetalles;
 import biblioteca.biblioteca.web.helper.ControllerHelper;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ import jakarta.servlet.http.HttpSession;
 @Slf4j
 public class CatalogoController {
 
-    private final ListarCatalogoCommandHandler listarHandler;
+    private final ListarCatalogoQueryHandler listarHandler;
     private final ControllerHelper controllerHelper;
 
     @GetMapping({"/catalogo", "/lector/catalogo", "/bibliotecario/catalogo"})
@@ -30,7 +30,7 @@ public class CatalogoController {
         log.debug("CatalogoController.catalogo() llamado para usuario: {}", 
                  usuario != null ? usuario.getUsername() : "null");
         
-        var result = listarHandler.handle(new ListarCatalogoCommand(q));
+        var result = listarHandler.handle(new ListarCatalogoQuery(q));
         model.addAttribute("totalLibros", result.getTotalLibros());
         model.addAttribute("criterioBusqueda", result.getCriterio());
         model.addAttribute("libros", result.getItems()); // lista de LibroCatalogoItemDto

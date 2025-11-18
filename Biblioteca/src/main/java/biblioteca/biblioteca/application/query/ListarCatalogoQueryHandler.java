@@ -1,4 +1,4 @@
-package biblioteca.biblioteca.application.command;
+package biblioteca.biblioteca.application.query;
 
 
 import biblioteca.biblioteca.domain.model.EstadoCopia;
@@ -16,14 +16,14 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ListarCatalogoCommandHandler {
+public class ListarCatalogoQueryHandler {
 
     private final ILibroRepository libroRepo;
     private final IAutorRepository autorRepo;
     private final IEditorialRepository editorialRepo;
     private final ICopiaRepository copiaRepo;
 
-    public CatalogoResultDto handle(ListarCatalogoCommand cmd) {
+    public CatalogoResultDto handle(ListarCatalogoQuery cmd) {
         final String q = (cmd.getQ() == null) ? "" : cmd.getQ().trim();
 
         List<Libro> libros = q.isEmpty()

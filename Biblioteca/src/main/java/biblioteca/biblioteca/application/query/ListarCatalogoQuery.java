@@ -1,8 +1,8 @@
-package biblioteca.biblioteca.application.command;
+package biblioteca.biblioteca.application.query;
 
 import lombok.Value;
 
 @Value
-public class ListarCatalogoCommand {
+public class ListarCatalogoQuery {
     String q; // puede ser null o vacío → trae todos
 }
