@@ -2,32 +2,378 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Seleccionar rol</title>
+    <title>Elegir rol - Biblioteca</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+     <style>
+        body {
+            min-height: 100vh;
+            margin: 0;
+            background: radial-gradient(circle at top left, #1e293b 0, #020617 45%, #020617 100%);
+            color: #e5e7eb;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar-main {
+            background: linear-gradient(90deg, #020617, #0f172a);
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.6);
+        }
+
+        .navbar-brand {
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+
+        main {
+            flex: 1;
+            padding-top: 2.5rem;
+            padding-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            color: #9ca3af;
+        }
+
+        .text-soft-muted {
+            color: #9ca3af;
+        }
+
+        .role-card {
+            border: none;
+            border-radius: 1.1rem;
+            background: radial-gradient(circle at top left, #020617 0, #020617 40%, #020617 100%);
+            box-shadow: 0 18px 45px rgba(15, 23, 42, 0.8);
+            height: 100%;
+            padding: 1.3rem 1.4rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.7rem;
+        }
+
+        .role-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+
+        .role-icon-lector {
+            background: rgba(96, 165, 250, 0.15);
+            color: #93c5fd;
+        }
+
+        .role-icon-biblio {
+            background: rgba(52, 211, 153, 0.18);
+            color: #6ee7b7;
+        }
+
+        .role-icon-admin {
+            background: rgba(248, 113, 113, 0.18);
+            color: #fecaca;
+        }
+
+        .role-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+        }
+
+        .role-pill {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            padding: 0.15rem 0.55rem;
+            border-radius: 999px;
+            border: 1px solid #1f2937;
+            color: #9ca3af;
+        }
+
+        .btn-role {
+            margin-top: auto;
+            border-radius: 999px;
+            border-width: 1px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding-inline: 1.2rem;
+        }
+
+        .btn-role-lector {
+            background-color: rgba(59, 130, 246, 0.12);
+            border-color: #3b82f6;
+            color: #bfdbfe;
+        }
+
+        .btn-role-lector:hover {
+            background-color: rgba(37, 99, 235, 0.26);
+            border-color: #3b82f6;
+            color: #e5e7eb;
+        }
+
+        .btn-role-biblio {
+            background-color: rgba(34, 197, 94, 0.12);
+            border-color: #22c55e;
+            color: #bbf7d0;
+        }
+
+        .btn-role-biblio:hover {
+            background-color: rgba(22, 163, 74, 0.26);
+            border-color: #22c55e;
+            color: #e5e7eb;
+        }
+
+        .btn-role-admin {
+            background-color: rgba(248, 113, 113, 0.08);
+            border-color: #ef4444;
+            color: #fecaca;
+        }
+
+        .btn-role-admin:hover {
+            background-color: rgba(239, 68, 68, 0.28);
+            border-color: #ef4444;
+            color: #fef2f2;
+        }
+
+        /* Avatar + menú usuario (sin JS) */
+        .user-menu { position: relative; list-style: none; }
+        .user-menu summary { list-style: none; cursor: pointer; }
+        .user-menu summary::-webkit-details-marker { display: none; }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 999px;
+            background: radial-gradient(circle at 30% 20%, #22c55e, #0ea5e9);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #0b1120;
+            font-weight: 700;
+            font-size: 0.85rem;
+            box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.9);
+        }
+
+        .user-menu-dropdown {
+            position: absolute;
+            right: 0;
+            margin-top: 0.75rem;
+            min-width: 210px;
+            background: #020617;
+            border-radius: 0.75rem;
+            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.85);
+            padding: 0.75rem 0.8rem;
+            border: 1px solid #1f2937;
+            z-index: 20;
+        }
+
+        .user-menu-header { padding: 0.35rem 0.5rem 0.5rem; }
+
+        .user-menu-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #e5e7eb;
+        }
+
+        .user-menu-role {
+            font-size: 0.75rem;
+            color: #9ca3af;
+        }
+
+        .user-menu-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #1f2937, transparent);
+            margin: 0.4rem 0.2rem 0.5rem;
+        }
+
+        .user-menu-link {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.35rem 0.6rem;
+            border-radius: 0.5rem;
+            font-size: 0.8rem;
+            color: #e5e7eb;
+            text-decoration: none;
+        }
+
+        .user-menu-link i { font-size: 0.95rem; }
+
+        .user-menu-link:hover {
+            background-color: #0b1120;
+            color: #f9fafb;
+        }
+
+        .user-menu-form { margin: 0; }
+
+        .user-menu-logout-btn {
+            background: none;
+            border: none;
+            padding: 0;
+            width: 100%;
+            text-align: left;
+        }
+    </style>
 </head>
 <body class="p-4">
 
-<!-- Navbar con logout -->
-<div th:replace="fragments/navbar :: navbar"></div>
+<nav class="navbar navbar-main">
+    <div class="container d-flex align-items-center justify-content-between">
+        <a class="navbar-brand text-white" href="#">
+            BIBLIOTECA
+        </a>
 
-<div class="container">
-    <h1 class="h4 mb-3">Hola, <span th:text="${nombre}">Usuario</span></h1>
-    <p>Tenés más de un rol. Elegí con qué vista querés ingresar:</p>
+        <details class="user-menu ms-2">
+            <summary class="d-flex align-items-center gap-2">
+                <span class="user-avatar">
+                    US
+                    <!-- Thymeleaf: th:text="${inicialesUsuario}" -->
+                </span>
+            </summary>
+            <div class="user-menu-dropdown">
+                <div class="user-menu-header">
+                    <div class="user-menu-name"
+                         th:text="${nombreCompleto ?: 'Usuario'}">
+                        Usuario
+                    </div>
+                    <div class="user-menu-role">
+                        Cuenta con varios roles
+                    </div>
+                </div>
 
-    <form method="post" th:action="@{/seleccionar-rol}">
-        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <div class="user-menu-divider"></div>
 
-        <div class="d-flex flex-wrap gap-2">
-            <button class="btn btn-outline-primary"
-                    type="submit"
-                    name="rol"
-                    th:value="${rol.authority}"
-                    th:text="${#strings.replace(rol.authority, 'ROLE_', '')}"
-                    th:each="rol : ${roles}">
-                ROL
-            </button>
+                <a th:href="${perfilPath}" class="user-menu-link">
+                    <i class="bi bi-person-badge"></i>
+                    <span>Perfil</span>
+                </a>
+
+                <form th:action="@{/logout}" method="post" class="user-menu-form">
+                    <input type="hidden"
+                           th:name="${_csrf.parameterName}"
+                           th:value="${_csrf.token}" />
+                    <button type="submit" class="user-menu-link user-menu-logout-btn">
+                        <i class="bi bi-box-arrow-right"></i>
+                        <span>Cerrar sesión</span>
+                    </button>
+                </form>
+            </div>
+        </details>
+    </div>
+</nav>
+
+<main class="container">
+    <div class="row justify-content-center mb-4">
+        <div class="col-12 col-md-10 col-lg-8 text-center">
+            <h1 class="h4 mb-2">Hola, <span th:text="${nombre}">Usuario</span></h1>
+            <div class="section-title mb-2">Seleccioná tu rol</div>
+            <p class="text-soft-muted">Tenés más de un rol. Elegí con qué vista querés ingresar:</p>
         </div>
-    </form>
+    </div>
+    <div class="row g-4 justify-content-center">
+        <!-- Card Lector -->
+        <div class="col-12 col-md-6 col-lg-4" th:if="${roles.?[authority=='ROLE_LECTOR'] != null and #lists.size(roles.?[authority=='ROLE_LECTOR']) > 0}">
+            <div class="role-card">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="role-icon role-icon-lector">
+                            <i class="bi bi-book"></i>
+                        </div>
+                        <div>
+                            <div class="role-title">Entrar como lector</div>
+                            <div class="small text-soft-muted">
+                                Para explorar el catálogo y consultar tus préstamos.
+                            </div>
+                        </div>
+                    </div>
+                    <span class="role-pill">Lector</span>
+                </div>
+
+                <div class="mt-3 small text-soft-muted">
+                    Ideal si solo necesitás buscar libros, ver tus préstamos y revisar fechas de vencimiento.
+                </div>
+
+                <div class="mt-3">
+                    <form method="post" th:action="@{/seleccionar-rol}">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                        <button type="submit" name="rol" value="ROLE_LECTOR" class="btn btn-role btn-role-lector w-100">Continuar como lector</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card Bibliotecario -->
+        <div class="col-12 col-md-6 col-lg-4" th:if="${roles.?[authority=='ROLE_BIBLIOTECARIO'] != null and #lists.size(roles.?[authority=='ROLE_BIBLIOTECARIO']) > 0}">
+            <div class="role-card">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="role-icon role-icon-biblio">
+                            <i class="bi bi-journal-check"></i>
+                        </div>
+                        <div>
+                            <div class="role-title">Entrar como bibliotecario</div>
+                            <div class="small text-soft-muted">
+                                Para gestionar préstamos y ayudar a los lectores.
+                            </div>
+                        </div>
+                    </div>
+                    <span class="role-pill">Bibliotecario</span>
+                </div>
+
+                <div class="mt-3 small text-soft-muted">
+                    Usá este perfil si estás trabajando en el mostrador: registrar nuevos préstamos y controlar devoluciones.
+                </div>
+
+                <div class="mt-3">
+                    <form method="post" th:action="@{/seleccionar-rol}">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                        <button type="submit" name="rol" value="ROLE_BIBLIOTECARIO" class="btn btn-role btn-role-biblio w-100">Continuar como bibliotecario</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card Admin -->
+        <div class="col-12 col-md-6 col-lg-4" th:if="${roles.?[authority=='ROLE_ADMINISTRADOR'] != null and #lists.size(roles.?[authority=='ROLE_ADMINISTRADOR']) > 0}">
+            <div class="role-card">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="role-icon role-icon-admin">
+                            <i class="bi bi-shield-lock"></i>
+                        </div>
+                        <div>
+                            <div class="role-title">Entrar como administrador</div>
+                            <div class="small text-soft-muted">
+                                Para configurar usuarios y el catálogo completo.
+                            </div>
+                        </div>
+                    </div>
+                    <span class="role-pill">Admin</span>
+                </div>
+
+                <div class="mt-3 small text-soft-muted">
+                    Elegí esta opción si necesitás dar de alta usuarios, gestionar libros, copias, autores y editoriales.
+                </div>
+
+                <div class="mt-3">
+                    <form method="post" th:action="@{/seleccionar-rol}">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                        <button type="submit" name="rol" value="ROLE_ADMINISTRADOR" class="btn btn-role btn-role-admin w-100">Continuar como administrador</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
 </div>
 </body>
 </html>

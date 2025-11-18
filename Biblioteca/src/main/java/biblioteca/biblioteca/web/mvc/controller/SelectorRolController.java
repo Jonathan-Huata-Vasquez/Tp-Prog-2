@@ -3,6 +3,7 @@ package biblioteca.biblioteca.web.mvc.controller;
 import biblioteca.biblioteca.application.service.RolActualService;
 import biblioteca.biblioteca.infrastructure.security.UsuarioDetalles;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -13,6 +14,7 @@ import jakarta.servlet.http.HttpSession;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 public class SelectorRolController {
@@ -32,7 +34,7 @@ public class SelectorRolController {
             String rolActual = rolActualService.determinarRolActivo(usuario, session);
             return redirigirPorRol("ROLE_" + rolActual);
         }
-
+        log.info("usuario.getAuthorities() {}", usuario.getAuthorities());
         // Múltiples roles, mostrar selector
         model.addAttribute("nombre", usuario.getNombreCompleto());
         model.addAttribute("roles", usuario.getAuthorities());
