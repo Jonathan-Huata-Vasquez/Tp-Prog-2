@@ -1,13 +1,6 @@
+<!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-  <head
-    th:replace="~{fragments/head :: head(titulo=${formMode} == 'editar' ? 'Editar Copia - Administración' : 'Nueva Copia - Administración')}"
-  >
-    <title
-      th:text="${formMode} == 'editar' ? 'Editar Copia - Administración' : 'Nueva Copia - Administración'"
-    >
-      Nueva Copia - Administración
-    </title>
-  </head>
+  <head th:replace="~{fragments/head :: head(titulo='Crear copia - Administración')}"><title>Crear copia - Administración</title></head>
   <body>
     <!-- ...navbar... -->
     <main class="container">

@@ -88,4 +88,11 @@ public class PrestamoJpaAdapter implements IPrestamoRepository {
     public int contarDevueltosPorLector(Integer idLector) {
         return repo.countByLectorIdAndFechaDevolucionIsNotNull(idLector);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public int contarCopiaEnPrestamos(Integer idCopia) {
+        return repo.countByCopiaId(idCopia);
+    }
+
 }

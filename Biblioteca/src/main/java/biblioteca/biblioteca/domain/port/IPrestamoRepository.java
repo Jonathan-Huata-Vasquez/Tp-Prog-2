@@ -18,4 +18,5 @@ public interface IPrestamoRepository {
     int contarActivosPorLector(Integer idLector);
     int contarVencidosPorLector(Integer idLector);
     int contarDevueltosPorLector(Integer idLector);
+    int contarCopiaEnPrestamos(Integer idCopia);
 }

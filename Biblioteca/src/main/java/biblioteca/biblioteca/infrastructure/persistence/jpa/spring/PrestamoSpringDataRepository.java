@@ -25,4 +25,6 @@ public interface PrestamoSpringDataRepository extends JpaRepository<PrestamoEnti
     int countByLectorIdAndFechaDevolucionIsNull(Integer lectorId);
     int countByLectorIdAndFechaDevolucionIsNullAndFechaVencimientoBefore(Integer lectorId, LocalDate fecha);
     int countByLectorIdAndFechaDevolucionIsNotNull(Integer lectorId);
+
+    int countByCopiaId(Integer copiaId);
 }

@@ -1,9 +1,7 @@
 package biblioteca.biblioteca.web.mvc.controller;
 
 
-import biblioteca.biblioteca.application.command.ActualizarCopiaCommand;
-import biblioteca.biblioteca.application.command.ActualizarCopiaCommandHandler;
-import biblioteca.biblioteca.application.command.CrearCopiaCommandHandler;
+import biblioteca.biblioteca.application.command.*;
 import biblioteca.biblioteca.application.query.*;
 import biblioteca.biblioteca.domain.model.EstadoCopia;
 import biblioteca.biblioteca.infrastructure.security.UsuarioDetalles;
@@ -32,6 +30,8 @@ public class AdminCopiasController {
     private final ActualizarCopiaCommandHandler actualizarCopiaCommandHandler;
     private final ListarLibrosQueryHandler listarLibrosQueryHandler;
     private final ObtenerCopiaQueryHandler obtenerCopiaQueryHandler;
+    private final EliminarCopiaCommandHandler eliminarCopiaCommandHandler;
+
 
     @GetMapping("/admin/copias")
     public String listar(@AuthenticationPrincipal UsuarioDetalles usuario,
@@ -65,13 +65,11 @@ public class AdminCopiasController {
     public String crear(@AuthenticationPrincipal UsuarioDetalles usuario,
                         HttpSession session,
                         Model model,
-                        @ModelAttribute("copiaForm") CopiaFormDto copiaForm) {
+                        @ModelAttribute("copiaForm") CrearCopiaCommand crearCopiaCommand) {
 
         try {
-            var cmd = biblioteca.biblioteca.application.command.CrearCopiaCommand.builder()
-                .idLibro(copiaForm.getIdLibro())
-                .build();
-            crearCopiaCommandHandler.handle(cmd);
+
+            crearCopiaCommandHandler.handle(crearCopiaCommand);
             return "redirect:/admin/copias";
         } catch (Exception e) {
             var libros = listarLibrosQueryHandler.handle(new ListarLibrosQuery());
@@ -120,9 +118,32 @@ public class AdminCopiasController {
         controllerHelper.agregarRolActualAlModelo(model, usuario, session);
         var libros = listarLibrosQueryHandler.handle(new ListarLibrosQuery());
         model.addAttribute("libros", libros);
-        model.addAttribute("estados", new EstadoCopia[]{EstadoCopia.EnBiblioteca, EstadoCopia.EnReparacion});
-            model.addAttribute("copiaForm", CopiaFormDto.builder().id(copia.getId()).idLibro(copia.getIdLibro()).estado(copia.getEstado()).build());
+        model.addAttribute("estados",new EstadoCopia[]{EstadoCopia.EnBiblioteca, EstadoCopia.EnReparacion});
+        model.addAttribute("copiaForm", CopiaFormDto.builder().id(copia.getId()).idLibro(copia.getIdLibro()).estado(copia.getEstado()).build());
         model.addAttribute("formMode", "editar");
         return "admin/admin-copia-form-editar";
+    }
+
+    @PostMapping("/admin/copias/{id}/eliminar")
+    public String eliminar(@PathVariable Integer id,
+                           @AuthenticationPrincipal UsuarioDetalles usuario,
+                           HttpSession session,
+                           Model model) {
+        // Verificar si la copia está en préstamo activo
+
+        try {
+            var cmd = EliminarCopiaCommand.builder().idCopia(id).build();
+            // Aquí deberías inyectar EliminarCopiaCommandHandler, pero si no está, puedes obtenerlo por contexto
+            eliminarCopiaCommandHandler.handle(cmd);
+            return "redirect:/admin/copias";
+        } catch (Exception e) {
+            var result = listarCopiasQueryHandler.handle(new ListarCopiasQuery());
+            model.addAttribute("copias", result);
+            model.addAttribute("errorEliminar", e.getMessage());
+            model.addAttribute("admin", usuario);
+            model.addAttribute("adminIniciales", controllerHelper.calcularIniciales(usuario));
+            controllerHelper.agregarRolActualAlModelo(model, usuario, session);
+            return "admin/admin-copias";
+        }
     }
 }
