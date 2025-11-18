@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: head(titulo='Nuevo Libro - Administración')}"><title>Nuevo Libro - Administración</title></head>
+<head th:replace="~{fragments/head :: head(titulo=${formMode} == 'editar' ? 'Editar Libro - Administración' : 'Nuevo Libro - Administración')}"><title th:text="${formMode} == 'editar' ? 'Editar Libro - Administración' : 'Nuevo Libro - Administración'">Nuevo Libro - Administración</title></head>
 <body>
 <div th:replace="~{fragments/navbar-admin :: navbarAdmin('libros')}"></div>
 
@@ -13,7 +13,7 @@
                 <div class="card-body d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
                     <div>
                         <p class="section-title mb-1">Libros</p>
-                        <h1 class="h4 mb-2" th:text="${libro?.id != null} ? 'Editar libro' : 'Nuevo libro'">Nuevo libro</h1>
+                        <h1 class="h4 mb-2" th:text="${formMode} == 'editar' ? 'Editar libro' : 'Nuevo libro'">Nuevo libro</h1>
                         <p class="mb-0 text-soft-muted">
                             Cargá los datos principales del libro para que pueda formar parte del catálogo de la biblioteca.
                         </p>
@@ -36,7 +36,7 @@
 
                     <!-- FORM -->
 
-                    <form th:action="@{/admin/libros}" th:object="${libroForm}" method="post" class="row g-3">
+                    <form th:action="${formMode} == 'editar' ? @{'/admin/libros/' + ${libroForm.id} + '/editar'} : @{/admin/libros}" th:object="${libroForm}" method="post" class="row g-3">
                         <!-- Título -->
                         <div class="col-12">
                             <label for="titulo" class="small-label mb-1">Título</label>
@@ -102,7 +102,7 @@
                         <div class="col-12 d-flex flex-wrap gap-2">
                             <button type="submit" class="btn btn-primary" aria-label="Guardar libro">
                                 <i class="bi bi-check2-circle me-1" aria-hidden="true"></i>
-                                <span th:text="${libro?.id != null} ? 'Guardar cambios' : 'Crear libro'">Crear libro</span>
+                                <span th:text="${formMode} == 'editar' ? 'Guardar cambios' : 'Crear libro'">Crear libro</span>
                             </button>
 
                             <a th:href="@{/admin/libros}" class="btn btn-outline-secondary">

@@ -10,4 +10,5 @@ public interface ILibroRepository {
     List<Libro> buscarPorTitulo(String q);
     void eliminar(Integer idLibro);
     Libro guardar(Libro libro);
+    int contarCopiasPorLibro(Integer idLibro);
 }

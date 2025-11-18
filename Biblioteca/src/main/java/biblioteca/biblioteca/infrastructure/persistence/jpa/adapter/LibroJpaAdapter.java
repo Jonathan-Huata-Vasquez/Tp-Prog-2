@@ -3,6 +3,7 @@ package biblioteca.biblioteca.infrastructure.persistence.jpa.adapter;
 import biblioteca.biblioteca.domain.model.Libro;
 import biblioteca.biblioteca.domain.port.ILibroRepository;
 import biblioteca.biblioteca.infrastructure.persistence.jpa.entity.LibroEntity;
+import biblioteca.biblioteca.infrastructure.persistence.jpa.spring.CopiaSpringDataRepository;
 import biblioteca.biblioteca.infrastructure.persistence.jpa.spring.LibroSpringDataRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +18,7 @@ public class LibroJpaAdapter implements ILibroRepository {
 
     private final LibroSpringDataRepository repo;
     private final LibroMapper mapper;
+    private final CopiaSpringDataRepository copiaRepo;
 
     @Override
     @Transactional
@@ -52,5 +54,10 @@ public class LibroJpaAdapter implements ILibroRepository {
                 .stream()
                 .map(mapper::toDomain)
                 .toList();
+    }
+    @Override
+    @Transactional(readOnly = true)
+    public int contarCopiasPorLibro(Integer idLibro) {
+        return copiaRepo.countByLibroId(idLibro);
     }
 }

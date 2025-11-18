@@ -18,6 +18,11 @@ public class EliminarLibroCommandHandler {
         if (cmd == null) throw new DatoInvalidoException("El comando no puede ser null");
         var existente = libroRepo.porId(cmd.getIdLibro());
         if (existente == null) throw new EntidadNoEncontradaException("Libro inexistente: " + cmd.getIdLibro());
+        // Verificar si el libro tiene copias asociadas
+        int cantidadCopias = libroRepo.contarCopiasPorLibro(cmd.getIdLibro());
+        if (cantidadCopias > 0) {
+            throw new DatoInvalidoException("No se puede eliminar el libro porque tiene copias asociadas.");
+        }
         libroRepo.eliminar(cmd.getIdLibro());
     }
 }

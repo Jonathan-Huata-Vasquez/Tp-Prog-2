@@ -38,7 +38,7 @@ public class ListarCatalogoQueryHandler {
                     int total = copiaRepo.contarPorLibro(l.getIdLibro());
                     int disponibles = copiaRepo.contarPorLibroYEstado(l.getIdLibro(), EstadoCopia.EnBiblioteca);
 
-                    // descripcionCorta: ej. primeros 180 caracteres
+                    // descripcion completa y corta
                     String desc = l.getDescripcion() == null ? "" : l.getDescripcion();
                     String corta = desc.length() <= 180 ? desc : (desc.substring(0, 180) + "…");
 
@@ -49,8 +49,11 @@ public class ListarCatalogoQueryHandler {
                             .titulo(l.getTitulo())
                             .anioPublicacion(l.getAnioPublicacion())
                             .categoria(l.getCategoria().name())
+                            .idAutor(l.getIdAutor())
                             .autorNombre(autor.getNombre())
+                            .idEditorial(l.getIdEditorial())
                             .editorialNombre(editorial.getNombre())
+                            .descripcion(desc)
                             .descripcionCorta(corta)
                             .portadaUrl(portada) // si es null, la vista usa la portada “placeholder”
                             .totalCopias(total)
