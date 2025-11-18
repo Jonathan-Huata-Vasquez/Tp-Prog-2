@@ -1,0 +1,100 @@
+
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(titulo='Copias - Administración')}"><title>Copias - Administración</title></head>
+<body>
+<div th:replace="~{fragments/navbar-admin :: navbarAdmin('copias')}"></div>
+<main class="container">
+  <div class="row g-4 mt-4">
+    <div class="col-12">
+      <div class="card card-soft mb-3">
+        <div class="card-body d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+          <div>
+            <p class="section-title mb-1">Copias / Ejemplares</p>
+            <h1 class="h4 mb-2">Gestión de copias</h1>
+            <p class="mb-0 text-soft-muted">Administración de ejemplares físicos de los libros.</p>
+          </div>
+          <div class="text-md-end">
+            <a th:href="@{/admin/copias/nueva}" class="btn btn-primary btn-sm">
+              <i class="bi bi-plus-circle me-1"></i>Nueva copia
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Mensaje de error al eliminar -->
+    <div th:if="${errorEliminar}" class="alert alert-danger mb-3 py-2 px-3">
+      <div class="d-flex align-items-start gap-2">
+        <i class="bi bi-exclamation-circle-fill"></i>
+        <div>
+          <strong>No se pudo eliminar:</strong>
+          <span th:text="${errorEliminar}">Motivo del error</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12">
+      <div class="card card-soft">
+        <div class="card-body">
+          <p class="section-title mb-2">Listado</p>
+          <p class="small text-soft-muted mb-3">Cada fila representa una copia física de un libro.</p>
+          <div class="table-responsive">
+            <table class="table table-dark-custom table-striped table-hover align-middle mb-0">
+              <thead>
+                <tr>
+                  <th scope="col">ID copia</th>
+                  <th scope="col">Título libro</th>
+                  <th scope="col">ID libro</th>
+                  <th scope="col">Estado</th>
+                  <th scope="col">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="copia : ${copias}" th:id="${'fila-copia-' + copia.id}">
+                  <td><span class="small" th:text="${copia.id}">101</span></td>
+                  <td th:text="${copia.tituloLibro}">Título del libro</td>
+                  <td><span class="small" th:text="${copia.idLibro}">1</span></td>
+                  <td>
+                    <span th:switch="${copia.estado}">
+                      <span th:case="'DISPONIBLE'" class="badge-estado badge-estado-disponible">Disponible</span>
+                      <span th:case="'PRESTADO'" class="badge-estado badge-estado-prestado">Prestada</span>
+                      <span th:case="'BAJA'" class="badge-estado badge-estado-baja">Baja</span>
+                      <span th:case="*" class="badge-estado badge-estado-baja" th:text="${copia.estado}">N/D</span>
+                    </span>
+                  </td>
+                  <td>
+                    <div class="d-flex flex-wrap gap-2">
+                      <a class="btn btn-outline-secondary btn-sm" th:href="@{/admin/copias/{id}/editar(id=${copia.id})}" title="Editar"><i class="bi bi-pencil-square"></i></a>
+                      <a class="btn btn-outline-danger btn-sm" th:href="${'#modal-eliminar-copia-' + copia.id}" title="Eliminar"><i class="bi bi-trash"></i></a>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Modales de eliminación -->
+<div th:each="copia : ${copias}" th:id="${'modal-eliminar-copia-' + copia.id}" class="modal-overlay">
+  <div class="modal-card">
+    <div class="d-flex align-items-start gap-2 mb-2">
+      <div class="text-danger me-2"><i class="bi bi-exclamation-triangle-fill"></i></div>
+      <div>
+        <p class="modal-title mb-1">Eliminar copia</p>
+        <p class="small text-soft-muted mb-0">Se eliminará la copia <strong th:text="${copia.tituloLibro}">Título</strong>. Esta acción es irreversible.</p>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <a href="#" class="btn btn-outline-secondary btn-sm">Cancelar</a>
+      <form th:action="@{/admin/copias/{id}/eliminar(id=${copia.id})}" method="post" class="d-inline">
+        <button type="submit" class="btn btn-danger-soft btn-sm">Eliminar</button>
+      </form>
+    </div>
+  </div>
+</div>
+</body>
+</html>

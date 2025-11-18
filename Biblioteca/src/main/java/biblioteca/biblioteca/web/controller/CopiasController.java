@@ -62,9 +62,5 @@ public class CopiasController {
         return ResponseEntity.ok(dto);
     }
 
-    @GetMapping
-    public ResponseEntity<List<CopiaDto>> listar(@RequestParam(required = false) Integer idLibro) {
-        var lista = listarHandler.handle(ListarCopiasQuery.builder().idLibro(idLibro).build());
-        return ResponseEntity.ok(lista);
-    }
+
 }

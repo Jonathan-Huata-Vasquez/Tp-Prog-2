@@ -15,12 +15,22 @@ public class ListarCopiasQueryHandler {
 
     private final ICopiaRepository copiaRepo;
     private final CopiaDtoMapper dtoMapper;
+    private final biblioteca.biblioteca.domain.port.ILibroRepository libroRepo;
 
     @Transactional(readOnly = true)
     public List<CopiaDto> handle(ListarCopiasQuery q) {
-        var listado = (q != null && q.getIdLibro() != null)
-                ? copiaRepo.porLibro(q.getIdLibro())
-                : copiaRepo.todas();
-        return listado.stream().map(dtoMapper::toDto).toList();
+        var listado = copiaRepo.todas();
+
+        return listado.stream().map(copia -> {
+            var dto = dtoMapper.toDto(copia);
+            var libro = libroRepo.porId(copia.getIdLibro());
+            String titulo = libro != null ? libro.getTitulo() : "";
+            return CopiaDto.builder()
+                    .id(dto.getId())
+                    .idLibro(dto.getIdLibro())
+                    .tituloLibro(titulo)
+                    .estado(dto.getEstado())
+                    .build();
+        }).toList();
     }
 }

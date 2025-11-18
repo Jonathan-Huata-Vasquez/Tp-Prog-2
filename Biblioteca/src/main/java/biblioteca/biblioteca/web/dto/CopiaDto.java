@@ -9,5 +9,6 @@ import lombok.Value;
 public class CopiaDto {
     Integer id;
     Integer idLibro;
+    String tituloLibro;
     EstadoCopia estado;
 }
