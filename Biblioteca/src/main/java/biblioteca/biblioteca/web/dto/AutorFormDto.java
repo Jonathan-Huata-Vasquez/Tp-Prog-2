@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -12,6 +14,6 @@ import lombok.NoArgsConstructor;
 public class AutorFormDto {
     private Integer id;
     private String nombre;
-    private java.time.LocalDate fechaNacimiento;
+    private LocalDate fechaNacimiento;
     private String nacionalidad;
 }

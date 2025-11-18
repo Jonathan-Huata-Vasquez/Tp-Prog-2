@@ -1,5 +1,9 @@
 package biblioteca.biblioteca.infrastructure.security;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +18,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
+        private static final Logger log = LoggerFactory.getLogger(SecurityConfig.class);
 
     private final UsuarioDetallesService usuarioDetallesService;
 
@@ -83,8 +88,22 @@ public class SecurityConfig {
         return provider;
     }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+        @Bean
+                public PasswordEncoder passwordEncoder() {
+                        return new BCryptPasswordEncoder() {
+                                @Override
+                                public String encode(CharSequence rawPassword) {
+                                        String encoded = super.encode(rawPassword);
+                                            log.info("[BCRYPT] Contraseña original: '{}' | Encriptada: {}", rawPassword, encoded);
+                                        return encoded;
+                                }
+
+                                @Override
+                                public boolean matches(CharSequence rawPassword, String encodedPassword) {
+                                        boolean result = super.matches(rawPassword, encodedPassword);
+                                        log.info("[BCRYPT] Comparando contraseña: raw='{}' hash='{}' resultado={}", rawPassword, encodedPassword, result);
+                                        return result;
+                                }
+                        };
+        }
 }

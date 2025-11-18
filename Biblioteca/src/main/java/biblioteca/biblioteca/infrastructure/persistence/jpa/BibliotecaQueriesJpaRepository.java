@@ -63,7 +63,7 @@ public interface BibliotecaQueriesJpaRepository extends JpaRepository<PrestamoEn
             p.id,
             p.lector_id, 
             l.nombre as nombre_lector,
-            CASE WHEN l.bloqueado_hasta IS NOT NULL AND l.bloqueado_hasta >= CURRENT_DATE THEN true ELSE false END as bloqueado,
+            CASE WHEN l.bloqueado_hasta IS NOT NULL AND l.bloqueado_hasta >= CURRENT_DATE THEN 1 ELSE 0 END as bloqueado,
             lib.titulo as titulo_libro,
             a.nombre as autor_nombre,
             p.copia_id,
@@ -72,7 +72,7 @@ public interface BibliotecaQueriesJpaRepository extends JpaRepository<PrestamoEn
             p.fecha_devolucion,
             CASE 
                 WHEN p.fecha_devolucion IS NULL AND p.fecha_vencimiento < :fechaActual 
-                THEN DATEDIFF('DAY', p.fecha_vencimiento, :fechaActual)
+                THEN DATEDIFF(p.fecha_vencimiento, :fechaActual)
                 ELSE 0
             END as dias_atraso
         FROM prestamo p
@@ -97,7 +97,7 @@ public interface BibliotecaQueriesJpaRepository extends JpaRepository<PrestamoEn
             p.id,
             p.lector_id, 
             l.nombre as nombre_lector,
-            CASE WHEN l.bloqueado_hasta IS NOT NULL AND l.bloqueado_hasta >= CURRENT_DATE THEN true ELSE false END as bloqueado,
+            CASE WHEN l.bloqueado_hasta IS NOT NULL AND l.bloqueado_hasta >= CURRENT_DATE THEN 1 ELSE 0 END as bloqueado,
             lib.titulo as titulo_libro,
             a.nombre as autor_nombre,
             p.copia_id,

@@ -121,15 +121,16 @@ public class BibliotecaQueriesRepositoryImpl implements IBibliotecaQueriesReposi
         
         int offset = pagina * tamanoPagina;
         List<Object[]> resultados;
-        
+        log.info("Ejecutando prestamos query: fechaActual={}, pagina={}, tamanoPagina={}, estadoFiltro={}, offset={}", fechaActual, pagina, tamanoPagina, estadoFiltro, offset);
         if (estadoFiltro == null || estadoFiltro.trim().isEmpty()) {
+            log.info("Query: obtenerPrestamosPaginados(fechaActual={}, offset={}, tamanoPagina={})", fechaActual, offset, tamanoPagina);
             resultados = bibliotecaQueriesJpaRepo.obtenerPrestamosPaginados(
                 fechaActual, offset, tamanoPagina);
         } else {
+            log.info("Query: obtenerPrestamosPaginadosConFiltro(fechaActual={}, estadoFiltro={}, offset={}, tamanoPagina={})", fechaActual, estadoFiltro.toUpperCase(), offset, tamanoPagina);
             resultados = bibliotecaQueriesJpaRepo.obtenerPrestamosPaginadosConFiltro(
                 fechaActual, estadoFiltro.toUpperCase(), offset, tamanoPagina);
         }
-        
         return resultados.stream()
                 .map(this::mapearResultadoAPrestamoBibliotecarioDto)
                 .collect(Collectors.toList());
@@ -182,7 +183,12 @@ public class BibliotecaQueriesRepositoryImpl implements IBibliotecaQueriesReposi
         Number idPrestamo = (Number) resultado[0];
         Number idLector = (Number) resultado[1];
         String nombreLector = (String) resultado[2];
-        Boolean lectorBloqueado = (Boolean) resultado[3];
+        Boolean lectorBloqueado = null;
+        if (resultado[3] instanceof Number) {
+            lectorBloqueado = ((Number) resultado[3]).intValue() == 1;
+        } else if (resultado[3] instanceof Boolean) {
+            lectorBloqueado = (Boolean) resultado[3];
+        }
         String tituloLibro = (String) resultado[4];
         String autorNombre = (String) resultado[5];
         Number idCopia = (Number) resultado[6];

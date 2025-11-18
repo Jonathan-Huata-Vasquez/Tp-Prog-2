@@ -1,5 +1,8 @@
 package biblioteca.biblioteca.infrastructure.security;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import biblioteca.biblioteca.domain.model.Usuario;
 import biblioteca.biblioteca.domain.port.IUsuarioRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +15,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class UsuarioDetallesService implements UserDetailsService {
+    private static final Logger log = LoggerFactory.getLogger(UsuarioDetallesService.class);
 
     private final IUsuarioRepository usuarioRepo;
 
