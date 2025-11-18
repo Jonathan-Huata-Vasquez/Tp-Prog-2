@@ -5,6 +5,7 @@ import biblioteca.biblioteca.infrastructure.persistence.jpa.entity.UsuarioEntity
 import biblioteca.biblioteca.infrastructure.persistence.jpa.spring.RolSpringDataRepository;
 import biblioteca.biblioteca.infrastructure.persistence.jpa.spring.UsuarioSpringDataRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,9 +31,10 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+@Slf4j
 @Configuration
 @RequiredArgsConstructor
-public class DatosDemoH2 implements CommandLineRunner {
+public class DatosDemoH2  {
 
     private static final String DEMO_PASSWORD = "password";
 
@@ -47,7 +49,7 @@ public class DatosDemoH2 implements CommandLineRunner {
     private final LectorSpringDataRepository lectorRepo;
     private final PrestamoSpringDataRepository prestamoRepo;
 
-    @Override
+    //@Override
     public void run(String... args) {
         // 1) Asegurar roles (solo si faltan)
         RolEntity rolLector        = ensureRol("LECTOR");
