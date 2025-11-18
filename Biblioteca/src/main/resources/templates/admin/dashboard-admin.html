@@ -99,6 +99,24 @@
                                         <a th:href="@{/admin/copias/nueva}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-plus-circle me-1"></i>Nueva</a>
                                     </div>
                                 </div>
+                                <!-- Editoriales -->
+                                <div class="kpi-card">
+                                    <div class="kpi-head">
+                                        <div class="kpi-icon"><i class="bi bi-building"></i></div>
+                                        <div class="kpi-titles">
+                                            <p class="kpi-label mb-1">Editoriales</p>
+                                            <p class="kpi-title mb-0" title="Editoriales registradas">Editoriales registradas</p>
+                                        </div>
+                                    </div>
+                                    <div class="mt-1">
+                                        <span class="kpi-number" th:text="${resumen.editorialesTotal}">0</span>
+                                        <div class="kpi-sub">catálogo total</div>
+                                    </div>
+                                    <div class="kpi-actions">
+                                        <a th:href="@{/admin/editoriales}" class="btn btn-outline-primary btn-sm"><i class="bi bi-table me-1"></i>Ver</a>
+                                        <a th:href="@{/admin/editoriales/nueva}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-plus-circle me-1"></i>Nueva</a>
+                                    </div>
+                                </div>
                                 <!-- Autores -->
                                 <div class="kpi-card">
                                     <div class="kpi-head">
@@ -117,24 +135,7 @@
                                         <a th:href="@{/admin/autores/nuevo}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-plus-circle me-1"></i>Nuevo</a>
                                     </div>
                                 </div>
-                                <!-- Editoriales -->
-                                <div class="kpi-card">
-                                    <div class="kpi-head">
-                                        <div class="kpi-icon"><i class="bi bi-building"></i></div>
-                                        <div class="kpi-titles">
-                                            <p class="kpi-label mb-1">Editoriales</p>
-                                            <p class="kpi-title mb-0" title="Sellos activos">Sellos activos</p>
-                                        </div>
-                                    </div>
-                                    <div class="mt-1">
-                                        <span class="kpi-number" th:text="${resumen.editorialesTotal}">0</span>
-                                        <div class="kpi-sub">proveedores</div>
-                                    </div>
-                                    <div class="kpi-actions">
-                                        <a th:href="@{/admin/editoriales}" class="btn btn-outline-primary btn-sm"><i class="bi bi-table me-1"></i>Ver</a>
-                                        <a th:href="@{/admin/editoriales/nueva}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-plus-circle me-1"></i>Nueva</a>
-                                    </div>
-                                </div>
+                                
                             </div>
                         </div>
 

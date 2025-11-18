@@ -60,4 +60,16 @@ public class LibroJpaAdapter implements ILibroRepository {
     public int contarCopiasPorLibro(Integer idLibro) {
         return copiaRepo.countByLibroId(idLibro);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public int contarEditorialPorLibro(Integer idEditorial) {
+        return repo.countByEditorialId(idEditorial);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public int contarAutorPorLibro(Integer idAutor) {
+        return repo.countByAutorId(idAutor);
+    }
 }

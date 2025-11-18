@@ -11,4 +11,6 @@ public interface ILibroRepository {
     void eliminar(Integer idLibro);
     Libro guardar(Libro libro);
     int contarCopiasPorLibro(Integer idLibro);
+    int contarEditorialPorLibro(Integer idEditorial);
+    int contarAutorPorLibro(Integer idAutor);
 }
